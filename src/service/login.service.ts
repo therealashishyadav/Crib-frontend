@@ -4,7 +4,7 @@ import { JwtToken } from '../entity/JwtToken';
 import { LoginEntity } from '../entity/LoginEntity';
 import { Role } from '../entity/Role';
 import { Observable } from 'rxjs';
-import { environment } from '../environments/environment';
+import { environment } from '../environment/environment';
 
 // const token_url = "http://localhost:8080/api/v1/auth/signin"
 // const user_url = "http://localhost:8080/api/v1/USER"
