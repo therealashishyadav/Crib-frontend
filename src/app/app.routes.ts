@@ -18,6 +18,7 @@ import { PgDetailComponent } from '../components/pg-detail/pg-detail.component';
 // import { Navbar2Component } from '../components/navbar2/navbar2.component';
 
 export const routes: Routes = [
+      { path: '', redirectTo: '/homepage', pathMatch: 'full' },
     { path: 'account', component: AccountComponent },
     { path: 'login', component: LoginComponent },
     { path: 'navbar', component: NavbarComponent },
