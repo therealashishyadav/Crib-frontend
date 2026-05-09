@@ -13,7 +13,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { PgdetailsService } from '../../service/pgdetails.service';
-import { PgModel } from '../../entity/PgModel';
 import { response } from 'express';
 import { error } from 'console';
 import { MatCardModule } from '@angular/material/card';
@@ -22,6 +21,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { PgModel } from '../../entity/PgModel';
 
 
 @Component({

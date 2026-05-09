@@ -1,19 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════════
-   NOOKLY — Homepage  v3
-   Philosophy  : Cinematic Luxury · Radical Restraint · Image-Led Depth
-   Images      : Unsplash (dark-tinted, always visible, subtle on hover)
-   Fonts       : Cormorant Garamond (display) · Jost (body)
-   No italic   : font-style: normal enforced everywhere
-   Scope       : :host only — zero :root
-   Accordion   : .is-open + aria-expanded
-   ═══════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@200;300;400;500;600;700&display=swap');
-
-
-/* ───────────────────────────────────────────────────────────────────────
-   1. DESIGN TOKENS
-   ─────────────────────────────────────────────────────────────────────── */
 :host {
   /* Brand */
   --azure:          #4A90E2;
