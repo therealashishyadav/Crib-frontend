@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://nookeureka-server.onrender.com'
+  apiUrl: 'https://apigateway-x0ku.onrender.com'
 };
