@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PgModel } from '../entity/PgModel';
 import { Observable } from 'rxjs';
-import { environment } from '../environment/environment';
+import { environment } from '../environments/environment';
 
 const post_pg_url = `${environment.apiUrl}/addPGWithFiles`
 

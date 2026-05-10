@@ -43,7 +43,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PGListing } from '../entity/PGListing';
-import { environment } from '../environment/environment';
+import { environment } from '../environments/environment';
 
 // const SHOW_PG_URL = 'http://localhost:8080';
 // const ADD_PG_URL = 'http://localhost:8080/api/pg-listings';

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, forkJoin } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
-import { environment } from '../environment/environment';
+import { environment } from '../environments/environment';
 
 // Models
 export interface Owner {
