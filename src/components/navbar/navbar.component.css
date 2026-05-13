@@ -72,11 +72,11 @@
    NAVBAR CONTAINER
 ════════════════════════════════════════════════════════════ */
 .navbar-container {
-  /* position: fixed; */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 9999;
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
