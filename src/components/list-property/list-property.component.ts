@@ -272,6 +272,7 @@
 
 
 // src/app/components/list-property/list-property.component.ts
+// src/app/components/list-property/list-property.component.ts
 
 import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -293,13 +294,9 @@ import { FooterComponent } from '../footer/footer.component';
 import { PgModel, SharingOptionModel } from '../../entity/PgModel';
 import { PgListingService } from '../../service/pg-listing.service';
 
-// ── Replace with your actual Cloudinary cloud name ────────────────────────────
-// Found in: Cloudinary Dashboard → top-right account menu → Cloud Name
-const CLOUDINARY_CLOUD_NAME = 'YOUR_CLOUD_NAME';
-
-// ── Create this preset in Cloudinary Dashboard: ───────────────────────────────
-// Settings → Upload → Add upload preset → Mode: Unsigned → Name: nookly_unsigned
-const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned';
+// ── Cloudinary config ─────────────────────────────────────────────────────────
+const CLOUDINARY_CLOUD_NAME    = 'dmb3nvt45';       // your cloud name
+const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned'; // your unsigned preset
 
 @Component({
   selector: 'app-list-property',
@@ -336,14 +333,14 @@ export class ListPropertyComponent {
   isSubmitting  = false;
   submitSuccess = false;
 
-  // ── Per-upload progress flags (shown in snackbar messages) ───────────────
+  // ── Per-upload progress flags ─────────────────────────────────────────────
   uploadingCover   = false;
   uploadingGallery = false;
   uploadingVideo   = false;
 
   // ── File holders ─────────────────────────────────────────────────────────
-  coverImageFile: File | null = null;       // actual file selected by owner
-  coverImagePreview: string | null = null;  // base64 preview shown in form
+  coverImageFile: File | null = null;
+  coverImagePreview: string | null = null;
   galleryImageFiles: File[] = [];
   videoFile: File | null = null;
 
@@ -469,8 +466,8 @@ export class ListPropertyComponent {
   }
 
   // ── Cloudinary Upload Helper ──────────────────────────────────────────────
-  // Uploads a file directly from the browser to Cloudinary.
-  // No backend needed — returns the permanent secure CDN URL.
+  // Uploads directly from browser to Cloudinary — no backend involved.
+  // The URL format is: https://api.cloudinary.com/v1_1/{cloud_name}/{resource_type}/upload
   private async uploadToCloudinary(
     file: File,
     resourceType: 'image' | 'video' = 'image'
@@ -483,6 +480,7 @@ export class ListPropertyComponent {
       resourceType === 'video' ? 'nookly-pg/videos' : 'nookly-pg/images'
     );
 
+    // ✅ Correct URL — only cloud name and resource type go here
     const apiUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
 
     const response = await fetch(apiUrl, { method: 'POST', body: formData });
@@ -504,7 +502,6 @@ export class ListPropertyComponent {
     Object.keys(cleaned).forEach(key => {
       if (cleaned[key] === '') cleaned[key] = null;
     });
-    // Deep-clean each sharingOption entry too
     cleaned.sharingOptions = model.sharingOptions.map((opt: any) => {
       const cleanedOpt = { ...opt };
       Object.keys(cleanedOpt).forEach(key => {
@@ -515,6 +512,7 @@ export class ListPropertyComponent {
     return cleaned;
   }
 
+  // ── Submit ────────────────────────────────────────────────────────────────
   async SubmitListing(): Promise<void> {
     if (this.pgForm.invalid) {
       this.snackBar.open('Please fill all required fields.', 'Close', { duration: 3000 });
@@ -561,7 +559,7 @@ export class ListPropertyComponent {
       // ── STEP 4: Sanitize — empty strings → null ───────────────────────────
       const payload = this.cleanModel(this.pgModel);
 
-      // ── STEP 5: POST to Spring Boot ───────────────────────────────────────
+      // ── STEP 5: POST cleaned payload to Spring Boot via API Gateway ───────
       this.pgListingService.createListing(payload).subscribe({
         next: (response) => {
           this.isSubmitting  = false;
@@ -571,7 +569,6 @@ export class ListPropertyComponent {
         },
         error: (error) => {
           this.isSubmitting = false;
-          // Try to surface a meaningful message from the backend
           const message =
             error?.error?.message ??
             error?.error?.error ??
@@ -582,7 +579,6 @@ export class ListPropertyComponent {
       });
 
     } catch (error: any) {
-      // Catches Cloudinary upload failures or network errors
       this.isSubmitting    = false;
       this.uploadingCover   = false;
       this.uploadingGallery = false;
