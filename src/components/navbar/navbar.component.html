@@ -1,77 +1,3 @@
-<!-- <div class="navbar-container" [class.scrolled]="isScrolled" [class.search-open]="showSearch">
-
-  <nav class="navbar" role="navigation" aria-label="Main navigation">
-    <div class="nav-inner">
-
-      <a class="nav-logo" routerLink="/homepage" aria-label="Nookly – Go to homepage">
-        <span class="nav-logo__mark" aria-hidden="true">
-          <svg class="nav-logo__icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true">
-            <path class="logo-glyph" d="M6 28V10L18 4L30 10V28" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" />
-            <path class="logo-glyph logo-glyph--door" d="M14 28V20H22V28" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" />
-            <circle class="logo-glyph logo-glyph--dot" cx="18" cy="14" r="2.5" stroke-width="0" />
-          </svg>
-        </span>
-        <span class="nav-logo__wordmark">
-          <span class="nav-logo__word">Nookly</span>
-          <span class="nav-logo__tagline"></span>
-        </span>
-      </a>
-
-      <ul class="nav-links" [class.active]="isMenuOpen" role="list">
-        <li class="nav-links__item">
-          <a class="nav-links__anchor" routerLink="/homepage" routerLinkActive="is-active" (click)="closeMenu()">
-            Home
-          </a>
-        </li>
-        <li class="nav-links__item">
-          <a class="nav-links__anchor" routerLink="/about" routerLinkActive="is-active" (click)="closeMenu()">
-            About
-          </a>
-        </li>
-        <li class="nav-links__item">
-          <a class="nav-links__anchor" routerLink="/service" routerLinkActive="is-active" (click)="closeMenu()">
-            Services
-          </a>
-        </li>
-        <li class="nav-links__item">
-          <a class="nav-links__anchor" routerLink="/contact" routerLinkActive="is-active" (click)="closeMenu()">
-            Contact
-          </a>
-        </li>
-        <li class="nav-links__item">
-          <a class="nav-links__anchor" routerLink="/profile" routerLinkActive="is-active" (click)="closeMenu()">
-            Profile
-          </a>
-        </li>
-      </ul>
-
-
-      <div class="nav-actions">
-
-        <a class="nav-actions__cta" routerLink="/listproperty" (click)="closeMenu()">
-          <span class="nav-actions__cta-label">List Property</span>
-          <svg class="nav-actions__cta-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </a>
-
-        <button class="nav-hamburger" [class.is-open]="isMenuOpen" (click)="toggleMenu()"
-          [attr.aria-expanded]="isMenuOpen" aria-controls="nav-links" aria-label="Toggle menu">
-          <span class="nav-hamburger__bar"></span>
-          <span class="nav-hamburger__bar"></span>
-          <span class="nav-hamburger__bar"></span>
-        </button>
-
-      </div>
-    </div>
-  </nav>
-</div>-->
-
-
 <div class="navbar-container" [class.scrolled]="isScrolled" [class.search-open]="showSearch">
 
   <nav class="navbar" role="navigation" aria-label="Main navigation">
@@ -135,22 +61,21 @@
           </a>
         </li>
         <li class="nav-links__item" *ngIf="!isLoggedIn">
-          <a class="nav-links__anchor nav-links__anchor--register" routerLink="/account"
-            routerLinkActive="is-active" (click)="closeMenu()">
+          <a class="nav-links__anchor nav-links__anchor--register" routerLink="/account" routerLinkActive="is-active"
+            (click)="closeMenu()">
             Register
           </a>
         </li>
       </ul>
 
       <div class="nav-actions">
-        <a class="nav-actions__cta" routerLink="/listproperty" (click)="closeMenu()">
+        <a class="nav-actions__cta" routerLink="/contact" (click)="closeMenu()">
           <span class="nav-actions__cta-label">List Property</span>
           <svg class="nav-actions__cta-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true">
             <path d="M3 8h10M9 4l4 4-4 4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </a>
-
         <button class="nav-hamburger" [class.is-open]="isMenuOpen" (click)="toggleMenu()"
           [attr.aria-expanded]="isMenuOpen" aria-controls="nav-links" aria-label="Toggle menu">
           <span class="nav-hamburger__bar"></span>
