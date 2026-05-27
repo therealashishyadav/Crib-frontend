@@ -15,6 +15,7 @@ import { OwnerloginComponent } from '../components/ownerlogin/ownerlogin.compone
 import { ListPropertyComponent } from '../components/list-property/list-property.component';
 import { PgListingsComponent } from '../components/pg-listings/pg-listings.component';
 import { PgDetailComponent } from '../components/pg-detail/pg-detail.component';
+import { ForgotPasswordComponent } from '../components/forgot-password/forgot-password.component';
 // import { Navbar2Component } from '../components/navbar2/navbar2.component';
 
 export const routes: Routes = [
@@ -32,7 +33,8 @@ export const routes: Routes = [
     { path: 'owner', component: OwnerloginComponent },
     { path: 'addpglist', component: ListPropertyComponent },
     { path: 'listings', component: PgListingsComponent },
-    {path: 'pg/:id', component: PgDetailComponent}
+    {path: 'pg/:id', component: PgDetailComponent},
+    { path: 'forgot-password', component: ForgotPasswordComponent},
 
 
     // {path: 'navbar2', component: Navbar2Component},
