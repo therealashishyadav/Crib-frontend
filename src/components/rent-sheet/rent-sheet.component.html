@@ -1,0 +1,159 @@
+
+<app-navbar></app-navbar>
+
+<div class="page-container">
+
+  <!-- ── Header ── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Rent Sheet</h1>
+      <p class="page-subtitle">Track monthly rent payments</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button routerLink="/owner/tenants">
+        <mat-icon>group</mat-icon> Tenants
+      </button>
+      <button mat-raised-button color="warn" (click)="sendAllReminders()"
+              [disabled]="pendingCount === 0">
+        <mat-icon>send</mat-icon>
+        Send All Reminders ({{ pendingCount }})
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Month/Year Selector ── -->
+  <div class="selectors">
+    <mat-form-field appearance="outline" class="month-select">
+      <mat-label>Month</mat-label>
+      <mat-select [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange()">
+        <mat-option *ngFor="let m of months" [value]="m.value">{{ m.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="year-select">
+      <mat-label>Year</mat-label>
+      <mat-select [(ngModel)]="selectedYear" (ngModelChange)="onMonthChange()">
+        <mat-option *ngFor="let y of years" [value]="y">{{ y }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- ── Summary cards ── -->
+  <div class="summary-grid">
+    <div class="summary-card total">
+      <mat-icon>group</mat-icon>
+      <div class="summary-info">
+        <span class="summary-value">{{ totalTenants }}</span>
+        <span class="summary-label">Total Tenants</span>
+      </div>
+    </div>
+    <div class="summary-card paid">
+      <mat-icon>check_circle</mat-icon>
+      <div class="summary-info">
+        <span class="summary-value">{{ paidCount }}</span>
+        <span class="summary-label">Paid</span>
+      </div>
+    </div>
+    <div class="summary-card pending">
+      <mat-icon>pending</mat-icon>
+      <div class="summary-info">
+        <span class="summary-value">{{ pendingCount }}</span>
+        <span class="summary-label">Pending</span>
+      </div>
+    </div>
+    <div class="summary-card amount-collected">
+      <mat-icon>currency_rupee</mat-icon>
+      <div class="summary-info">
+        <span class="summary-value">₹{{ totalCollected | number }}</span>
+        <span class="summary-label">Collected</span>
+      </div>
+    </div>
+    <div class="summary-card amount-pending">
+      <mat-icon>warning</mat-icon>
+      <div class="summary-info">
+        <span class="summary-value">₹{{ totalPending | number }}</span>
+        <span class="summary-label">Pending Amount</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Loading ── -->
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-icon class="spin">refresh</mat-icon>
+    <p>Loading rent sheet...</p>
+  </div>
+
+  <!-- ── Rent table ── -->
+  <div class="sheet-table" *ngIf="!isLoading && records.length > 0">
+
+    <div class="table-header">
+      <span>Tenant</span>
+      <span>Room</span>
+      <span>Amount</span>
+      <span>Status</span>
+      <span>Paid On</span>
+      <span>Actions</span>
+    </div>
+
+    <div class="table-row" *ngFor="let record of records"
+         [class.paid-row]="record.paid"
+         [class.pending-row]="!record.paid">
+
+      <!-- Tenant name + phone -->
+      <div class="tenant-cell">
+        <div class="tenant-avatar-sm">
+          {{ record.tenant?.fullName?.charAt(0)?.toUpperCase() }}
+        </div>
+        <div>
+          <p class="tenant-name">{{ record.tenant?.fullName }}</p>
+          <p class="tenant-phone">{{ record.tenant?.phone }}</p>
+        </div>
+      </div>
+
+      <!-- Room -->
+      <div class="room-cell">{{ record.tenant?.roomNumber }}</div>
+
+      <!-- Amount -->
+      <div class="amount-cell">₹{{ record.amountDue | number }}</div>
+
+      <!-- Status toggle — single click to mark paid/unpaid -->
+      <div class="status-cell">
+        <button class="status-toggle"
+                [class.paid]="record.paid"
+                [class.unpaid]="!record.paid"
+                (click)="togglePayment(record)"
+                [matTooltip]="record.paid ? 'Click to mark unpaid' : 'Click to mark paid'">
+          <mat-icon>{{ record.paid ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          {{ record.paid ? 'PAID' : 'PENDING' }}
+        </button>
+      </div>
+
+      <!-- Paid on date -->
+      <div class="date-cell">
+        {{ record.paidOn ? (record.paidOn | date:'dd MMM') : '—' }}
+      </div>
+
+      <!-- WhatsApp reminder -->
+      <div class="action-cell">
+        <button mat-icon-button class="whatsapp-btn"
+                [disabled]="record.paid"
+                [matTooltip]="record.paid ? 'Already paid' : 'Send WhatsApp reminder'"
+                (click)="sendReminder(record)">
+          <mat-icon>chat</mat-icon>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Empty state ── -->
+  <div *ngIf="!isLoading && records.length === 0" class="empty-state">
+    <mat-icon>receipt_long</mat-icon>
+    <h3>No tenants found</h3>
+    <p>Add tenants first to generate a rent sheet.</p>
+    <button mat-raised-button color="primary" routerLink="/owner/add-tenant">
+      Add Tenant
+    </button>
+  </div>
+
+</div>

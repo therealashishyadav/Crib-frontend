@@ -1,0 +1,73 @@
+<div class="page-container">
+  <div class="form-card">
+
+    <div class="card-header">
+      <button mat-icon-button routerLink="/ownerpage" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1 class="page-title">{{ isEditing ? 'Edit Tenant' : 'Add New Tenant' }}</h1>
+        <p class="page-subtitle">{{ isEditing ? 'Update tenant details' : 'Add a new tenant to your PG' }}</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Full Name *</mat-label>
+        <input matInput [(ngModel)]="tenant.fullName" name="fullName" placeholder="Tenants's full name">
+        <mat-icon matSuffix>person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Phone Number *</mat-label>
+        <input matInput type="tel" [(ngModel)]="tenant.phone" name="phone" placeholder="9876543210">
+        <mat-icon matSuffix>phone</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Room Number *</mat-label>
+        <input matInput [(ngModel)]="tenant.roomNumber" name="roomNumber" placeholder="Room 3 / 2B">
+        <mat-icon matSuffix>meeting_room</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Monthly Rent (₹) *</mat-label>
+        <input matInput type="number" [(ngModel)]="tenant.monthlyRent" name="monthlyRent" placeholder="8000">
+        <mat-icon matSuffix>currency_rupee</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>ID Proof (optional)</mat-label>
+        <input matInput [(ngModel)]="tenant.tenantIdProof" name="tenantIdProof"
+               placeholder="Aadhaar / PAN / Passport number">
+        <mat-icon matSuffix>badge</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Move-in Date</mat-label>
+        <input matInput type="date" [(ngModel)]="tenant.moveInDate" name="moveInDate">
+        <mat-icon matSuffix>calendar_today</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Notes (optional)</mat-label>
+        <textarea matInput [(ngModel)]="tenant.notes" name="notes" rows="3"
+                  placeholder="Any additional info about this tenant..."></textarea>
+      </mat-form-field>
+
+    </div>
+
+    <div class="form-actions">
+      <button mat-raised-button color="primary" class="save-btn"
+              (click)="save()" [disabled]="isLoading">
+        <mat-icon>{{ isEditing ? 'save' : 'person_add' }}</mat-icon>
+        {{ isLoading ? 'Saving...' : (isEditing ? 'Save Changes' : 'Add Tenant') }}
+      </button>
+      <button mat-button routerLink="/ownerpage" class="cancel-btn">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,572 @@
+/* ================================================================
+   Nookly Tenants List Page – Production-Grade Stylesheet
+   Reuses provided design tokens. Consistent luxury look with
+   form page. No edits to <app-navbar>. Space from navbar via
+   margin-top on page container.
+   ================================================================ */
+
+:host {
+  /* ---- Design tokens (provided) ---- */
+  --nookly-azure: #4A90E2;
+  --nookly-mist: #D9E6F1;
+  --nookly-slate: #A7B3C6;
+  --nookly-midnight: #2C3E50;
+  --nookly-white: #FFFFFF;
+  --nookly-azure-deep: #2d6abf;
+  --nookly-azure-glow: rgba(74, 144, 226, 0.12);
+  --nookly-azure-line: rgba(74, 144, 226, 0.25);
+  --nookly-midnight-05: rgba(44, 62, 80, 0.05);
+  --nookly-gold: #C9A96E;
+
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Jost', 'Segoe UI', sans-serif;
+
+  --space-xs: 0.35rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  --ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-mid: 420ms;
+  --dur-slow: 700ms;
+
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 8px 24px rgba(44, 62, 80, 0.08), 0 1px 3px rgba(44, 62, 80, 0.04);
+  --shadow-hover: 0 20px 40px rgba(44, 62, 80, 0.12), 0 4px 12px rgba(74, 144, 226, 0.1);
+  --shadow-azure: 0 8px 32px rgba(74, 144, 226, 0.18);
+
+  /* ---- Global host setup ---- */
+  display: block;
+  min-height: 100vh;
+  padding: var(--space-xl) var(--space-sm);
+
+  background-image:
+    linear-gradient(135deg, rgba(44, 62, 80, 0.75) 0%, rgba(74, 144, 226, 0.65) 100%),
+    url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+
+  font-family: var(--font-body);
+  color: var(--nookly-midnight);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Floating ambient orbs (same as form page) ---- */
+:host::before,
+:host::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: orbitFloat 16s ease-in-out infinite alternate;
+  opacity: 0.25;
+}
+
+:host::before {
+  width: 480px;
+  height: 480px;
+  top: -150px;
+  right: -120px;
+  background: radial-gradient(circle, var(--nookly-mist) 0%, transparent 70%);
+  animation-duration: 20s;
+}
+
+:host::after {
+  width: 320px;
+  height: 320px;
+  bottom: 40px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, transparent 70%);
+  animation-duration: 24s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes orbitFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(25px, 20px) scale(1.05); }
+}
+
+/* ---- Page container – white backdrop card ---- */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: var(--space-xl);               /* space between navbar and content */
+  padding: var(--space-lg);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(2px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  z-index: 2;
+  animation: pageReveal 0.6s var(--ease-luxury) both;
+}
+
+@keyframes pageReveal {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Page header ---- */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 600;
+  color: var(--nookly-midnight);
+  line-height: 1.2;
+  position: relative;
+  display: inline-block;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--nookly-gold), var(--nookly-azure));
+  border-radius: var(--radius-pill);
+  transition: width var(--dur-slow) var(--ease-luxury);
+}
+
+.page-title:hover::after {
+  width: 100%;
+}
+
+.page-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--nookly-slate);
+  margin-top: var(--space-xs);
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+/* ---- Buttons (shared styles) ---- */
+.toggle-btn,
+.rent-btn,
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border-radius: var(--radius-pill);
+  padding: 0.6rem 1.4rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.3s var(--ease-bounce);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--nookly-slate);
+  color: var(--nookly-midnight);
+}
+
+.toggle-btn:hover {
+  background: var(--nookly-azure-glow);
+  border-color: var(--nookly-azure);
+  color: var(--nookly-azure);
+}
+
+.rent-btn {
+  background: transparent;
+  border: 1px solid var(--nookly-azure);
+  color: var(--nookly-azure);
+}
+
+.rent-btn:hover {
+  background: var(--nookly-azure-glow);
+  transform: translateY(-1px);
+}
+
+.add-btn {
+  background: linear-gradient(105deg, var(--nookly-midnight) 100%, var(--nookly-azure-glow) 100%);
+  border: none;
+  color: var(--nookly-white);
+  box-shadow: var(--shadow-azure);
+}
+
+.add-btn:hover {
+  background: linear-gradient(105deg, #1F3348 0%, var(--nookly-azure-deep) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
+}
+
+/* ---- Loading state ---- */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) 0;
+  color: var(--nookly-slate);
+  gap: var(--space-sm);
+}
+
+.loading-state .mat-icon.spin {
+  font-size: 2.5rem;
+  color: var(--nookly-azure);
+  animation: nookly-spin 0.8s linear infinite;
+}
+
+@keyframes nookly-spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  font-size: 1rem;
+}
+
+/* ---- Empty state ---- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  gap: var(--space-sm);
+}
+
+.empty-state .mat-icon {
+  font-size: 3rem;
+  color: var(--nookly-slate);
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--nookly-midnight);
+}
+
+.empty-state p {
+  color: var(--nookly-slate);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.empty-state button {
+  margin-top: var(--space-sm);
+  background: var(--nookly-azure);
+  color: var(--nookly-midnight);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0.7rem 1.8rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  box-shadow: var(--shadow-azure);
+  transition: all 0.3s var(--ease-bounce);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.empty-state button:hover {
+  background: var(--nookly-azure-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
+}
+
+/* ---- Tenant grid ---- */
+.tenant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+/* ---- Tenant card ---- */
+.tenant-card {
+  background: var(--nookly-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--dur-mid) var(--ease-luxury),
+              transform var(--dur-mid) var(--ease-luxury);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.tenant-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+}
+
+.tenant-card.inactive {
+  opacity: 0.85;
+  background: #fafbfc;  /* subtle grayish tint, still legible */
+}
+
+/* ---- Status badge ---- */
+.status-badge {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+}
+
+.status-badge.active {
+  background: var(--nookly-azure);
+  color: var(--nookly-midnight);
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+.status-badge.moved-out {
+  background: var(--nookly-slate);
+  color: var(--nookly-white);
+}
+
+/* ---- Tenant info ---- */
+.tenant-info {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  flex: 1;
+}
+
+.tenant-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--nookly-azure), var(--nookly-gold));
+  color: var(--nookly-white);
+  font-weight: 700;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+.tenant-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.tenant-name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--nookly-midnight);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.tenant-phone,
+.tenant-room,
+.tenant-rent,
+.tenant-movein {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.9rem;
+  color: var(--nookly-slate);
+}
+
+.tenant-phone .mat-icon,
+.tenant-room .mat-icon,
+.tenant-rent .mat-icon,
+.tenant-movein .mat-icon {
+  font-size: 1.1rem;
+  color: var(--nookly-azure);
+  flex-shrink: 0;
+}
+
+.tenant-rent {
+  font-weight: 500;
+  color: var(--nookly-midnight);
+}
+
+/* ---- Tenant actions ---- */
+.tenant-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+  margin-top: auto;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--nookly-mist);
+}
+
+.tenant-actions button {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--dur-mid) var(--ease-luxury),
+              color var(--dur-mid) var(--ease-luxury),
+              transform var(--dur-mid) var(--ease-bounce);
+}
+
+/* WhatsApp button – green accent using nookly tones */
+.whatsapp-btn {
+  color: var(--nookly-slate);
+}
+.whatsapp-btn:hover {
+  background: #e0f2e9;  /* subtle green tint, does not conflict with tokens */
+  color: #25D366;       /* recognizable WhatsApp green */
+  transform: scale(1.1);
+}
+
+.edit-btn {
+  color: var(--nookly-slate);
+}
+.edit-btn:hover {
+  background: var(--nookly-azure-glow);
+  color: var(--nookly-azure);
+  transform: scale(1.1);
+}
+
+.moveout-btn {
+  color: var(--nookly-slate);
+}
+.moveout-btn:hover {
+  background: rgba(201, 169, 110, 0.12);
+  color: var(--nookly-gold);
+  transform: scale(1.1);
+}
+
+/* ---- Responsive adjustments ---- */
+@media (max-width: 900px) {
+  :host {
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  .page-container {
+    margin: var(--space-lg) 1rem;
+    padding: var(--space-md);
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions button {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-container {
+    padding: var(--space-sm);
+  }
+
+  .tenant-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .tenant-card {
+    padding: var(--space-sm);
+  }
+
+  /* Smaller header buttons stacking */
+  .header-actions {
+    flex-direction: column;
+  }
+
+  :host::before,
+  :host::after {
+    display: none;  /* hide floating orbs for performance on tiny screens */
+  }
+}
+
+/* ---- Accessibility ---- */
+:host ::selection {
+  background: var(--nookly-mist);
+  color: var(--nookly-midnight);
+}
+
+:host *:focus-visible {
+  outline: 2px solid var(--nookly-azure);
+  outline-offset: 3px;
+  border-radius: var(--radius-md);
+}
+
+/* Respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :host::before,
+  :host::after {
+    animation: none;
+  }
+
+  .page-container,
+  .tenant-card,
+  .add-btn,
+  .rent-btn,
+  .toggle-btn,
+  .empty-state button {
+    animation: none;
+    transition: none;
+  }
+
+  .loading-state .mat-icon.spin {
+    animation-duration: 2s;
+  }
+}
+
+/* ---- Print styles ---- */
+@media print {
+  :host {
+    background: white;
+    padding: 0;
+  }
+
+  .page-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  :host::before,
+  :host::after {
+    display: none;
+  }
+}

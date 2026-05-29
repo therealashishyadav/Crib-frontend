@@ -1,0 +1,293 @@
+/* FILE: src/app/components/rent-sheet/rent-sheet.component.css */
+
+:host {
+  --azure:      #4A90E2;
+  --azure-deep: #2d6abf;
+  --azure-glow: rgba(74,144,226,0.10);
+  --midnight:   #2C3E50;
+  --slate:      #A7B3C6;
+  --mist:       #D9E6F1;
+  --white:      #FFFFFF;
+  --gold:       #C9A96E;
+  --green:      #1DB977;
+  --green-dim:  rgba(29,185,119,0.12);
+  --green-border: rgba(29,185,119,0.28);
+  --red:        #E74C3C;
+  --red-dim:    rgba(231,76,60,0.10);
+  --surface:    #F4F7FB;
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Jost', 'Segoe UI', sans-serif;
+  --r-md: 14px; --r-lg: 22px; --r-pill: 9999px;
+  --sh-sm: 0 2px 12px rgba(44,62,80,0.08);
+  --sh-md: 0 8px 32px rgba(44,62,80,0.10);
+
+  display: block;
+  background: var(--surface);
+  min-height: 100vh;
+  font-family: var(--font-body);
+}
+
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem clamp(1rem, 4vw, 2.5rem);
+}
+
+/* ── Header ── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 600;
+  color: var(--midnight);
+  margin: 0 0 0.25rem;
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--slate);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Selectors ── */
+.selectors {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.month-select { min-width: 160px; }
+.year-select  { min-width: 110px; }
+
+/* ── Summary cards ── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: var(--white);
+  border-radius: var(--r-md);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--sh-sm);
+  border-left: 3px solid transparent;
+}
+
+.summary-card.total         { border-color: var(--azure); }
+.summary-card.paid          { border-color: var(--green); }
+.summary-card.pending       { border-color: var(--gold); }
+.summary-card.amount-collected { border-color: var(--green); }
+.summary-card.amount-pending   { border-color: var(--red); }
+
+.summary-card mat-icon {
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+  opacity: 0.7;
+}
+
+.summary-card.total mat-icon          { color: var(--azure); }
+.summary-card.paid mat-icon           { color: var(--green); }
+.summary-card.pending mat-icon        { color: var(--gold); }
+.summary-card.amount-collected mat-icon { color: var(--green); }
+.summary-card.amount-pending mat-icon   { color: var(--red); }
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-value {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--midnight);
+  line-height: 1;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  color: var(--slate);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+/* ── Table ── */
+.sheet-table {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-md);
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr 1fr 0.8fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--midnight);
+  color: var(--white);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr 1fr 0.8fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  align-items: center;
+  border-bottom: 1px solid rgba(167,179,198,0.15);
+  transition: background 0.2s;
+}
+
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: rgba(74,144,226,0.03); }
+.table-row.paid-row { background: rgba(29,185,119,0.04); }
+
+/* ── Cells ── */
+.tenant-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tenant-avatar-sm {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--azure-deep), var(--azure));
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.tenant-name  { font-size: 0.9rem; font-weight: 500; color: var(--midnight); margin: 0 0 2px; }
+.tenant-phone { font-size: 0.78rem; color: var(--slate); margin: 0; }
+.room-cell    { font-size: 0.875rem; color: var(--midnight); font-weight: 500; }
+.amount-cell  { font-size: 0.9rem; font-weight: 600; color: var(--midnight); }
+.date-cell    { font-size: 0.82rem; color: var(--slate); }
+
+/* ── Status toggle button ── */
+.status-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.875rem;
+  border: none;
+  border-radius: var(--r-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-toggle.paid {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid var(--green-border);
+}
+
+.status-toggle.paid:hover {
+  background: rgba(231,76,60,0.08);
+  color: var(--red);
+  border-color: rgba(231,76,60,0.3);
+}
+
+.status-toggle.unpaid {
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid rgba(231,76,60,0.25);
+}
+
+.status-toggle.unpaid:hover {
+  background: var(--green-dim);
+  color: var(--green);
+  border-color: var(--green-border);
+}
+
+.status-toggle mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* ── WhatsApp button ── */
+.whatsapp-btn { color: #25D366; }
+.whatsapp-btn:hover:not([disabled]) { background: rgba(37,211,102,0.10); }
+.whatsapp-btn[disabled] { opacity: 0.35; }
+
+/* ── Loading & empty ── */
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--slate);
+}
+
+.loading-state mat-icon, .empty-state mat-icon {
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+  opacity: 0.4;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--midnight);
+  margin: 0 0 0.5rem;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.spin { animation: spin 1s linear infinite; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1.5fr 0.8fr 1fr 1fr;
+  }
+  /* Hide paid-on date and room on small screens */
+  .table-header span:nth-child(2),
+  .room-cell,
+  .table-header span:nth-child(5),
+  .date-cell {
+    display: none;
+  }
+}

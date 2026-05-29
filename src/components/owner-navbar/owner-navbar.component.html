@@ -1,0 +1,97 @@
+<!-- FILE: src/app/components/owner-navbar/owner-navbar.component.html -->
+
+<nav class="owner-nav" [class.scrolled]="scrolled">
+  <div class="nav-inner">
+
+    <!-- ── Logo ── -->
+    <a routerLink="/owner/dashboard" class="nav-logo">
+      <div class="logo-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M3 9.5L12 3l9 6.5V21H3V9.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M9 21V13h6v8" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+          <circle cx="12" cy="8" r="1.2" fill="#C9A96E"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-brand">CribUp</span>
+        <span class="logo-tag">Owner Portal</span>
+      </div>
+    </a>
+
+    <!-- ── Desktop nav links ── -->
+    <ul class="nav-links" [class.open]="menuOpen">
+      <li *ngFor="let item of navItems; let i = index"
+          class="nav-item"
+          [style.--i]="i">
+        <a [routerLink]="item.route"
+           routerLinkActive="active"
+           class="nav-link"
+           (click)="menuOpen = false">
+          <mat-icon class="link-icon">{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- ── Right side ── -->
+    <div class="nav-right">
+
+      <!-- Quick action buttons (desktop only) -->
+      <a routerLink="/owner/add-pg" class="quick-btn" title="Add PG">
+        <mat-icon>add_home</mat-icon>
+      </a>
+      <a routerLink="/owner/add-tenant" class="quick-btn" title="Add Tenant">
+        <mat-icon>person_add</mat-icon>
+      </a>
+
+      <!-- Profile dropdown -->
+      <div class="profile-wrapper" (click)="toggleProfile()">
+        <div class="profile-avatar" matRipple>
+          {{ ownerInitial }}
+        </div>
+        <span class="profile-name">{{ ownerName.split(' ')[0] }}</span>
+        <mat-icon class="chevron" [class.rotated]="profileOpen">expand_more</mat-icon>
+      </div>
+
+      <!-- Profile dropdown menu -->
+      <div class="profile-dropdown" [class.open]="profileOpen">
+        <div class="dropdown-header">
+          <div class="dropdown-avatar">{{ ownerInitial }}</div>
+          <div>
+            <p class="dropdown-name">{{ ownerName }}</p>
+            <p class="dropdown-role">PG Owner</p>
+          </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item" (click)="goToProfile()">
+          <mat-icon>manage_accounts</mat-icon>
+          <span>My Profile</span>
+        </button>
+        <button class="dropdown-item" (click)="router.navigate(['/owner/tenants'])">
+          <mat-icon>group</mat-icon>
+          <span>Tenants</span>
+        </button>
+        <button class="dropdown-item" (click)="router.navigate(['/owner/rent-sheet'])">
+          <mat-icon>receipt_long</mat-icon>
+          <span>Rent Sheet</span>
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item logout" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </div>
+
+      <!-- Hamburger (mobile) -->
+      <button class="hamburger" [class.open]="menuOpen" (click)="toggleMenu()" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+    </div>
+  </div>
+</nav>
+
+<!-- Spacer so content doesn't hide behind fixed navbar -->
+<div class="nav-spacer"></div>

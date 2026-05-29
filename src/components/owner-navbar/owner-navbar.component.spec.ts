@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TennetpgComponent } from './tennetpg.component';
+import { OwnerNavbarComponent } from './owner-navbar.component';
 
-describe('TennetpgComponent', () => {
-  let component: TennetpgComponent;
-  let fixture: ComponentFixture<TennetpgComponent>;
+describe('OwnerNavbarComponent', () => {
+  let component: OwnerNavbarComponent;
+  let fixture: ComponentFixture<OwnerNavbarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TennetpgComponent]
+      imports: [OwnerNavbarComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TennetpgComponent);
+    fixture = TestBed.createComponent(OwnerNavbarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
