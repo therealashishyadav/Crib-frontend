@@ -59,4 +59,9 @@ export class TenantService {
   getTenantHistory(tenantId: number): Observable<RentRecord[]> {
     return this.http.get<RentRecord[]>(`${BASE}/${tenantId}/history`, { headers: this.headers() });
   }
+
+  hardDeleteTenant(id: number): Observable<any> {
+    return this.http.delete(`${BASE}/${id}/permanent`, { headers: this.headers() });
+}
+
 }
