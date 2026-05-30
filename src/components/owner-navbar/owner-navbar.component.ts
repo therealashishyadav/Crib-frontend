@@ -21,8 +21,8 @@ export class OwnerNavbarComponent implements OnInit {
 
   // Nav items — only visible to owners
   navItems = [
-    { label: 'Dashboard',   icon: 'dashboard',      route: '/owner/dashboard'  },
-    { label: 'Add PG',      icon: 'add_home',        route: '/owner/add-pg'     },
+    { label: 'Dashboard',   icon: 'dashboard',      route: '/ownerpage'  },
+    { label: 'Add PG',      icon: 'add_home',        route: '/addpglist'     },
     { label: 'Add Tenant',  icon: 'person_add',      route: '/owner/add-tenant' },
     { label: 'Tenants',     icon: 'group',           route: '/owner/tenants'    },
     { label: 'Rent Sheet',  icon: 'receipt_long',    route: '/owner/rent-sheet' },
