@@ -42,11 +42,11 @@ export const routes: Routes = [
     // { path: 'addtenant', component: AddTenantComponent },
     // { path: 'rentsheet', component: RentSheetComponent },
     { path: 'owner-navbar', component: OwnerNavbarComponent },
-    { path: 'ownerpage', component: OwnerpageComponent},
-    { path: 'addpglist', component: ListPropertyComponent, canActivate: [OwnerGuard] },
-    { path: 'owner/add-tenant', component: AddTenantComponent, canActivate: [OwnerGuard] },
-    { path: 'owner/tenants', component: TenantListComponent, canActivate: [OwnerGuard] },
-    { path: 'owner/rent-sheet', component: RentSheetComponent, canActivate: [OwnerGuard] },
+    { path: 'ownerpage', component: OwnerpageComponent },
+    { path: 'addpglist', component: ListPropertyComponent },
+    { path: 'owner/add-tenant', component: AddTenantComponent },
+    { path: 'owner/tenants', component: TenantListComponent },
+    { path: 'owner/rent-sheet', component: RentSheetComponent },
 
 
     // {path: 'navbar2', component: Navbar2Component},
