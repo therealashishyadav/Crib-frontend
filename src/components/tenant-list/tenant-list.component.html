@@ -97,109 +97,112 @@
 
 <div class="page-container">
 
-  <!-- ── Header ── -->
-  <div class="page-header">
-    <div>
-      <h1 class="page-title">My Tenants</h1>
-      <p class="page-subtitle">{{ tenants.length }} {{ showInactive ? 'total' : 'active' }} tenant(s)</p>
-    </div>
-    <div class="header-actions">
-      <button mat-stroked-button (click)="toggleInactive()" class="toggle-btn">
-        <mat-icon>{{ showInactive ? 'visibility_off' : 'visibility' }}</mat-icon>
-        {{ showInactive ? 'Hide Moved Out' : 'Show All' }}
-      </button>
-      <button mat-raised-button color="accent" (click)="goToRentSheet()" class="rent-btn">
-        <mat-icon>receipt_long</mat-icon>
-        Rent Sheet
-      </button>
-      <button mat-raised-button color="primary" routerLink="/owner/add-tenant" class="add-btn">
-        <mat-icon>person_add</mat-icon>
-        Add Tenant
-      </button>
-    </div>
-  </div>
-
-  <!-- ── Loading ── -->
-  <div *ngIf="isLoading" class="loading-state">
-    <mat-icon class="spin">refresh</mat-icon>
-    <p>Loading tenants...</p>
-  </div>
-
-  <!-- ── Empty state ── -->
-  <div *ngIf="!isLoading && tenants.length === 0" class="empty-state">
-    <mat-icon>group_off</mat-icon>
-    <h3>No tenants yet</h3>
-    <p>Add your first tenant to start tracking rent.</p>
-    <button mat-raised-button color="primary" routerLink="/owner/add-tenant">
-      <mat-icon>person_add</mat-icon> Add First Tenant
-    </button>
-  </div>
-
-  <!-- ── Tenant cards ── -->
-  <div class="tenant-grid" *ngIf="!isLoading && tenants.length > 0">
-    <div class="tenant-card" *ngFor="let tenant of tenants"
-         [class.inactive]="!tenant.active">
-
-      <!-- Status badge -->
-      <div class="status-badge" [class.active]="tenant.active" [class.moved-out]="!tenant.active">
-        {{ tenant.active ? 'Active' : 'Moved Out' }}
-      </div>
-
-      <!-- Tenant info -->
-      <div class="tenant-info">
-        <div class="tenant-avatar">
-          {{ tenant.fullName.charAt(0).toUpperCase() }}
+    <!-- ── Header ── -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">My Tenants</h1>
+            <p class="page-subtitle">{{ tenants.length }} {{ showInactive ? 'total' : 'active' }} tenant(s)</p>
         </div>
-        <div class="tenant-details">
-          <h3 class="tenant-name">{{ tenant.fullName }}</h3>
-          <p class="tenant-phone">
-            <mat-icon>phone</mat-icon> {{ tenant.phone }}
-          </p>
-          <p class="tenant-room">
-            <mat-icon>meeting_room</mat-icon> {{ tenant.roomNumber }}
-          </p>
-          <p class="tenant-rent">
-            <mat-icon>currency_rupee</mat-icon> ₹{{ tenant.monthlyRent }}/month
-          </p>
-          <p class="tenant-movein" *ngIf="tenant.moveInDate">
-            <mat-icon>calendar_today</mat-icon> Since {{ tenant.moveInDate | date:'dd MMM yyyy' }}
-          </p>
+        <div class="header-actions">
+            <button mat-stroked-button (click)="toggleInactive()" class="toggle-btn">
+                <mat-icon>{{ showInactive ? 'visibility_off' : 'visibility' }}</mat-icon>
+                {{ showInactive ? 'Hide Moved Out' : 'Show All' }}
+            </button>
+            <button mat-raised-button color="accent" (click)="goToRentSheet()" class="rent-btn">
+                <mat-icon>receipt_long</mat-icon>
+                Rent Sheet
+            </button>
+            <button mat-raised-button color="primary" routerLink="/owner/add-tenant" class="add-btn">
+                <mat-icon>person_add</mat-icon>
+                Add Tenant
+            </button>
         </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="tenant-actions">
-        <!-- WhatsApp reminder -->
-        <button mat-icon-button class="whatsapp-btn"
-                title="Send WhatsApp reminder"
-                (click)="sendWhatsApp(tenant)">
-          <mat-icon>chat</mat-icon>
-        </button>
-
-        <!-- Edit tenant -->
-        <button mat-icon-button class="edit-btn"
-                title="Edit tenant"
-                (click)="editTenant(tenant)">
-          <mat-icon>edit</mat-icon>
-        </button>
-
-        <!-- Mark as moved out (soft delete) -->
-        <button mat-icon-button class="moveout-btn"
-                title="Mark as moved out"
-                *ngIf="tenant.active"
-                (click)="markMovedOut(tenant)">
-          <mat-icon>logout</mat-icon>
-        </button>
-
-        <!-- NEW: Permanently delete tenant -->
-        <button mat-icon-button class="delete-btn"
-                title="Delete tenant permanently"
-                (click)="deleteTenant(tenant)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-
     </div>
-  </div>
+
+    <!-- ── Loading ── -->
+    <div *ngIf="isLoading" class="loading-state">
+        <mat-icon class="spin">refresh</mat-icon>
+        <p>Loading tenants...</p>
+    </div>
+
+    <!-- ── Empty state ── -->
+    <div *ngIf="!isLoading && tenants.length === 0" class="empty-state">
+        <mat-icon>group_off</mat-icon>
+        <h3>No tenants yet</h3>
+        <p>Add your first tenant to start tracking rent.</p>
+        <button mat-raised-button color="primary" routerLink="/owner/add-tenant">
+            <mat-icon>person_add</mat-icon> Add First Tenant
+        </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="pg-filter">
+        <mat-label>Filter by PG</mat-label>
+        <mat-select [(ngModel)]="selectedPgId" (ngModelChange)="onPgFilter()">
+            <mat-option [value]="null">All PGs</mat-option>
+            <mat-option *ngFor="let pg of ownerPgs" [value]="pg.id">
+                {{ pg.pgName }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <!-- ── Tenant cards ── -->
+    <div class="tenant-grid" *ngIf="!isLoading && tenants.length > 0">
+        <div class="tenant-card" *ngFor="let tenant of tenants" [class.inactive]="!tenant.active">
+
+            <!-- Status badge -->
+            <div class="status-badge" [class.active]="tenant.active" [class.moved-out]="!tenant.active">
+                {{ tenant.active ? 'Active' : 'Moved Out' }}
+            </div>
+
+            <!-- Tenant info -->
+            <div class="tenant-info">
+                <div class="tenant-avatar">
+                    {{ tenant.fullName.charAt(0).toUpperCase() }}
+                </div>
+                <div class="tenant-details">
+                    <h3 class="tenant-name">{{ tenant.fullName }}</h3>
+                    <p class="tenant-phone">
+                        <mat-icon>phone</mat-icon> {{ tenant.phone }}
+                    </p>
+                    <p class="tenant-room">
+                        <mat-icon>meeting_room</mat-icon> {{ tenant.roomNumber }}
+                    </p>
+                    <p class="tenant-rent">
+                        <mat-icon>currency_rupee</mat-icon> ₹{{ tenant.monthlyRent }}/month
+                    </p>
+                    <p class="tenant-movein" *ngIf="tenant.moveInDate">
+                        <mat-icon>calendar_today</mat-icon> Since {{ tenant.moveInDate | date:'dd MMM yyyy' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="tenant-actions">
+                <!-- WhatsApp reminder -->
+                <button mat-icon-button class="whatsapp-btn" title="Send WhatsApp reminder"
+                    (click)="sendWhatsApp(tenant)">
+                    <mat-icon>chat</mat-icon>
+                </button>
+
+                <!-- Edit tenant -->
+                <button mat-icon-button class="edit-btn" title="Edit tenant" (click)="editTenant(tenant)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+
+                <!-- Mark as moved out (soft delete) -->
+                <button mat-icon-button class="moveout-btn" title="Mark as moved out" *ngIf="tenant.active"
+                    (click)="markMovedOut(tenant)">
+                    <mat-icon>logout</mat-icon>
+                </button>
+
+                <!-- NEW: Permanently delete tenant -->
+                <button mat-icon-button class="delete-btn" title="Delete tenant permanently"
+                    (click)="deleteTenant(tenant)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </div>
+
+        </div>
+    </div>
 
 </div>

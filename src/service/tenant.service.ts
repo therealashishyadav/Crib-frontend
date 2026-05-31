@@ -63,5 +63,7 @@ export class TenantService {
   hardDeleteTenant(id: number): Observable<any> {
     return this.http.delete(`${BASE}/${id}/permanent`, { headers: this.headers() });
 }
-
+getTenantsByPg(pgId: number): Observable<Tenant[]> {
+  return this.http.get<Tenant[]>(`${BASE}/by-pg/${pgId}`, { headers: this.headers() });
+}
 }
