@@ -1,76 +1,382 @@
 /* ================================================================
-   TENANT LIST – SPREADSHEET STYLE (Compact Rows)
-   Use this CSS alongside the existing component. It replaces the
-   card‑based `.tenant-grid` with a horizontal row layout.
+   Nookly Tenants List Page – COMPACT SPREADSHEET STYLE
+   Original design tokens + host styling preserved.
+   Tenant cards become rows, no HTML changes.
    ================================================================ */
 
-/* ── Override the grid to a table structure ────────────────────── */
-.tenant-grid {
+:host {
+  /* ---- Design tokens (provided) ---- */
+  --nookly-azure: #4A90E2;
+  --nookly-mist: #D9E6F1;
+  --nookly-slate: #A7B3C6;
+  --nookly-midnight: #2C3E50;
+  --nookly-white: #FFFFFF;
+  --nookly-azure-deep: #2d6abf;
+  --nookly-azure-glow: rgba(74, 144, 226, 0.12);
+  --nookly-azure-line: rgba(74, 144, 226, 0.25);
+  --nookly-midnight-05: rgba(44, 62, 80, 0.05);
+  --nookly-gold: #C9A96E;
+
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Jost', 'Segoe UI', sans-serif;
+
+  --space-xs: 0.35rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  --ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-mid: 420ms;
+  --dur-slow: 700ms;
+
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 8px 24px rgba(44, 62, 80, 0.08), 0 1px 3px rgba(44, 62, 80, 0.04);
+  --shadow-hover: 0 20px 40px rgba(44, 62, 80, 0.12), 0 4px 12px rgba(74, 144, 226, 0.1);
+  --shadow-azure: 0 8px 32px rgba(74, 144, 226, 0.18);
+
+  /* ---- Global host setup ---- */
   display: block;
+  min-height: 100vh;
+  padding: var(--space-xl) var(--space-sm);
+
+  background-image:
+    linear-gradient(135deg, rgba(44, 62, 80, 0.75) 0%, rgba(74, 144, 226, 0.65) 100%),
+    url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+
+  font-family: var(--font-body);
+  color: var(--nookly-midnight);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Floating ambient orbs (same as form page) ---- */
+:host::before,
+:host::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: orbitFloat 16s ease-in-out infinite alternate;
+  opacity: 0.25;
+}
+
+:host::before {
+  width: 480px;
+  height: 480px;
+  top: -150px;
+  right: -120px;
+  background: radial-gradient(circle, var(--nookly-mist) 0%, transparent 70%);
+  animation-duration: 20s;
+}
+
+:host::after {
+  width: 320px;
+  height: 320px;
+  bottom: 40px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, transparent 70%);
+  animation-duration: 24s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes orbitFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(25px, 20px) scale(1.05); }
+}
+
+/* ---- Page container – white backdrop card ---- */
+.page-container {
+  max-width: 1400px;  /* wider to fit spreadsheet columns */
+  margin: 0 auto;
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(2px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  z-index: 2;
+  animation: pageReveal 0.6s var(--ease-luxury) both;
+}
+
+@keyframes pageReveal {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Page header ---- */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 600;
+  color: var(--nookly-midnight);
+  line-height: 1.2;
+  position: relative;
+  display: inline-block;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--nookly-gold), var(--nookly-azure));
+  border-radius: var(--radius-pill);
+  transition: width var(--dur-slow) var(--ease-luxury);
+}
+
+.page-title:hover::after {
   width: 100%;
-  overflow-x: auto;
+}
+
+.page-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--nookly-slate);
+  margin-top: var(--space-xs);
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+/* ---- Buttons (shared styles) ---- */
+.toggle-btn,
+.rent-btn,
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border-radius: var(--radius-pill);
+  padding: 0.6rem 1.4rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.3s var(--ease-bounce);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--nookly-slate);
+  color: var(--nookly-midnight);
+}
+
+.toggle-btn:hover {
+  background: var(--nookly-azure-glow);
+  border-color: var(--nookly-azure);
+  color: var(--nookly-azure);
+}
+
+.rent-btn {
+  background: transparent;
+  border: 1px solid var(--nookly-azure);
+  color: var(--nookly-azure);
+}
+
+.rent-btn:hover {
+  background: var(--nookly-azure-glow);
+  transform: translateY(-1px);
+}
+
+.add-btn {
+  background: linear-gradient(105deg, var(--nookly-midnight) 100%, var(--nookly-azure-glow) 100%);
+  border: none;
+  color: var(--nookly-white);
+  box-shadow: var(--shadow-azure);
+}
+
+.add-btn:hover {
+  background: linear-gradient(105deg, #1F3348 0%, var(--nookly-azure-deep) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
+}
+
+/* ---- Loading state ---- */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) 0;
+  color: var(--nookly-slate);
+  gap: var(--space-sm);
+}
+
+.loading-state .mat-icon.spin {
+  font-size: 2.5rem;
+  color: var(--nookly-azure);
+  animation: nookly-spin 0.8s linear infinite;
+}
+
+@keyframes nookly-spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  font-size: 1rem;
+}
+
+/* ---- Empty state ---- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  gap: var(--space-sm);
+}
+
+.empty-state .mat-icon {
+  font-size: 3rem;
+  color: var(--nookly-slate);
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--nookly-midnight);
+}
+
+.empty-state p {
+  color: var(--nookly-slate);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.empty-state button {
+  margin-top: var(--space-sm);
+  background: var(--nookly-azure);
+  color: var(--nookly-midnight);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0.7rem 1.8rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  box-shadow: var(--shadow-azure);
+  transition: all 0.3s var(--ease-bounce);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.empty-state button:hover {
+  background: var(--nookly-azure-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
+}
+
+/* ================================================================
+   COMPACT SPREADSHEET STYLES – replaces card grid with rows
+   ================================================================ */
+
+/* PG filter – keep it, but make it fit the compact style */
+.pg-filter {
+  width: 260px;
+  margin-bottom: var(--space-md);
+}
+
+/* The grid becomes a flex column (table structure) */
+.tenant-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   margin-top: var(--space-md);
   border-radius: var(--radius-md);
+  overflow-x: auto;
   background: var(--nookly-white);
   box-shadow: var(--shadow-card);
 }
 
-/* Table header (visible on all screen sizes) */
+/* Fake table header – added via pseudo-element */
 .tenant-grid::before {
-  content: "";
-  display: none;
-}
-
-/* We'll create a real header row */
-.tenant-header-row {
+  content: "TENANT   PHONE   ROOM   RENT   MOVE-IN   STATUS   ACTIONS";
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1fr 1.5fr 1fr 1.2fr;
+  grid-template-columns: minmax(180px, 2fr) minmax(120px, 1.2fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(110px, 1fr) minmax(90px, 0.8fr) minmax(120px, 1.2fr);
+  gap: var(--space-sm);
+  padding: 0.7rem 1rem;
   background: linear-gradient(135deg, var(--nookly-midnight) 0%, #1F3348 100%);
   color: white;
   font-weight: 600;
-  padding: 0.9rem 1.2rem;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  font-size: 0.85rem;
-  letter-spacing: 0.3px;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  gap: var(--space-sm);
-  align-items: center;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  white-space: nowrap;
+  font-family: var(--font-body);
 }
 
-/* Tenant card becomes a table row */
+/* Each tenant becomes a grid row */
 .tenant-card {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1fr 1.5fr 1fr 1.2fr;
+  grid-template-columns: minmax(180px, 2fr) minmax(120px, 1.2fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(110px, 1fr) minmax(90px, 0.8fr) minmax(120px, 1.2fr);
   align-items: center;
   gap: var(--space-sm);
-  padding: 0.8rem 1.2rem;
+  padding: 0.6rem 1rem;
   margin: 0;
   background: var(--nookly-white);
   border-radius: 0;
   box-shadow: none;
   border-bottom: 1px solid var(--nookly-mist);
-  transition: background var(--dur-mid) ease;
+  transition: background 0.2s ease;
+  position: relative;
 }
 
 .tenant-card:hover {
-  background: var(--nookly-azure-glow);
   transform: none;
   box-shadow: none;
+  background: var(--nookly-azure-glow);
 }
 
-/* Remove absolute positioning of status badge – make it part of grid */
+/* Inactive row styling */
+.tenant-card.inactive {
+  opacity: 0.85;
+  background: #fafbfc;
+}
+
+/* Status badge – no absolute positioning, becomes part of row */
 .status-badge {
   position: static;
   display: inline-block;
   width: fit-content;
-  padding: 0.25rem 0.7rem;
+  padding: 0.2rem 0.7rem;
   font-size: 0.7rem;
   font-weight: 700;
-  text-align: center;
   border-radius: var(--radius-pill);
+  text-align: center;
+  white-space: nowrap;
+  justify-self: start;
 }
 
-/* Tenant info (avatar + details) – we flatten into columns */
+/* Tenant info block – horizontal avatar + name */
 .tenant-info {
   display: flex;
   align-items: center;
@@ -82,78 +388,75 @@
   width: 2.2rem;
   height: 2.2rem;
   font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .tenant-details {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0;
 }
 
 .tenant-name {
-  font-size: 1rem;
-  margin: 0;
+  font-size: 0.95rem;
   font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
 }
 
+/* Hide the original detail paragraphs (they will be shown as separate columns) */
 .tenant-phone,
 .tenant-room,
 .tenant-rent,
 .tenant-movein {
-  display: none; /* Hide duplicate data – we show only essential columns */
-}
-
-/* Show only the avatar + name in the "Name" column */
-.tenant-name-block {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
+  font-size: 0.85rem;
+  color: var(--nookly-slate);
+  margin: 0;
+  white-space: nowrap;
 }
 
-/* Spreadsheet columns – map existing content to grid cells */
+/* Hide the icons inside those columns for cleaner look */
+.tenant-phone .mat-icon,
+.tenant-room .mat-icon,
+.tenant-rent .mat-icon,
+.tenant-movein .mat-icon {
+  display: none;
+}
+
+/* Map each piece to the grid columns */
 .tenant-card .tenant-info {
   grid-column: 1 / 2;
 }
-
 .tenant-card .tenant-phone {
-  display: block; /* Show phone as separate column */
   grid-column: 2 / 3;
-  font-size: 0.85rem;
-  margin: 0;
 }
-
 .tenant-card .tenant-room {
-  display: block;
   grid-column: 3 / 4;
 }
-
 .tenant-card .tenant-rent {
-  display: block;
   grid-column: 4 / 5;
 }
-
 .tenant-card .tenant-movein {
-  display: block;
   grid-column: 5 / 6;
 }
-
 .tenant-card .status-badge {
   grid-column: 6 / 7;
-  justify-self: start;
 }
-
 .tenant-card .tenant-actions {
   grid-column: 7 / 8;
   justify-self: end;
-  border: none;
-  padding: 0;
-  margin: 0;
 }
 
-/* Adjust action buttons spacing */
+/* Adjust actions – smaller buttons, no border top */
 .tenant-actions {
   display: flex;
   gap: 0.2rem;
+  padding: 0;
+  margin: 0;
+  border: none;
 }
 
 .tenant-actions button {
@@ -161,41 +464,21 @@
   height: 1.8rem;
 }
 
-/* Hide avatar text when screen is too narrow (optional) */
-@media (max-width: 900px) {
-  .tenant-header-row,
+/* ================================================================
+   RESPONSIVE: On medium screens, adjust column widths
+   ================================================================ */
+@media (max-width: 1000px) {
+  .tenant-grid::before,
   .tenant-card {
-    grid-template-columns: 1.5fr 1fr 0.8fr 1fr 1fr 0.8fr 1fr;
-    gap: var(--space-xs);
-    padding: 0.6rem 0.8rem;
-  }
-
-  .tenant-avatar {
-    width: 1.8rem;
-    height: 1.8rem;
-    font-size: 0.8rem;
-  }
-
-  .tenant-name {
-    font-size: 0.85rem;
-  }
-
-  .tenant-phone,
-  .tenant-room,
-  .tenant-rent,
-  .tenant-movein {
-    font-size: 0.75rem;
+    grid-template-columns: minmax(150px, 1.8fr) minmax(100px, 1fr) minmax(80px, 0.7fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(80px, 0.7fr) minmax(100px, 1fr);
   }
 }
 
-@media (max-width: 700px) {
-  /* On mobile, revert to stacked cards for readability */
-  .tenant-grid {
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .tenant-header-row {
+/* ================================================================
+   MOBILE: revert to stacked cards for readability
+   ================================================================ */
+@media (max-width: 800px) {
+  .tenant-grid::before {
     display: none;
   }
 
@@ -203,17 +486,23 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    background: white;
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-sm);
     padding: var(--space-md);
-    box-shadow: var(--shadow-card);
+    margin-bottom: var(--space-sm);
+    border-radius: var(--radius-md);
     border-bottom: none;
+    box-shadow: var(--shadow-card);
+    gap: var(--space-sm);
   }
 
   .tenant-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
+  }
+
+  .status-badge {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
   }
 
   .tenant-info {
@@ -224,20 +513,78 @@
   .tenant-room,
   .tenant-rent,
   .tenant-movein {
-    display: flex;
-    width: 100%;
-    margin-top: 0.2rem;
+    display: flex !important;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.9rem;
   }
 
-  .status-badge {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
+  .tenant-phone .mat-icon,
+  .tenant-room .mat-icon,
+  .tenant-rent .mat-icon,
+  .tenant-movein .mat-icon {
+    display: inline-flex !important;
   }
 
   .tenant-actions {
     width: 100%;
     justify-content: flex-end;
     margin-top: var(--space-sm);
+    border-top: 1px solid var(--nookly-mist);
+    padding-top: var(--space-sm);
+  }
+}
+
+/* ---- Accessibility ---- */
+:host ::selection {
+  background: var(--nookly-mist);
+  color: var(--nookly-midnight);
+}
+
+:host *:focus-visible {
+  outline: 2px solid var(--nookly-azure);
+  outline-offset: 3px;
+  border-radius: var(--radius-md);
+}
+
+/* Respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :host::before,
+  :host::after {
+    animation: none;
+  }
+
+  .page-container,
+  .tenant-card,
+  .add-btn,
+  .rent-btn,
+  .toggle-btn,
+  .empty-state button {
+    animation: none;
+    transition: none;
+  }
+
+  .loading-state .mat-icon.spin {
+    animation-duration: 2s;
+  }
+}
+
+/* ---- Print styles ---- */
+@media print {
+  :host {
+    background: white;
+    padding: 0;
+  }
+
+  .page-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  :host::before,
+  :host::after {
+    display: none;
   }
 }
