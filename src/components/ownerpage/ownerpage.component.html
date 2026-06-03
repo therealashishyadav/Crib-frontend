@@ -15,7 +15,7 @@
           <span class="live-dot"></span> Owner Portal
         </span>
         <h1 class="hero-title">
-           {{ greeting }},<br>
+          {{ greeting }},<br>
           <span class="hero-name">{{ ownerName }}</span>
         </h1>
         <p class="hero-subtitle">
@@ -52,7 +52,8 @@
       <div class="stat-card" style="--delay:0.05s">
         <div class="stat-icon-wrap azure">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/><path d="M9 21V13h6v8"/>
+            <path d="M3 9.5L12 3l9 6.5V21H3V9.5z" />
+            <path d="M9 21V13h6v8" />
           </svg>
         </div>
         <div class="stat-info">
@@ -65,7 +66,8 @@
       <div class="stat-card" style="--delay:0.10s">
         <div class="stat-icon-wrap gold">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 6v6l4 2" />
           </svg>
         </div>
         <div class="stat-info">
@@ -78,7 +80,8 @@
       <div class="stat-card" style="--delay:0.15s">
         <div class="stat-icon-wrap green">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 8v4l3 3"/>
+            <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+            <path d="M12 8v4l3 3" />
           </svg>
         </div>
         <div class="stat-info">
@@ -91,8 +94,9 @@
       <div class="stat-card" style="--delay:0.20s">
         <div class="stat-icon-wrap rose">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"/>
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75" />
           </svg>
         </div>
         <div class="stat-info">
@@ -176,7 +180,7 @@
       <div class="pg-grid" *ngIf="!isLoading && pgs.length > 0">
         <div class="pg-card" *ngFor="let pg of pgs">
           <div class="pg-cover"
-               [style.background-image]="pg.coverImageUrl ? 'url(' + pg.coverImageUrl + ')' : 'var(--img-default-pg)'">
+            [style.background-image]="pg.coverImageUrl ? 'url(' + pg.coverImageUrl + ')' : 'var(--img-default-pg)'">
             <div class="pg-cover-overlay"></div>
             <span class="pg-occupancy-badge">{{ pg.occupancyLabel || pg.occupancyType }}</span>
           </div>
@@ -184,7 +188,8 @@
             <h3 class="pg-name">{{ pg.pgName }}</h3>
             <p class="pg-location">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                <circle cx="12" cy="10" r="3" />
               </svg>
               {{ pg.locality }}, {{ pg.city }}
             </p>
@@ -203,27 +208,37 @@
               </div>
             </div>
             <div class="amenities">
-              <span class="badge wifi"  *ngIf="pg.wifiAvailable">WiFi</span>
-              <span class="badge food"  *ngIf="pg.foodProvided">Food</span>
-              <span class="badge ac"    *ngIf="pg.airConditioned">AC</span>
-              <span class="badge furn"  *ngIf="pg.furnished">Furnished</span>
-              <span class="badge cctv"  *ngIf="pg.cctvSurveillance">CCTV</span>
+              <span class="badge wifi" *ngIf="pg.wifiAvailable">WiFi</span>
+              <span class="badge food" *ngIf="pg.foodProvided">Food</span>
+              <span class="badge ac" *ngIf="pg.airConditioned">AC</span>
+              <span class="badge furn" *ngIf="pg.furnished">Furnished</span>
+              <span class="badge cctv" *ngIf="pg.cctvSurveillance">CCTV</span>
               <span class="badge laund" *ngIf="pg.laundryService">Laundry</span>
             </div>
             <div class="pg-actions">
               <button class="btn-edit" (click)="editPG(pg)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
                 Edit
               </button>
               <button class="btn-delete" (click)="deletePG(pg.id)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
-                  <path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/>
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14H6L5 6" />
+                  <path d="M10 11v6m4-6v6" />
+                  <path d="M9 6V4h6v2" />
                 </svg>
                 Delete
+              </button>
+              <button class="btn-share" (click)="sharePg(pg)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                  <polyline points="16 6 12 2 8 6" />
+                  <line x1="12" y1="2" x2="12" y2="15" />
+                </svg>
+                Share
               </button>
             </div>
           </div>
@@ -296,7 +311,8 @@
           <div class="earn-num">01</div>
           <div class="earn-icon"></div>
           <h3>Finder's Fee</h3>
-          <p>₹499 one-time per successful tenant placement. You only pay after a real tenant moves in through CribUp.</p>
+          <p>₹499 one-time per successful tenant placement. You only pay after a real tenant moves in through CribUp.
+          </p>
           <div class="earn-tag">Per placement</div>
         </div>
         <div class="earn-card">
@@ -317,7 +333,8 @@
           <div class="earn-num">04</div>
           <div class="earn-icon"></div>
           <h3>Partner Referrals</h3>
-          <p>When tenants use nearby services (laundry, tiffin, internet), partners pay us. You and tenants pay nothing.</p>
+          <p>When tenants use nearby services (laundry, tiffin, internet), partners pay us. You and tenants pay nothing.
+          </p>
           <div class="earn-tag">B2B only</div>
         </div>
       </div>
@@ -338,7 +355,8 @@
           <div class="news-body">
             <span class="news-tag new">New</span>
             <h3>WhatsApp Rent Reminders are live </h3>
-            <p>You can now send instant WhatsApp reminders to pending tenants directly from the Rent Sheet with one click. Free, instant, no API needed.</p>
+            <p>You can now send instant WhatsApp reminders to pending tenants directly from the Rent Sheet with one
+              click. Free, instant, no API needed.</p>
             <span class="news-date">May 2025</span>
           </div>
         </div>
@@ -437,7 +455,8 @@
       <div class="city-content">
         <span class="eyebrow-tag light-tag">Expanding Fast</span>
         <h2 class="city-title">CribUp is growing across India</h2>
-        <p class="city-subtitle">Starting from Pune, we're expanding to Mumbai, Bangalore, Hyderabad and beyond in 2025. List now and be among the first verified owners in your city.</p>
+        <p class="city-subtitle">Starting from Pune, we're expanding to Mumbai, Bangalore, Hyderabad and beyond in 2025.
+          List now and be among the first verified owners in your city.</p>
         <div class="city-chips">
           <span class="city-chip active">Pune ✓</span>
           <span class="city-chip soon">Mumbai</span>
@@ -457,7 +476,8 @@
       <div class="testimonials-grid">
         <div class="testi-card">
           <div class="testi-stars">★★★★★</div>
-          <p class="testi-quote">"99acres charged me ₹22,000 and gave me 3 fake leads. CribUp gave me a real tenant in 10 days for free. I only paid ₹499 after they moved in."</p>
+          <p class="testi-quote">"99acres charged me ₹22,000 and gave me 3 fake leads. CribUp gave me a real tenant in
+            10 days for free. I only paid ₹499 after they moved in."</p>
           <div class="testi-author">
             <div class="testi-avatar">R</div>
             <div>
@@ -468,7 +488,8 @@
         </div>
         <div class="testi-card">
           <div class="testi-stars">★★★★★</div>
-          <p class="testi-quote">"The WhatsApp reminder feature alone saves me hours every month. One click and all pending tenants get a message. Absolutely love it."</p>
+          <p class="testi-quote">"The WhatsApp reminder feature alone saves me hours every month. One click and all
+            pending tenants get a message. Absolutely love it."</p>
           <div class="testi-author">
             <div class="testi-avatar">S</div>
             <div>
@@ -479,7 +500,8 @@
         </div>
         <div class="testi-card">
           <div class="testi-stars">★★★★☆</div>
-          <p class="testi-quote">"Finally a platform that treats owners fairly. No upfront nonsense. The rent sheet is clean and simple. My accountant loves it too."</p>
+          <p class="testi-quote">"Finally a platform that treats owners fairly. No upfront nonsense. The rent sheet is
+            clean and simple. My accountant loves it too."</p>
           <div class="testi-author">
             <div class="testi-avatar">A</div>
             <div>

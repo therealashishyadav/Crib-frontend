@@ -21,6 +21,8 @@ import { AddTenantComponent } from '../components/add-tenant/add-tenant.componen
 import { RentSheetComponent } from '../components/rent-sheet/rent-sheet.component';
 import { OwnerGuard } from '../OwnerGuard';
 import { OwnerNavbarComponent } from '../components/owner-navbar/owner-navbar.component';
+import { AddFlatComponent } from '../components/add-flat/add-flat.component';
+import { ManagementDashboardComponent } from '../components/management-dashboard/management-dashboard.component';
 // import { Navbar2Component } from '../components/navbar2/navbar2.component';
 
 export const routes: Routes = [
@@ -38,15 +40,15 @@ export const routes: Routes = [
     { path: 'listings', component: PgListingsComponent },
     { path: 'pg/:id', component: PgDetailComponent },
     { path: 'forgot-password', component: ForgotPasswordComponent },
-    // { path: 'tenantlist', component: TenantListComponent },
-    // { path: 'addtenant', component: AddTenantComponent },
-    // { path: 'rentsheet', component: RentSheetComponent },
     { path: 'owner-navbar', component: OwnerNavbarComponent },
     { path: 'ownerpage', component: OwnerpageComponent },
     { path: 'addpglist', component: ListPropertyComponent },
     { path: 'owner/add-tenant', component: AddTenantComponent },
     { path: 'owner/tenants', component: TenantListComponent },
     { path: 'owner/rent-sheet', component: RentSheetComponent },
+   { path: 'owner/add-flat', component: AddFlatComponent },
+   { path: 'management', component: ManagementDashboardComponent },
+   
 
 
     // {path: 'navbar2', component: Navbar2Component},

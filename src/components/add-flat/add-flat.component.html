@@ -1,0 +1,390 @@
+<app-owner-navbar></app-owner-navbar>
+
+<section class="headline">
+  <h1>List Your Premium Flat</h1>
+  <p>Fill out the form below to list your property on Crib.</p>
+  <p>Your details will be kept confidential.</p>
+</section>
+
+<section class="success-section" *ngIf="submitSuccess">
+  <div class="success-card">
+    <mat-icon class="success-icon">check_circle</mat-icon>
+    <h2>Your Flat has been listed successfully!</h2>
+    <p>Redirecting to your listing page...</p>
+  </div>
+</section>
+
+<section class="form-container" *ngIf="!submitSuccess">
+  <form #flatForm="ngForm" (ngSubmit)="submitListing()" novalidate>
+    <mat-accordion multi>
+
+      <mat-expansion-panel expanded>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <mat-icon class="panel-icon">apartment</mat-icon> Basic Information
+          </mat-panel-title>
+          <mat-panel-description class="panel-desc">Essential details about your flat</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-group">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Flat Name</mat-label>
+            <input matInput placeholder="e.g. Sunrise Apartments" name="flatName" [(ngModel)]="flatModel.flatName" required>
+            <mat-icon matSuffix>home</mat-icon>
+            <mat-error *ngIf="flatForm.submitted && !flatModel.flatName">Flat name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Full Address</mat-label>
+            <textarea matInput placeholder="Street, Area, Landmark" name="fullAddress" [(ngModel)]="flatModel.fullAddress" required rows="2"></textarea>
+            <mat-error *ngIf="flatForm.submitted && !flatModel.fullAddress">Address is required</mat-error>
+          </mat-form-field>
+
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>City</mat-label>
+              <input matInput placeholder="e.g. Pune" name="city" [(ngModel)]="flatModel.city" required>
+              <mat-error *ngIf="flatForm.submitted && !flatModel.city">City is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Locality</mat-label>
+              <input matInput placeholder="e.g. Koregaon Park" name="locality" [(ngModel)]="flatModel.locality">
+            </mat-form-field>
+          </div>
+
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Pin Code</mat-label>
+              <input matInput placeholder="411001" name="pinCode" [(ngModel)]="flatModel.pinCode" maxlength="6">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Google Map Link</mat-label>
+              <input matInput placeholder="https://maps.google.com/..." name="googleMapLink" [(ngModel)]="flatModel.googleMapLink">
+              <mat-icon matSuffix>map</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nearby Landmarks</mat-label>
+            <textarea matInput placeholder="Near Metro Station, Close to IT Park" name="nearbyLandmarks" [(ngModel)]="flatModel.nearbyLandmarks" rows="2"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <mat-icon class="panel-icon">perm_media</mat-icon> Media
+          </mat-panel-title>
+          <mat-panel-description class="panel-desc">Images and videos of your flat</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-group">
+          <div class="upload-box">
+            <h4 class="upload-title">
+              <mat-icon class="upload-icon">image</mat-icon> Cover Image
+              <span class="upload-hint-text">(Main image shown on your listing card)</span>
+            </h4>
+            <div *ngIf="coverImagePreview" class="cover-preview-wrapper">
+              <img [src]="coverImagePreview" alt="Cover Image Preview" class="cover-preview-img">
+              <button mat-stroked-button type="button" color="warn" class="remove-cover-btn" (click)="removeCoverImage()">
+                <mat-icon>delete</mat-icon> Remove
+              </button>
+            </div>
+            <input #coverInput type="file" accept="image/*" (change)="onCoverImageSelected($event)" style="display:none">
+            <button mat-stroked-button type="button" class="upload-btn" (click)="coverInput.click()" *ngIf="!coverImagePreview">
+              <mat-icon>add_photo_alternate</mat-icon> Upload Cover Image
+            </button>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Virtual Tour Link (Optional)</mat-label>
+            <input matInput placeholder="Paste YouTube walkthrough or Google 360° link" name="virtualTourLink" [(ngModel)]="flatModel.virtualTourLink">
+            <mat-icon matSuffix>360</mat-icon>
+            <mat-hint>e.g. YouTube video link or Google Maps 360° tour</mat-hint>
+          </mat-form-field>
+
+          <div class="upload-box">
+            <h4 class="upload-title">
+              <mat-icon class="upload-icon">photo_library</mat-icon> Gallery Images
+            </h4>
+            <div *ngFor="let image of galleryImageFiles; let i = index" class="gallery-item">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Image {{ i + 1 }}</mat-label>
+                <input matInput readonly [value]="image.name">
+                <button mat-icon-button type="button" (click)="removeGalleryImage(i)" matSuffix>
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <input #galleryInput type="file" multiple accept="image/*" (change)="onGalleryFilesSelected($event)" style="display:none">
+            <button mat-stroked-button type="button" (click)="galleryInput.click()" class="upload-btn">
+              <mat-icon>add_photo_alternate</mat-icon> Add Images
+            </button>
+          </div>
+
+          <div class="upload-box">
+            <h4 class="upload-title">
+              <mat-icon class="upload-icon">videocam</mat-icon> Video Upload
+            </h4>
+            <mat-form-field appearance="outline" class="full-width" *ngIf="videoFile">
+              <mat-label>Video File</mat-label>
+              <input matInput readonly [value]="videoFile.name">
+              <button mat-icon-button type="button" (click)="removeVideo()" matSuffix>
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-form-field>
+            <input #videoInput type="file" accept="video/*" (change)="onVideoFileSelected($event)" style="display:none">
+            <button mat-stroked-button type="button" (click)="videoInput.click()" class="upload-btn">
+              <mat-icon>videocam</mat-icon> Select Video
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <mat-icon class="panel-icon">meeting_room</mat-icon> Flat Details
+          </mat-panel-title>
+          <mat-panel-description class="panel-desc">Room configuration and specifications</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-group">
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Bedrooms</mat-label>
+              <input matInput type="number" placeholder="2" name="bedrooms" [(ngModel)]="flatModel.bedrooms" required min="1">
+              <mat-icon matSuffix>bed</mat-icon>
+              <mat-error *ngIf="flatForm.submitted && !flatModel.bedrooms">Required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Bathrooms</mat-label>
+              <input matInput type="number" placeholder="2" name="bathrooms" [(ngModel)]="flatModel.bathrooms" required min="1">
+              <mat-icon matSuffix>bathtub</mat-icon>
+              <mat-error *ngIf="flatForm.submitted && !flatModel.bathrooms">Required</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Square Feet</mat-label>
+              <input matInput type="number" placeholder="1200" name="squareFeet" [(ngModel)]="flatModel.squareFeet">
+              <mat-icon matSuffix>straighten</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Furnishing Status</mat-label>
+              <mat-select name="furnishingStatus" [(ngModel)]="flatModel.furnishingStatus">
+                <mat-option value="FULLY_FURNISHED">Fully Furnished</mat-option>
+                <mat-option value="SEMI_FURNISHED">Semi Furnished</mat-option>
+                <mat-option value="UNFURNISHED">Unfurnished</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Floor Number</mat-label>
+              <input matInput type="number" placeholder="3" name="floorNumber" [(ngModel)]="flatModel.floorNumber">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Total Floors</mat-label>
+              <input matInput type="number" placeholder="10" name="totalFloors" [(ngModel)]="flatModel.totalFloors">
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput placeholder="Describe your flat, USPs, views, etc." name="description" [(ngModel)]="flatModel.description" rows="3"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <mat-icon class="panel-icon">currency_rupee</mat-icon> Pricing & Charges
+          </mat-panel-title>
+          <mat-panel-description class="panel-desc">Rent, deposit and other charges</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-group">
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Monthly Rent (₹)</mat-label>
+              <input matInput type="number" placeholder="25000" name="rentAmount" [(ngModel)]="flatModel.rentAmount" required>
+              <mat-icon matSuffix>currency_rupee</mat-icon>
+              <mat-error *ngIf="flatForm.submitted && !flatModel.rentAmount">Rent is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Deposit Amount (₹)</mat-label>
+              <input matInput type="number" placeholder="50000" name="depositAmount" [(ngModel)]="flatModel.depositAmount">
+              <mat-icon matSuffix>currency_rupee</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Maintenance Amount (₹)</mat-label>
+              <input matInput type="number" placeholder="2000" name="maintenanceAmount" [(ngModel)]="flatModel.maintenanceAmount">
+              <mat-icon matSuffix>currency_rupee</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Notice Period (days)</mat-label>
+              <input matInput type="number" placeholder="30" name="noticePeriodDays" [(ngModel)]="flatModel.noticePeriodDays">
+            </mat-form-field>
+          </div>
+
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Available From</mat-label>
+              <input matInput type="date" name="availableFromDate" [(ngModel)]="flatModel.availableFromDate">
+              <mat-icon matSuffix>calendar_today</mat-icon>
+            </mat-form-field>
+
+            <mat-checkbox [(ngModel)]="flatModel.immediatePossession" name="immediatePossession" class="checkbox-inline">Immediate Possession</mat-checkbox>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Additional Charges Info</mat-label>
+            <textarea matInput placeholder="Electricity, water, internet charged separately" name="additionalChargesInfo" [(ngModel)]="flatModel.additionalChargesInfo" rows="2"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <mat-icon class="panel-icon">star</mat-icon> Amenities
+          </mat-panel-title>
+          <mat-panel-description class="panel-desc">Facilities available in your flat</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-group">
+          <div class="checkbox-grid">
+            <mat-checkbox [(ngModel)]="flatModel.parkingAvailable" name="parkingAvailable">Parking</mat-checkbox>
+            <mat-checkbox [(ngModel)]="flatModel.liftAvailable" name="liftAvailable">Lift</mat-checkbox>
+            <mat-checkbox [(ngModel)]="flatModel.securityGuard" name="securityGuard">Security Guard</mat-checkbox>
+            <mat-checkbox [(ngModel)]="flatModel.cctvInstalled" name="cctvInstalled">CCTV</mat-checkbox>
+            <mat-checkbox [(ngModel)]="flatModel.waterSupply24x7" name="waterSupply24x7">24x7 Water Supply</mat-checkbox>
+            <mat-checkbox [(ngModel)]="flatModel.powerBackup" name="powerBackup">Power Backup</mat-checkbox>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Other Amenities</mat-label>
+            <mat-select name="amenities" [(ngModel)]="flatModel.amenities" multiple>
+              <mat-option value="AC">AC</mat-option>
+              <mat-option value="WiFi">WiFi</mat-option>
+              <mat-option value="Geyser">Geyser</mat-option>
+              <mat-option value="Washing Machine">Washing Machine</mat-option>
+              <mat-option value="Refrigerator">Refrigerator</mat-option>
+              <mat-option value="Microwave">Microwave</mat-option>
+              <mat-option value="Gym">Gym</mat-option>
+              <mat-option value="Swimming Pool">Swimming Pool</mat-option>
+              <mat-option value="Clubhouse">Clubhouse</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nearby Facilities</mat-label>
+            <textarea matInput placeholder="Schools, hospitals, malls, metro station" name="nearbyFacilities" [(ngModel)]="flatModel.nearbyFacilities" rows="2"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <mat-icon class="panel-icon">gavel</mat-icon> Rules & Policies
+          </mat-panel-title>
+          <mat-panel-description class="panel-desc">House rules and restrictions</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-group">
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Entry / Exit Timings</mat-label>
+              <input matInput placeholder="No restrictions" name="entryExitTimings" [(ngModel)]="flatModel.entryExitTimings">
+            </mat-form-field>
+          </div>
+
+          <div class="checkbox-grid">
+            <mat-checkbox [(ngModel)]="flatModel.visitorsAllowed" name="visitorsAllowed">Visitors Allowed</mat-checkbox>
+            <mat-checkbox [(ngModel)]="flatModel.petsAllowed" name="petsAllowed">Pets Allowed</mat-checkbox>
+            <mat-checkbox [(ngModel)]="flatModel.smokingAllowed" name="smokingAllowed">Smoking Allowed</mat-checkbox>
+            <mat-checkbox [(ngModel)]="flatModel.alcoholAllowed" name="alcoholAllowed">Alcohol Allowed</mat-checkbox>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <mat-icon class="panel-icon">contact_phone</mat-icon> Contact Information
+          </mat-panel-title>
+          <mat-panel-description class="panel-desc">How potential tenants can reach you</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-group">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Owner / Manager Name</mat-label>
+            <input matInput placeholder="Your full name" name="ownerName" [(ngModel)]="flatModel.ownerName" required>
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="flatForm.submitted && !flatModel.ownerName">Owner name is required</mat-error>
+          </mat-form-field>
+
+          <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Contact Number</mat-label>
+              <input matInput placeholder="9876543210" name="contactNumber" [(ngModel)]="flatModel.contactNumber" required maxlength="10">
+              <mat-icon matSuffix>call</mat-icon>
+              <mat-error *ngIf="flatForm.submitted && !flatModel.contactNumber">Contact number is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>WhatsApp Number</mat-label>
+              <input matInput placeholder="9876543210" name="whatsappNumber" [(ngModel)]="flatModel.whatsappNumber">
+              <mat-icon matSuffix>chat</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput placeholder="owner@email.com" name="email" [(ngModel)]="flatModel.email" type="email">
+            <mat-icon matSuffix>email</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Visiting Hours</mat-label>
+            <input matInput placeholder="10am - 7pm" name="visitingHours" [(ngModel)]="flatModel.visitingHours">
+            <mat-hint>Preferred time for property visits</mat-hint>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" color="warn" (click)="resetForm()">
+        <mat-icon>clear</mat-icon> Reset
+      </button>
+      <a mat-stroked-button routerLink="/ownerpage">
+        <mat-icon>arrow_back_ios</mat-icon> Go Back
+      </a>
+      <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting">
+        <mat-icon>save</mat-icon>
+        {{ isSubmitting ? 'Submitting...' : 'Submit Flat Details' }}
+      </button>
+    </div>
+
+  </form>
+</section>
+
+<app-footer></app-footer>
