@@ -12,6 +12,7 @@ import {
   PlatformSettings,
   PageResponse
 } from '../entity/DashboardStats';
+import { ServiceHealth } from '../entity/DashboardStats';
 
 @Injectable({ providedIn: 'root' })
 export class ManagementService {
@@ -76,6 +77,13 @@ export class ManagementService {
     return this.http.get<ChartData[]>(`${this.apiUrl}/reports/monthly-growth`);
   }
 
+  /**
+   * Returns health status of dependent services. Back-end endpoint may be optional.
+   */
+  getServiceHealth(): Observable<ServiceHealth[]> {
+    return this.http.get<ServiceHealth[]>(`${this.apiUrl}/health`);
+  }
+
   getPlatformSettings(): Observable<PlatformSettings> {
     return this.http.get<PlatformSettings>(`${this.apiUrl}/settings`);
   }
@@ -84,7 +92,25 @@ export class ManagementService {
     return this.http.put<void>(`${this.apiUrl}/settings`, settings);
   }
 
-  broadcastAnnouncement(announcement: { announcementTitle: string; announcementMessage: string }): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/settings/announce`, announcement);
+  // Backwards-compatible alias used by some components
+  savePlatformSettings(settings: PlatformSettings): Observable<void> {
+    return this.updatePlatformSettings(settings);
+  }
+
+  /**
+   * Broadcast announcement. Accepts either a payload object or simple (title, message, target) args.
+   */
+  broadcastAnnouncement(titleOrPayload: any, message?: string, target?: string): Observable<void> {
+    const payload = typeof titleOrPayload === 'string'
+      ? { announcementTitle: titleOrPayload, announcementMessage: message || '', target }
+      : titleOrPayload;
+    return this.http.post<void>(`${this.apiUrl}/settings/announce`, payload);
+  }
+
+  /**
+   * Some deployments return a plain list of users; helper for that case.
+   */
+  getAllUsersFallback(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/users/all`);
   }
 }

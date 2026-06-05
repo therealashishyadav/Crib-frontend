@@ -85,3 +85,18 @@ export interface PageResponse<T> {
   size: number;
   number: number;
 }
+
+export interface ServiceHealth {
+  name: string;
+  status: string;
+}
+
+// Alias for management user view if needed
+export type MgmtUser = User;
+
+
+
+
+
+
+
