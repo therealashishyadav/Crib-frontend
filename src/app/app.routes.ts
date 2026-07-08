@@ -23,6 +23,7 @@ import { OwnerGuard } from '../OwnerGuard';
 import { OwnerNavbarComponent } from '../components/owner-navbar/owner-navbar.component';
 import { AddFlatComponent } from '../components/add-flat/add-flat.component';
 import { ManagementComponent } from '../components/management/management.component';
+import { PolicyComponentComponent } from '../components/policy-component/policy-component.component';
 // import { Navbar2Component } from '../components/navbar2/navbar2.component';
 
 export const routes: Routes = [
@@ -46,12 +47,22 @@ export const routes: Routes = [
     { path: 'owner/add-tenant', component: AddTenantComponent },
     { path: 'owner/tenants', component: TenantListComponent },
     { path: 'owner/rent-sheet', component: RentSheetComponent },
-   { path: 'owner/add-flat', component: AddFlatComponent },
-   { path: 'management', component: ManagementComponent },
-   
+    { path: 'owner/add-flat', component: AddFlatComponent },
+    { path: 'listproperty', redirectTo: '/addpglist', pathMatch: 'full' },
+    { path: 'listings/flats', redirectTo: '/listings', pathMatch: 'full' },
+    { path: 'listings/duplexes', redirectTo: '/listings', pathMatch: 'full' },
+    { path: 'listings/pgs', redirectTo: '/listings', pathMatch: 'full' },
+    { path: 'profile', redirectTo: '/account', pathMatch: 'full' },
+    { path: 'owner/profile', redirectTo: '/ownerpage', pathMatch: 'full' },
+    { path: 'careers', redirectTo: '/about', pathMatch: 'full' },
+    { path: 'press', redirectTo: '/about', pathMatch: 'full' },
+    { path: 'blog', redirectTo: '/about', pathMatch: 'full' },
+    { path: 'trust-safety', redirectTo: '/about', pathMatch: 'full' },
+    { path: 'privacy-policy', component: PolicyComponentComponent },
+    { path: 'terms-of-service', component: PolicyComponentComponent },
+    { path: 'cookie-policy', component: PolicyComponentComponent },
+    { path: 'management', component: ManagementComponent },
 
-
-    // {path: 'navbar2', component: Navbar2Component},
 
 ];
 
