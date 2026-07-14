@@ -197,7 +197,7 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
     private http: HttpClient,
     private route: Router, // <-- Named 'route' (matches your usage)
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   //  1. Load the Google script when the component initializes
   ngOnInit(): void {
@@ -291,15 +291,17 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
 
     this.loginService.googleLogin(idToken).subscribe({
       next: (jwtResponse) => {
-        //  Only access localStorage in browser
+        // Store tokens in localStorage (browser only)
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem('token', jwtResponse.token);
           localStorage.setItem('refreshToken', jwtResponse.refreshToken);
         }
 
-        // Navigate to dashboard
-        this.route.navigate(['/dashboard']); // <-- Fixed: use 'route' not 'router'
-        this.snackBar.open('Login with Google successful!', 'Close', { duration: 3000 });
+        // Extract email from the JWT token
+        const emailFromToken = this.getEmailFromToken(jwtResponse.token);
+
+        // Fetch the user's role and navigate (reuse existing logic)
+        this.fetchUserRole(emailFromToken);
       },
       error: (err) => {
         console.error('Google login failed:', err);
