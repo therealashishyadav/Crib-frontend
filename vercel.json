@@ -3,6 +3,10 @@
     {
       "source": "/google502813affef6efc6.html",
       "destination": "/assets/google502813affef6efc6.html"
+    },
+    {
+      "source": "/((?!robots.txt|sitemap.xml|favicon.ico).*)",
+      "destination": "/index.html"
     }
   ]
 }
