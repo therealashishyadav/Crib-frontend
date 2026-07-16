@@ -169,6 +169,7 @@ import { JwtToken } from '../../entity/JwtToken';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { MetaService } from '../../service/meta.service';
 
 //  Declare the Google namespace for TypeScript
 declare const google: any;
@@ -195,12 +196,15 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
     @Inject(PLATFORM_ID) private platformId: Object,
     private loginService: LoginService,
     private http: HttpClient,
-    private route: Router, // <-- Named 'route' (matches your usage)
-    private snackBar: MatSnackBar
+    private route: Router,
+    private snackBar: MatSnackBar,
+    private metaService: MetaService
   ) { }
 
   //  1. Load the Google script when the component initializes
   ngOnInit(): void {
+    // Set meta tags for private login page
+    this.metaService.setPrivatePage('Login — CribUp');
     // Only load the script in the browser (not on server)
     if (isPlatformBrowser(this.platformId)) {
       this.loadGoogleScript().then(() => {

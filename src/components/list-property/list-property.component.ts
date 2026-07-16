@@ -1,6 +1,6 @@
 
 
-import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -20,6 +20,7 @@ import { FooterComponent } from '../footer/footer.component';
 import { PgModel, SharingOptionModel } from '../../entity/PgModel';
 import { PgListingService } from '../../service/pg-listing.service';
 import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
+import { MetaService } from '../../service/meta.service';
 
 // ── Cloudinary config ─────────────────────────────────────────────────────────
 const CLOUDINARY_CLOUD_NAME    = 'dmb3nvt45';       // your cloud name
@@ -49,7 +50,7 @@ const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned'; // your unsigned preset
   styleUrls: ['./list-property.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class ListPropertyComponent {
+export class ListPropertyComponent implements OnInit {
 
   @ViewChild('pgForm') pgForm!: NgForm;
 
@@ -122,8 +123,13 @@ export class ListPropertyComponent {
   constructor(
     private pgListingService: PgListingService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private metaService: MetaService
   ) {}
+
+  ngOnInit(): void {
+    this.metaService.setPrivatePage('List Property — CribUp');
+  }
 
   // ── Cover Image ───────────────────────────────────────────────────────────
   onCoverImageSelected(event: Event): void {

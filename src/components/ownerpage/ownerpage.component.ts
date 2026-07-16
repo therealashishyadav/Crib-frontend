@@ -6,6 +6,7 @@ import { PgService } from '../../service/pg.service';
 import { RouterLink } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
+import { MetaService } from '../../service/meta.service';
 
 @Component({
   selector: 'app-ownerpage',
@@ -28,10 +29,12 @@ export class OwnerpageComponent implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private pgService: PgService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private metaService: MetaService
   ) { }
 
   ngOnInit(): void {
+    this.metaService.setPrivatePage('Owner Dashboard — CribUp');
     this.loadMyPGs();
   }
 

@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { NgModule } from '@angular/core';
+import { NgModule, OnInit } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -22,6 +22,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { PgModel } from '../../entity/PgModel';
+import { MetaService } from '../../service/meta.service';
 
 
 @Component({
@@ -116,11 +117,12 @@ onSubmit(): void {
     this.videoFile = null;
   }
 
-  constructor(private pgDetailService: PgdetailsService, private http: HttpClient, private route: Router) {
+  constructor(private pgDetailService: PgdetailsService, private http: HttpClient, private route: Router, private metaService: MetaService) {
 
   }
 
   ngOnInit(): void {
+    this.metaService.setPrivatePage('Add PG \u2014 CribUp');
     this.pgModel.galleryImages = [''];
   }
 

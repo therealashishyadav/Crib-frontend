@@ -12,6 +12,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { TenantService } from '../../service/tenant.service';
 import { RentRecord } from '../../entity/Tenant';
 import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
+import { MetaService } from '../../service/meta.service';
 
 @Component({
   selector: 'app-rent-sheet',
@@ -65,10 +66,12 @@ export class RentSheetComponent implements OnInit {
 
   constructor(
     private tenantService: TenantService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private metaService: MetaService
   ) {}
 
   ngOnInit(): void {
+    this.metaService.setPrivatePage('Rent Sheet \u2014 CribUp');
     this.loadSheet();
     this.tenantService.getPastMonths().subscribe({
       next: (data) => this.pastMonths = data

@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ManagementService } from '../../service/management.service';
+import { MetaService } from '../../service/meta.service';
 import {
   DashboardStats,
   ServiceHealth,
@@ -110,9 +111,13 @@ export class ManagementComponent implements OnInit {
     private managementService: ManagementService,
     private snackBar: MatSnackBar,
     private router: Router,
+    private metaService: MetaService
   ) {}
 
   ngOnInit(): void {
+    this.metaService.setPrivatePage('Management Portal — CribUp');
+    // Set meta tags for management dashboard
+    // this.metaService.setPage('Management Dashboard', 'Admin dashboard for managing PG listings, users, and inquiries', '', 'https://cribup.vercel.app/management');
     this.readCurrentUser();
     this.loadDashboard();
     this.loadUsers();

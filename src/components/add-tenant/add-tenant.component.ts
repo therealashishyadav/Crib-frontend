@@ -16,6 +16,7 @@ import { Tenant } from '../../entity/Tenant';
 import { OwnerNavbarComponent } from "../owner-navbar/owner-navbar.component";
 import { PgListingResponse } from '../../entity/PgModel';              //  import PG response type
 import { PgService } from '../../service/pg.service';
+import { MetaService } from '../../service/meta.service';
 
 @Component({
   selector: 'app-add-tenant',
@@ -45,10 +46,12 @@ private tenantService: TenantService,
   private pgService: PgService,          // ← change to PgService
   private router: Router,
   private route: ActivatedRoute,
-  private snackBar: MatSnackBar
+  private snackBar: MatSnackBar,
+  private metaService: MetaService
   ) {}
 
   ngOnInit(): void {
+    this.metaService.setPrivatePage('Add Tenant — CribUp');
     this.loadOwnerPGs();   //  fetch PGs first
 
     // If ?id=X in URL, load tenant for editing

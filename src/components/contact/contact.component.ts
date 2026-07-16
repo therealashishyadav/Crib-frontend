@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { Inquiry } from '../../entity/Inquiry';
 import { response } from 'express';
 import { error } from 'console';
 import { InquiryService } from '../../service/inquiry.service';
+import { MetaService } from '../../service/meta.service';
 
 @Component({
   selector: 'app-contact',
@@ -24,9 +25,18 @@ import { InquiryService } from '../../service/inquiry.service';
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css'
 })
-export class ContactComponent {
+export class ContactComponent implements OnInit {
 
-  constructor(private http: HttpClient, private inquiryService: InquiryService, private snackBar: MatSnackBar) { }
+  constructor(private http: HttpClient, private inquiryService: InquiryService, private snackBar: MatSnackBar, private metaService: MetaService) { }
+
+  ngOnInit(): void {
+    this.metaService.setPage(
+      'Contact Crib - Get in Touch',
+      'Have questions about finding a PG? Contact Crib support. Reach out via email or phone. We are here to help.',
+      '',
+      'https://cribup.vercel.app/contact'
+    );
+  }
 
   inquiry: Inquiry = new Inquiry();
 

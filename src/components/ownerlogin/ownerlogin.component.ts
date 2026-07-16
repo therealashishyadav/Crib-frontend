@@ -68,6 +68,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { PropertyCardComponent } from '../property-card/property-card.component';
+import { MetaService } from '../../service/meta.service';
 
 @Component({
   selector: 'app-home',
@@ -89,7 +90,10 @@ export class OwnerloginComponent implements OnInit {
   recommendedProperties = signal<any[]>([]);
   trendingProperties = signal<any[]>([]);
 
+  constructor(private metaService: MetaService) {}
+
   ngOnInit() {
+    this.metaService.setPrivatePage('Owner Login — CribUp');
     // Mock data - in a real app, this would come from a service
     this.featuredProperties.set([
       {

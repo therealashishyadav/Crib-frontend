@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -14,6 +14,7 @@ import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { FlatListingService } from '../../service/flat-listing.service';
 import { FlatModel } from '../../entity/FlatModel';
+import { MetaService } from '../../service/meta.service';
 
 const CLOUDINARY_CLOUD_NAME = 'dmb3nvt45';
 const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned';
@@ -54,8 +55,13 @@ export class AddFlatComponent {
   constructor(
     private flatService: FlatListingService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private metaService: MetaService
   ) {}
+
+  ngOnInit(): void {
+    this.metaService.setPrivatePage('Add Flat — CribUp');
+  }
 
   onCoverImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

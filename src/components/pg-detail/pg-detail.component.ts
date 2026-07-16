@@ -11,6 +11,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; //
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { PgListingService } from '../../service/pg-listing.service';
+import { MetaService } from '../../service/meta.service';
 import { PgListingResponse } from '../../entity/PgModel';
 
 @Component({
@@ -44,10 +45,17 @@ export class PgDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private pgListingService: PgListingService,
-    private snackBar: MatSnackBar          // ✅ inject MatSnackBar
+    private snackBar: MatSnackBar,          // ✅ inject MatSnackBar
+    private metaService: MetaService
   ) { }
 
   ngOnInit(): void {
+    this.metaService.setPage(
+      'PG Details - Verified Accommodation',
+      'View detailed information about this PG listing. Photos, amenities, pricing, and direct owner contact.',
+      '',
+      'https://cribup.vercel.app/pg-detail'
+    );
     const id = this.route.snapshot.params['id'];
     if (id) {
       this.pgListingService.getListingById(Number(id)).subscribe({
@@ -135,7 +143,6 @@ export class PgDetailComponent implements OnInit {
     this.router.navigate(['/listings']);
   }
 
-  // ✅ NEW: Share only the link (no message)
   sharePg(): void {
     if (!this.pg) return;
     const currentUrl = window.location.href;
@@ -158,13 +165,13 @@ export class PgDetailComponent implements OnInit {
 
   private copyLinkToClipboard(url: string): void {
     navigator.clipboard.writeText(url).then(() => {
-      this.snackBar.open('🔗 Link copied to clipboard!', 'Dismiss', {
+      this.snackBar.open(' Link copied to clipboard!', 'Dismiss', {
         duration: 2000,
         horizontalPosition: 'center',
         verticalPosition: 'bottom'
       });
     }).catch(() => {
-      this.snackBar.open('❌ Failed to copy link. Please copy manually.', 'Dismiss', {
+      this.snackBar.open(' Failed to copy link. Please copy manually.', 'Dismiss', {
         duration: 3000
       });
     });

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PgListingResponse } from '../../entity/PgModel';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -13,6 +13,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PgListingService } from '../../service/pg-listing.service';
+import { MetaService } from '../../service/meta.service';
 
 @Component({
   selector: 'app-pg-listings',
@@ -34,7 +35,7 @@ import { PgListingService } from '../../service/pg-listing.service';
   templateUrl: './pg-listings.component.html',
   styleUrl: './pg-listings.component.css'
 })
-export class PgListingsComponent {
+export class PgListingsComponent implements OnInit {
 
   listings: PgListingResponse[]         = [];
   filteredListings: PgListingResponse[] = [];
@@ -70,10 +71,17 @@ export class PgListingsComponent {
  
   constructor(
     private pgListingService: PgListingService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private metaService: MetaService
   ) {}
  
   ngOnInit(): void {
+    this.metaService.setPage(
+      'PG Listings - Find Verified Accommodation',
+      'Browse verified PG listings with direct owner contact. No broker fees, real photos, and transparent pricing.',
+      '',
+      'https://cribup.vercel.app/pg-listings'
+    );
     this.loadAllListings();
   }
  

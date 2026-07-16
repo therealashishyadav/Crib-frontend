@@ -13,6 +13,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment.prod';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { MetaService } from '../../service/meta.service';
 
 @Component({
   selector: 'app-tenant-list',
@@ -40,10 +41,17 @@ export class TenantListComponent implements OnInit {
     private tenantService: TenantService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private http: HttpClient
+    private http: HttpClient,
+    private metaService: MetaService
   ) { }
 
   ngOnInit(): void {
+    this.metaService.setPage(
+      'Tenant Management - Manage Your Tenants',
+      'View and manage all your tenants in one place. Track tenant information and PG assignments.',
+      '',
+      'https://cribup.vercel.app/tenant-list'
+    );
     this.loadTenants();
       this.loadOwnerPgs();
   this.loadTenants();

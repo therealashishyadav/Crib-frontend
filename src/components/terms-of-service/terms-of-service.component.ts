@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
+import { MetaService } from '../../service/meta.service';
 
 @Component({
   selector: 'app-terms-of-service',
@@ -64,7 +65,15 @@ export class TermsOfServiceComponent implements OnInit {
     this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
+  constructor(private metaService: MetaService) {}
+
   ngOnInit(): void {
+    this.metaService.setPage(
+      'Terms of Service - Crib Platform Agreement',
+      'Read the Terms of Service for Crib platform. Understand user rights, responsibilities, and platform policies.',
+      '',
+      'https://cribup.vercel.app/terms-of-service'
+    );
     const now = new Date();
     this.currentDate = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
   }

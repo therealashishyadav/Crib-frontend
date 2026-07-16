@@ -1,6 +1,3 @@
-
-<app-owner-navbar></app-owner-navbar>
-
 <!-- src/app/components/management/management.component.html -->
 <div class="portal-wrapper">
 
@@ -26,6 +23,9 @@
     </div>
 
     <nav class="sidebar-nav">
+      <button mat-button routerLink="/management/add-user">
+        <mat-icon>person_add</mat-icon> Add User
+      </button>
       <button class="nav-item" [class.active]="activeTab === 0" (click)="activeTab = 0">
         <mat-icon>dashboard</mat-icon>
         <span *ngIf="!sidebarCollapsed">Dashboard</span>
@@ -215,11 +215,8 @@
           <ng-container matColumnDef="role">
             <th mat-header-cell *matHeaderCellDef>Role</th>
             <td mat-cell *matCellDef="let u">
-              <span class="chip"
-                [class.chip-red]="u.role==='ADMIN'"
-                [class.chip-blue]="u.role==='OWNER'"
-                [class.chip-green]="u.role==='USER'"
-                [class.chip-purple]="u.role==='MANAGEMENT'">{{ u.role }}</span>
+              <span class="chip" [class.chip-red]="u.role==='ADMIN'" [class.chip-blue]="u.role==='OWNER'"
+                [class.chip-green]="u.role==='USER'" [class.chip-purple]="u.role==='MANAGEMENT'">{{ u.role }}</span>
             </td>
           </ng-container>
           <ng-container matColumnDef="active">
@@ -335,8 +332,8 @@
           <tr mat-header-row *matHeaderRowDef="displayedPgColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedPgColumns;"></tr>
         </table>
-        <mat-paginator [length]="pgsTotal" [pageSize]="pgsPageSize" [pageIndex]="pgsPageIndex"
-          (page)="onPgPage($event)" showFirstLastButtons [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+        <mat-paginator [length]="pgsTotal" [pageSize]="pgsPageSize" [pageIndex]="pgsPageIndex" (page)="onPgPage($event)"
+          showFirstLastButtons [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
       </div>
     </div>
 
@@ -443,7 +440,8 @@
       </div>
 
       <div class="section-card" *ngIf="!revenueSummary">
-        <p class="muted-text">Revenue data will appear once the revenue service is connected. Below is a placeholder summary for UI review.</p>
+        <p class="muted-text">Revenue data will appear once the revenue service is connected. Below is a placeholder
+          summary for UI review.</p>
       </div>
     </div>
 

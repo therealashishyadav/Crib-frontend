@@ -1,0 +1,46 @@
+<div class="add-user-container">
+    <h2>Add New User</h2>
+    <p class="subtitle">Register an Owner or Management user</p>
+
+    <form #registerForm="ngForm" (ngSubmit)="registerUser()">
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput [(ngModel)]="user.firstName" name="firstName" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput [(ngModel)]="user.lastName" name="lastName" required>
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" [(ngModel)]="user.email" name="email" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Phone</mat-label>
+            <input matInput type="tel" [(ngModel)]="user.phone" name="phone" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" [(ngModel)]="user.password" name="password" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Role</mat-label>
+            <mat-select [(ngModel)]="user.role" name="role" required>
+                <mat-option *ngFor="let role of roles" [value]="role">
+                    {{ role | titlecase }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || !registerForm.valid">
+            {{ isLoading ? 'Registering...' : 'Register User' }}
+        </button>
+    </form>
+</div>
