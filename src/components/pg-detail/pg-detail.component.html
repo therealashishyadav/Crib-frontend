@@ -83,7 +83,7 @@
                         <p class="pg-address">{{ pg.fullAddress }}</p>
                     </div>
                     <div class="pg-price-badge">
-                        <span class="from-text">From</span>
+                        <span class="from-text">Starting From</span>
                         <span class="price">₹{{ getLowestPrice() | number }}</span>
                         <span class="per-month">/month</span>
                     </div>
@@ -96,7 +96,7 @@
                     <span class="tag tag-wifi" *ngIf="pg.wifiAvailable">📶 WiFi</span>
                     <span class="tag tag-ac" *ngIf="pg.airConditioned">❄️ AC</span>
                     <span class="tag tag-immediate" *ngIf="pg.immediatePossession">⚡ Immediate</span>
-                    <span class="tag tag-available">Available: {{ pg.availableRooms }} rooms</span>
+                    <!-- <span class="tag tag-available">Available: {{ pg.availableRooms }} rooms</span> -->
                 </div>
 
                 <!-- Nearby Landmarks -->
@@ -328,6 +328,11 @@
                             <span class="rule-label">Deposit</span>
                             <span class="rule-value">₹{{ pg.depositAmount | number }}</span>
                         </div>
+                        <div class="price-row security-deposit"
+                            *ngIf="pg.securityDepositAmount && pg.securityDepositAmount > 0">
+                            <span>Security Deposit</span>
+                            <span class="price-val">₹{{ pg.securityDepositAmount | number }}</span>
+                        </div>
                     </div>
                     <div class="rule-item" *ngIf="pg.agreementType">
                         <mat-icon>description</mat-icon>
@@ -430,9 +435,20 @@
                         <span>{{ getSharingLabel(opt.sharingType) }}</span>
                         <span class="price-val">₹{{ opt.pricePerMonth | number }}/mo</span>
                     </div>
-                    <div class="price-row deposit" *ngIf="pg.depositAmount">
-                        <span>Deposit</span>
-                        <span class="price-val">₹{{ pg.depositAmount | number }}</span>
+                    <div class="rule-item" *ngIf="pg.depositAmount">
+                        <mat-icon>currency_rupee</mat-icon>
+                        <div>
+                            <span class="rule-label">Deposit</span>
+                            <span class="rule-value">₹{{ pg.depositAmount | number }}</span>
+                        </div>
+                    </div>
+
+                    <div class="rule-item" *ngIf="pg.securityDepositAmount && pg.securityDepositAmount > 0">
+                        <mat-icon>security</mat-icon>
+                        <div>
+                            <span class="rule-label">Security Deposit</span>
+                            <span class="rule-value">₹{{ pg.securityDepositAmount | number }}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -480,7 +496,7 @@
                 </div>
                 <div class="qf-item" *ngIf="pg.lockInPeriodMonths">
                     <mat-icon>lock</mat-icon>
-                    <span>Lock-in: {{ pg.lockInPeriodMonths }} months</span>
+                    <span>Lock-in: {{ pg.lockInPeriodMonths }} Days</span>
                 </div>
                 <div class="qf-item" *ngIf="pg.housekeepingFrequency">
                     <mat-icon>cleaning_services</mat-icon>

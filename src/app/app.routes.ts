@@ -42,7 +42,11 @@ export const routes: Routes = [
     { path: 'service', component: ServicesComponent },
     { path: 'owner', component: OwnerloginComponent },
     { path: 'listings', component: PgListingsComponent },
-    { path: 'pg/:id', component: PgDetailComponent },
+{ 
+    path: 'pg/:id', 
+    component: PgDetailComponent,
+    data: { ssr: false } 
+  },
     { path: 'forgot-password', component: ForgotPasswordComponent },
     { path: 'owner-navbar', component: OwnerNavbarComponent },
     { path: 'ownerpage', component: OwnerpageComponent },

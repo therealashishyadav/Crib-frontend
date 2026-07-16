@@ -1,39 +1,331 @@
+:host {
+  /* Brand Palette */
+  --nookly-azure: #4A90E2;
+  --nookly-mist: #D9E6F1;
+  --nookly-slate: #A7B3C6;
+  --nookly-midnight: #2C3E50;
+  --nookly-white: #FFFFFF;
+
+  --nookly-azure-deep: #2d6abf;
+  --nookly-azure-glow: rgba(74, 144, 226, 0.12);
+  --nookly-azure-line: rgba(74, 144, 226, 0.25);
+  --nookly-midnight-05: rgba(44, 62, 80, 0.05);
+  --nookly-gold: #C9A96E;
+
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Jost', 'Segoe UI', sans-serif;
+
+  --space-xs: 0.35rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  --ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-mid: 420ms;
+  --dur-slow: 700ms;
+
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 8px 24px rgba(44, 62, 80, 0.08), 0 1px 3px rgba(44, 62, 80, 0.04);
+  --shadow-hover: 0 20px 40px rgba(44, 62, 80, 0.12), 0 4px 12px rgba(74, 144, 226, 0.1);
+  --shadow-azure: 0 8px 32px rgba(74, 144, 226, 0.18);
+
+  display: block;
+  min-height: 100vh;
+  padding: var(--space-xl) var(--space-sm);
+
+  background-image:
+    linear-gradient(135deg, rgba(44, 62, 80, 0.75) 0%, rgba(74, 144, 226, 0.65) 100%),
+    url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+
+  font-family: var(--font-body);
+  color: var(--nookly-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Floating orbs to match the brand's ambient background treatment */
+:host::before,
+:host::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: orbitFloat 16s ease-in-out infinite alternate;
+  opacity: 0.25;
+}
+
+:host::before {
+  width: 480px;
+  height: 480px;
+  top: -150px;
+  right: -120px;
+  background: radial-gradient(circle, var(--nookly-mist) 0%, transparent 70%);
+  animation-duration: 20s;
+}
+
+:host::after {
+  width: 320px;
+  height: 320px;
+  bottom: 40px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, transparent 70%);
+  animation-duration: 24s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes orbitFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(25px, 20px) scale(1.05); }
+}
+
+/* ============================
+   Card container
+   ============================ */
+
 .add-user-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 30px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-lg);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(2px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  z-index: 2;
+  animation: pageReveal 0.6s var(--ease-luxury) both;
+}
+
+@keyframes pageReveal {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .add-user-container h2 {
-    margin-bottom: 4px;
-    color: #1a1a2e;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 600;
+  color: var(--nookly-midnight);
+  margin: 0 0 var(--space-xs) 0;
+  padding-bottom: var(--space-xs);
+  position: relative;
+  display: inline-block;
+}
+
+.add-user-container h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--nookly-gold), var(--nookly-azure));
+  border-radius: var(--radius-pill);
+  transition: width var(--dur-slow) var(--ease-luxury);
+}
+
+.add-user-container h2:hover::after {
+  width: 100%;
 }
 
 .add-user-container .subtitle {
-    color: #666;
-    margin-bottom: 24px;
-    font-size: 14px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--nookly-slate);
+  margin: 0 0 var(--space-md);
+}
+
+/* ============================
+   Form layout
+   ============================ */
+
+.add-user-container form {
+  display: flex;
+  flex-direction: column;
 }
 
 .form-row {
-    display: flex;
-    gap: 16px;
-}
-
-.form-row mat-form-field {
-    flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 1.5rem;
 }
 
 .full-width {
-    width: 100%;
+  width: 100%;
 }
 
-button[type="submit"] {
+/* ============================
+   Material field overrides
+   ============================ */
+
+::ng-deep .add-user-container .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .add-user-container .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
+  background-color: var(--nookly-white);
+  border-radius: var(--radius-md);
+  transition: all var(--dur-mid) var(--ease-luxury);
+}
+
+::ng-deep .add-user-container .mdc-notched-outline__leading,
+::ng-deep .add-user-container .mdc-notched-outline__notch,
+::ng-deep .add-user-container .mdc-notched-outline__trailing {
+  border-color: var(--nookly-mist) !important;
+  transition: border-color var(--dur-mid);
+}
+
+::ng-deep .add-user-container .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+::ng-deep .add-user-container .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+::ng-deep .add-user-container .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+  border-color: var(--nookly-azure) !important;
+}
+
+::ng-deep .add-user-container .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .add-user-container .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .add-user-container .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--nookly-azure) !important;
+  border-width: 2px !important;
+}
+
+::ng-deep .add-user-container .mat-mdc-form-field-label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--nookly-slate);
+  font-size: 0.9rem;
+}
+
+::ng-deep .add-user-container .mat-mdc-input-element {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--nookly-midnight);
+  caret-color: var(--nookly-azure);
+}
+
+::ng-deep .add-user-container .mat-mdc-select-value,
+::ng-deep .add-user-container .mat-mdc-select-arrow {
+  color: var(--nookly-midnight);
+}
+
+::ng-deep .add-user-container .mat-mdc-form-field-error {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: #d9534f;
+}
+
+/* ============================
+   Submit button
+   ============================ */
+
+.add-user-container button[mat-raised-button] {
+  align-self: flex-start;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--nookly-mist);
+}
+
+::ng-deep .add-user-container button.mat-mdc-raised-button.mat-primary {
+  background: linear-gradient(105deg, var(--nookly-midnight) 0%, var(--nookly-azure-deep) 100%);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0.6rem 1.8rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--nookly-white);
+  box-shadow: var(--shadow-azure);
+  transition: all 0.3s var(--ease-bounce);
+  cursor: pointer;
+}
+
+::ng-deep .add-user-container button.mat-mdc-raised-button.mat-primary:hover:not([disabled]) {
+  background: linear-gradient(105deg, #1F3348 0%, var(--nookly-azure-deep) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
+}
+
+::ng-deep .add-user-container button.mat-mdc-raised-button.mat-primary[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================
+   Responsive
+   ============================ */
+
+@media (max-width: 900px) {
+  :host {
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  .add-user-container {
+    margin: 0 1rem;
+    padding: var(--space-md);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .add-user-container {
+    padding: var(--space-sm);
+  }
+
+  .add-user-container h2 {
+    font-size: 1.5rem;
+  }
+
+  ::ng-deep .add-user-container .mat-mdc-input-element {
+    font-size: 0.85rem;
+  }
+
+  ::ng-deep .add-user-container button.mat-mdc-raised-button.mat-primary {
     width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    margin-top: 12px;
+    justify-content: center;
+    padding: 0.5rem 1.2rem;
+  }
+
+  :host::before,
+  :host::after {
+    display: none;
+  }
+}
+
+/* Accessibility */
+:host *:focus-visible {
+  outline: 2px solid var(--nookly-azure);
+  outline-offset: 3px;
+  border-radius: var(--radius-md);
+}
+
+/* Print */
+@media print {
+  :host {
+    background: white;
+    padding: 0;
+  }
+
+  .add-user-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  :host::before,
+  :host::after {
+    display: none;
+  }
 }
