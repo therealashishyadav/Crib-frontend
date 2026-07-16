@@ -19,3 +19,4 @@ export class PolicyComponentComponent implements OnInit {
       'https://cribup.vercel.app/privacy-policy'
     );
   }
+}
