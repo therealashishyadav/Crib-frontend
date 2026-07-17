@@ -5,19 +5,11 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "vercel-build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:PGHUB": "node dist/pghub/server/server.mjs"
   },
-  "vercel": {
-    "outputDirectory": "dist/pghub/browser"
-  },
-"assets": [
-  "src/favicon.ico",
-  "src/assets",
-  "src/robots.txt",
-  "src/sitemap.xml"
-],
   "private": true,
   "dependencies": {
     "@angular/animations": "^18.1.0",

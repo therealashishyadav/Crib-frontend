@@ -20,6 +20,11 @@
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
+            "server": "src/main.server.ts",
+            "ssr": {
+              "entry": "server.ts"
+            },
+            "prerender": false,
             "assets": [
               "src/favicon.ico",
               "src/assets",
@@ -31,12 +36,7 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "server.ts"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {

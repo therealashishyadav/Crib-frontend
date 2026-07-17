@@ -1,5 +1,10 @@
 {
   "outputDirectory": "dist/pghub/browser",
+  "functions": {
+    "dist/pghub/server/server.mjs": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
     {
       "source": "/google502813affef6efc6.html",
@@ -7,7 +12,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/dist/pghub/server/server.mjs"
     }
   ]
 }
