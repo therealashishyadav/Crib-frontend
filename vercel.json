@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "dist/pghub/browser",
+  "outputDirectory": "dist/pghub",
   "rewrites": [
     {
       "source": "/google502813affef6efc6.html",
