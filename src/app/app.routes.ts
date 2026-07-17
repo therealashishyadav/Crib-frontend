@@ -27,6 +27,7 @@ import { PolicyComponentComponent } from '../components/policy-component/policy-
 import { ComingSoonPageComponent } from '../components/coming-soon-page/coming-soon-page.component';
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { AddUserComponent } from '../components/add-user/add-user.component';
+import { ProfileComponent } from '../components/profile/profile.component';
 // import { Navbar2Component } from '../components/navbar2/navbar2.component';
 
 export const routes: Routes = [
@@ -59,7 +60,7 @@ export const routes: Routes = [
     { path: 'listings/flats', redirectTo: '/listings', pathMatch: 'full' },
     { path: 'listings/duplexes', redirectTo: '/listings', pathMatch: 'full' },
     { path: 'listings/pgs', redirectTo: '/listings', pathMatch: 'full' },
-    { path: 'profile', redirectTo: '/account', pathMatch: 'full' },
+    { path: 'profile', component: ProfileComponent },
     { path: 'owner/profile', redirectTo: '/ownerpage', pathMatch: 'full' },
     { path: 'careers', redirectTo: '/about', pathMatch: 'full' },
     { path: 'press', redirectTo: '/about', pathMatch: 'full' },
