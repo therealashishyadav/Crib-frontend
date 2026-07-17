@@ -1,61 +1,83 @@
+// src/service/auth.service.ts
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { Account } from '../entity/Account';
 
-@Injectable({ providedIn: 'root' })
+export interface AppUser {
+  email: string;
+  role: string;
+  token?: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly USER_KEY = 'auth_user';
+
+  private userSubject = new BehaviorSubject<AppUser | null>(null);
+  public user$ = this.userSubject.asObservable();
+
+  constructor() {
+    // Restore user from localStorage on app start
+    const stored = localStorage.getItem(this.USER_KEY);
+    if (stored) {
+      try {
+        this.userSubject.next(JSON.parse(stored));
+      } catch {
+        this.clear();
+      }
+    }
   }
 
-  decodeToken(): any | null {
-    const token = this.getToken();
-    if (!token) return null;
+  // ─── Token Management ──────────────────────────────────────────────
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+  }
+
+  clearToken(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+  }
+
+  // ─── User State ────────────────────────────────────────────────────
+  getCurrentUser(): AppUser | null {
+    return this.userSubject.value;
+  }
+
+  login(user: AppUser, token: string): void {
+    this.setToken(token);
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.userSubject.next(user);
+  }
+
+  logout(): void {
+    this.clear();
+    this.userSubject.next(null);
+  }
+
+  private clear(): void {
+    this.clearToken();
+    localStorage.removeItem(this.USER_KEY);
+  }
+
+  // ─── JWT Decode (simple) ──────────────────────────────────────────
+  decodeToken(token: string): any {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload;
+      const payload = token.split('.')[1];
+      return JSON.parse(atob(payload));
     } catch {
       return null;
     }
   }
 
-  getCurrentUser(): Account | null {
-    const payload = this.decodeToken();
-    if (!payload) return null;
-    const acc = new Account();
-    acc.firstName = payload.firstName || '';
-    acc.lastName = payload.lastName || '';
-    acc.email = payload.sub || '';
-    acc.phone = payload.phone || '';
-    acc.role = payload.role || 'USER';
-    acc.active = payload.active ?? true;
-    return acc;
-  }
-
+  // ─── Role Check ────────────────────────────────────────────────────
   hasRole(role: string): boolean {
-    const cur = this.getCurrentUser();
-    if (!cur || !cur.role) return false;
-    return cur.role === role;
-  }
-}
-// auth.service.ts
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-
-export interface AppUser {
-  name: string;
-  email: string;
-}
-
-@Injectable({ providedIn: 'root' })
-export class AuthService {
-  private userSubject = new BehaviorSubject<AppUser | null>(null);
-  user$: Observable<AppUser | null> = this.userSubject.asObservable();
-
-  login(user: AppUser): void {
-    this.userSubject.next(user);
-  }
-
-  logout(): void {
-    this.userSubject.next(null);
+    const user = this.getCurrentUser();
+    return user?.role === role;
   }
 }
