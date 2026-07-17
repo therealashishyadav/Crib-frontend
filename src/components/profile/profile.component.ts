@@ -10,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatChipsModule } from '@angular/material/chips';
 import { first } from 'rxjs/operators';
 
 import { AccountService } from '../../service/account.service';
@@ -18,7 +20,6 @@ import { InquiryService } from '../../service/inquiry.service';
 import { PgService } from '../../service/pg.service';
 import { Account } from '../../entity/Account';
 import { Inquiry } from '../../entity/Inquiry';
-import { PGListing } from '../../entity/PGListing';
 
 @Component({
   selector: 'app-profile',
@@ -35,12 +36,14 @@ import { PGListing } from '../../entity/PGListing';
     MatSnackBarModule,
     MatSelectModule,
     MatProgressSpinnerModule,
+    MatDividerModule,
+    MatChipsModule,
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
-  // User data
+  // ── User Data ────────────────────────────────────────────────────────
   user: Account | null = null;
   editUser: Account = new Account();
   editMode = false;
@@ -48,13 +51,13 @@ export class ProfileComponent implements OnInit {
   error = '';
   isOwner = false;
 
-  // Inquiries (sent by user)
+  // ── Inquiries (sent by user) ──────────────────────────────────────
   inquiries: any[] = [];
   filteredInquiries: any[] = [];
   inquiryStatusFilter = 'all';
   inquirySearch = '';
 
-  // Owner-specific data
+  // ── Owner Dashboard ──────────────────────────────────────────────
   ownerPGs: any[] = [];
   ownerStats = {
     totalPGs: 0,
@@ -67,12 +70,13 @@ export class ProfileComponent implements OnInit {
   receivedInquiryFilter = 'all';
   receivedInquirySearch = '';
 
-  // Password change
+  // ── Password Change ──────────────────────────────────────────────
   passwordData = {
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   };
+  showPassword = false;
 
   constructor(
     private accountService: AccountService,
@@ -88,25 +92,29 @@ export class ProfileComponent implements OnInit {
     this.loadInquiries();
   }
 
+  // ── Load Profile ──────────────────────────────────────────────────
   loadProfile(): void {
     this.loading = true;
     this.loginService.currentUser().pipe(first()).subscribe({
-      next: (data: Account) => {
+      next: (data) => {
         this.user = data;
-        this.editUser = { ...data };
+        // ✅ Fix: Properly initialize editUser as a full Account instance
+        this.editUser = new Account();
+        Object.assign(this.editUser, this.user);
         this.isOwner = data.role === 'OWNER';
         this.loading = false;
         if (this.isOwner) {
           this.loadOwnerData();
+          this.loadReceivedInquiries();
         }
       },
-      error: (err: unknown) => {
-        // Fallback: decode token
+      error: () => {
         const token = localStorage.getItem('token');
         if (token) {
           try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             this.user = {
+              id: payload.id || 0,
               firstName: payload.firstName || 'User',
               lastName: payload.lastName || '',
               email: payload.sub || '',
@@ -114,11 +122,14 @@ export class ProfileComponent implements OnInit {
               role: payload.role || 'USER',
               active: true,
             } as Account;
-            this.editUser = { ...this.user };
+            // ✅ Fix: Properly initialize editUser
+            this.editUser = new Account();
+            Object.assign(this.editUser, this.user);
             this.isOwner = this.user.role === 'OWNER';
             this.loading = false;
             if (this.isOwner) {
               this.loadOwnerData();
+              this.loadReceivedInquiries();
             }
           } catch (e) {
             this.error = 'Unable to load profile. Please try again.';
@@ -132,21 +143,19 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // ── Owner-specific methods ──────────────────────────────────────────
-
+  // ── Owner Methods ──────────────────────────────────────────────────
   loadOwnerData(): void {
     if (!this.user) return;
-    // Load owner's PGs
     this.pgService.getMyPGs().pipe(first()).subscribe({
       next: (pgs) => {
         this.ownerPGs = pgs;
         this.ownerStats.totalPGs = pgs.length;
         this.ownerStats.totalTenants = pgs.reduce((acc, pg) => acc + (pg.tenantCount || 0), 0);
-        // For inquiries and revenue, you'd need additional API calls
-        // For now, use placeholders or mock data
+        this.ownerStats.totalInquiries = pgs.reduce((acc, pg) => acc + (pg.inquiryCount || 0), 0);
+        this.ownerStats.monthlyRevenue = pgs.reduce((acc, pg) => acc + (pg.monthlyRevenue || 0), 0);
       },
       error: () => {
-        // If the endpoint doesn't exist yet, use mock data
+        // Mock data for UI preview
         this.ownerPGs = [
           {
             id: 1,
@@ -156,6 +165,9 @@ export class ProfileComponent implements OnInit {
             coverImageUrl: '',
             active: true,
             lowestPrice: 8500,
+            tenantCount: 8,
+            inquiryCount: 5,
+            monthlyRevenue: 68000,
           },
           {
             id: 2,
@@ -165,18 +177,21 @@ export class ProfileComponent implements OnInit {
             coverImageUrl: '',
             active: true,
             lowestPrice: 7000,
+            tenantCount: 6,
+            inquiryCount: 3,
+            monthlyRevenue: 42000,
           },
         ];
         this.ownerStats.totalPGs = this.ownerPGs.length;
+        this.ownerStats.totalTenants = 14;
+        this.ownerStats.totalInquiries = 8;
+        this.ownerStats.monthlyRevenue = 110000;
       },
     });
-    this.loadReceivedInquiries();
   }
 
   loadReceivedInquiries(): void {
-    // Fetch inquiries received for owner's PGs
-    // This would be a separate endpoint like /api/inquiries/received
-    // For now, use mock data
+    // Mock data for received inquiries
     this.receivedInquiries = [
       {
         id: 1,
@@ -186,7 +201,7 @@ export class ProfileComponent implements OnInit {
         message: 'Is this PG available for immediate move-in?',
         pgName: 'Zolo PG Viman Nagar',
         status: 'pending',
-        createdAt: '2026-07-15T10:30:00Z',
+        createdAt: new Date('2026-07-15T10:30:00Z'),
       },
       {
         id: 2,
@@ -196,7 +211,7 @@ export class ProfileComponent implements OnInit {
         message: 'Do you offer vegetarian meals?',
         pgName: 'Cosy PG Hinjawadi',
         status: 'responded',
-        createdAt: '2026-07-14T16:45:00Z',
+        createdAt: new Date('2026-07-14T16:45:00Z'),
       },
     ];
     this.filteredReceivedInquiries = [...this.receivedInquiries];
@@ -227,8 +242,12 @@ export class ProfileComponent implements OnInit {
         this.receivedInquiryFilter === 'all' || inq.status === this.receivedInquiryFilter;
       const matchSearch =
         !this.receivedInquirySearch ||
-        (inq.fullName || '').toLowerCase().includes(this.receivedInquirySearch.toLowerCase()) ||
-        (inq.pgName || '').toLowerCase().includes(this.receivedInquirySearch.toLowerCase());
+        (inq.fullName || '').toLowerCase().includes(
+          this.receivedInquirySearch.toLowerCase()
+        ) ||
+        (inq.pgName || '').toLowerCase().includes(
+          this.receivedInquirySearch.toLowerCase()
+        );
       return matchStatus && matchSearch;
     });
   }
@@ -245,33 +264,37 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  // ── Rest of the methods (same as before) ────────────────────────────
-
+  // ── Edit Profile ──────────────────────────────────────────────────
   toggleEdit(): void {
-    if (this.editMode && this.user) {
-      this.editUser = { ...this.user } as Account;
+    if (this.editMode) {
+      // Cancel editing: reset to original user data
+      this.editUser = new Account();
+      Object.assign(this.editUser, this.user);
     }
     this.editMode = !this.editMode;
   }
 
   updateProfile(): void {
     this.accountService.updateUser(this.editUser).pipe(first()).subscribe({
-      next: (updated: Account) => {
+      next: (updated) => {
         this.user = updated;
-        this.editUser = { ...updated };
+        // ✅ Fix: Properly initialize editUser with updated data
+        this.editUser = new Account();
+        Object.assign(this.editUser, updated);
         this.editMode = false;
         this.snackBar.open('Profile updated successfully!', 'Close', { duration: 3000 });
       },
-      error: (err: unknown) => {
+      error: (err) => {
         console.error(err);
-        this.snackBar.open('Failed to update profile. Please try again.', 'Close', { duration: 3000 });
+        this.snackBar.open('Failed to update profile. Please try again.', 'Close', {
+          duration: 3000,
+        });
       },
     });
   }
 
+  // ── Inquiries ──────────────────────────────────────────────────────
   loadInquiries(): void {
-    // Fetch inquiries sent by the user
-    // Mock data for now
     this.inquiries = [
       {
         id: 1,
@@ -281,7 +304,7 @@ export class ProfileComponent implements OnInit {
         message: 'Is this PG pet-friendly?',
         pgName: 'Sunshine PG',
         status: 'pending',
-        createdAt: '2026-07-16T08:00:00Z',
+        createdAt: new Date('2026-07-16T08:00:00Z'),
       },
     ];
     this.filteredInquiries = [...this.inquiries];
@@ -293,16 +316,11 @@ export class ProfileComponent implements OnInit {
         this.inquiryStatusFilter === 'all' || inq.status === this.inquiryStatusFilter;
       const matchSearch =
         !this.inquirySearch ||
-        (inq.pgName || '').toLowerCase().includes(this.inquirySearch.toLowerCase());
+        (inq.pgName || '').toLowerCase().includes(
+          this.inquirySearch.toLowerCase()
+        );
       return matchStatus && matchSearch;
     });
-  }
-
-  onTabChange(event: any): void {
-    // Reload data when switching tabs
-    if (event.index === 1) this.loadInquiries();
-    if (event.index === 2 && this.isOwner) this.loadOwnerData();
-    if (event.index === 3 && this.isOwner) this.loadReceivedInquiries();
   }
 
   deleteInquiry(inq: any): void {
@@ -313,6 +331,18 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  onTabChange(event: any): void {
+    if (event.index === 1) this.loadInquiries();
+    if (event.index === 2 && this.isOwner) {
+      this.loadOwnerData();
+      this.loadReceivedInquiries();
+    }
+    if (event.index === 3 && this.isOwner) {
+      this.loadReceivedInquiries();
+    }
+  }
+
+  // ── Account Settings ──────────────────────────────────────────────
   changePassword(): void {
     if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
       this.snackBar.open('Passwords do not match.', 'Close', { duration: 3000 });
@@ -321,26 +351,40 @@ export class ProfileComponent implements OnInit {
     this.accountService.changePassword(this.passwordData).pipe(first()).subscribe({
       next: () => {
         this.snackBar.open('Password changed successfully!', 'Close', { duration: 3000 });
-        this.passwordData = { currentPassword: '', newPassword: '', confirmPassword: '' };
+        this.passwordData = {
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        };
       },
-      error: (err: unknown) => {
+      error: (err) => {
         console.error(err);
-        this.snackBar.open('Failed to change password. Check your current password.', 'Close', { duration: 3000 });
+        this.snackBar.open(
+          'Failed to change password. Check your current password.',
+          'Close',
+          { duration: 3000 }
+        );
       },
     });
   }
 
   deactivateAccount(): void {
-    if (confirm('Are you sure you want to deactivate your account? You can reactivate later.')) {
+    if (
+      confirm(
+        'Are you sure you want to deactivate your account? You can reactivate later.'
+      )
+    ) {
       this.accountService.deactivateAccount().pipe(first()).subscribe({
         next: () => {
           this.snackBar.open('Account deactivated.', 'Close', { duration: 3000 });
           localStorage.removeItem('token');
           this.router.navigate(['/login']);
         },
-        error: (err: unknown) => {
+        error: (err) => {
           console.error(err);
-          this.snackBar.open('Failed to deactivate account.', 'Close', { duration: 3000 });
+          this.snackBar.open('Failed to deactivate account.', 'Close', {
+            duration: 3000,
+          });
         },
       });
     }
@@ -348,5 +392,14 @@ export class ProfileComponent implements OnInit {
 
   uploadPhoto(): void {
     this.snackBar.open('Photo upload coming soon.', 'Close', { duration: 2000 });
+  }
+
+  // ── Reset form helper (optional) ──────────────────────────────────
+  resetEditForm(): void {
+    this.editUser = new Account();
+    if (this.user) {
+      Object.assign(this.editUser, this.user);
+    }
+    this.editMode = false;
   }
 }

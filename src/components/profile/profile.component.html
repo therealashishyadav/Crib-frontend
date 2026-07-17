@@ -1,127 +1,269 @@
 <div class="profile-container">
-  <!-- Loading & Error states... (same as before) -->
+  <!-- ── Loading ───────────────────────────────────────────────────── -->
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading profile...</p>
+  </div>
 
+  <!-- ── Error ────────────────────────────────────────────────────── -->
+  <div *ngIf="error" class="error-box">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadProfile()">Retry</button>
+  </div>
+
+  <!-- ── Profile Content ──────────────────────────────────────────── -->
   <div *ngIf="!loading && !error && user" class="profile-content">
 
-    <!-- Profile Header (same for all) -->
+    <!-- ── Profile Header ─────────────────────────────────────────── -->
     <div class="profile-header">
       <div class="avatar-wrapper">
-<div class="avatar">{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</div>
+        <div class="avatar">{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</div>
         <button class="avatar-edit" (click)="uploadPhoto()">
           <mat-icon>photo_camera</mat-icon>
         </button>
       </div>
       <div class="header-info">
         <h1>{{ user.firstName }} {{ user.lastName }}</h1>
-        <p class="user-role">{{ user.role | titlecase }}</p>
-        <p class="user-email">{{ user.email }}</p>
-        <p class="user-phone">{{ user.phone }}</p>
+        <p class="user-role"><mat-icon>badge</mat-icon> {{ user.role | titlecase }}</p>
+        <p class="user-email"><mat-icon>email</mat-icon> {{ user.email }}</p>
+        <p class="user-phone"><mat-icon>phone</mat-icon> {{ user.phone }}</p>
+        <p class="user-status">
+          <span class="status-badge" [class.active]="user.active" [class.inactive]="!user.active">
+            {{ user.active ? 'Active' : 'Inactive' }}
+          </span>
+        </p>
       </div>
     </div>
 
-    <!-- Tabs -->
+    <!-- ── Tabs ────────────────────────────────────────────────────── -->
     <mat-tab-group (selectedTabChange)="onTabChange($event)">
 
-      <!-- ── Tab 1: Profile Info (Everyone) ── -->
+      <!-- ── Tab 1: Profile Info ──────────────────────────────────── -->
       <mat-tab label="Profile Info">
-        <!-- Profile form (same as before) -->
-      </mat-tab>
-
-      <!-- ── Tab 2: My Inquiries (Everyone) ── -->
-      <mat-tab label="My Inquiries">
-        <!-- Inquiries list (same as before) -->
-      </mat-tab>
-
-      <!-- ── Tab 3: Owner Dashboard (OWNER ONLY) ── -->
-      <mat-tab *ngIf="isOwner" label="My PGs">
         <ng-template matTabContent>
           <div class="tab-content">
-            <div class="owner-dashboard">
-              <!-- Stats Cards -->
-              <div class="stats-grid">
-                <div class="stat-card teal">
-                  <div class="stat-icon"><mat-icon>apartment</mat-icon></div>
-                  <div class="stat-body">
-                    <div class="stat-value">{{ ownerStats.totalPGs }}</div>
-                    <div class="stat-label">Total PGs</div>
-                  </div>
+
+            <!-- Edit Mode -->
+            <div *ngIf="editMode" class="profile-form">
+              <h2>Edit Profile</h2>
+              <form #editForm="ngForm" (ngSubmit)="updateProfile()">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>First Name</mat-label>
+                  <input matInput [(ngModel)]="editUser.firstName" name="firstName" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Last Name</mat-label>
+                  <input matInput [(ngModel)]="editUser.lastName" name="lastName" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input matInput [(ngModel)]="editUser.email" name="email" required email>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Phone</mat-label>
+                  <input matInput [(ngModel)]="editUser.phone" name="phone" required pattern="[0-9]{10}">
+                </mat-form-field>
+                <div class="form-actions">
+                  <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">
+                    <mat-icon>save</mat-icon> Save Changes
+                  </button>
+                  <button mat-raised-button color="warn" type="button" (click)="toggleEdit()">
+                    Cancel
+                  </button>
                 </div>
-                <div class="stat-card emerald">
-                  <div class="stat-icon"><mat-icon>people</mat-icon></div>
-                  <div class="stat-body">
-                    <div class="stat-value">{{ ownerStats.totalTenants }}</div>
-                    <div class="stat-label">Total Tenants</div>
-                  </div>
+              </form>
+            </div>
+
+            <!-- View Mode -->
+            <div *ngIf="!editMode" class="profile-view">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">First Name</span>
+                  <span class="value">{{ user.firstName }}</span>
                 </div>
-                <div class="stat-card amber">
-                  <div class="stat-icon"><mat-icon>question_answer</mat-icon></div>
-                  <div class="stat-body">
-                    <div class="stat-value">{{ ownerStats.totalInquiries }}</div>
-                    <div class="stat-label">Inquiries Received</div>
-                  </div>
+                <div class="info-item">
+                  <span class="label">Last Name</span>
+                  <span class="value">{{ user.lastName }}</span>
                 </div>
-                <div class="stat-card rose">
-                  <div class="stat-icon"><mat-icon>currency_rupee</mat-icon></div>
-                  <div class="stat-body">
-                    <div class="stat-value">₹{{ ownerStats.monthlyRevenue | number }}</div>
-                    <div class="stat-label">Monthly Revenue</div>
-                  </div>
+                <div class="info-item">
+                  <span class="label">Email</span>
+                  <span class="value">{{ user.email }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Phone</span>
+                  <span class="value">{{ user.phone }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Role</span>
+                  <span class="value role-badge">{{ user.role | titlecase }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Status</span>
+                  <span class="value status-badge" [class.active]="user.active" [class.inactive]="!user.active">
+                    {{ user.active ? 'Active' : 'Inactive' }}
+                  </span>
                 </div>
               </div>
+              <button mat-raised-button color="primary" (click)="toggleEdit()">
+                <mat-icon>edit</mat-icon> Edit Profile
+              </button>
+            </div>
 
-              <!-- My PG Listings -->
-              <div class="section-card">
-                <div class="section-header">
-                  <h3><mat-icon>apartment</mat-icon> My PG Listings</h3>
-                  <button mat-raised-button color="primary" [routerLink]="['/list-property']">
-                    <mat-icon>add</mat-icon> Add New PG
-                  </button>
+          </div>
+        </ng-template>
+      </mat-tab>
+
+      <!-- ── Tab 2: My Inquiries ──────────────────────────────────── -->
+      <mat-tab label="My Inquiries">
+        <ng-template matTabContent>
+          <div class="tab-content">
+
+            <div class="filter-bar">
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Status</mat-label>
+                <mat-select [(ngModel)]="inquiryStatusFilter" (selectionChange)="filterInquiries()">
+                  <mat-option value="all">All</mat-option>
+                  <mat-option value="pending">Pending</mat-option>
+                  <mat-option value="responded">Responded</mat-option>
+                  <mat-option value="resolved">Resolved</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Search PG</mat-label>
+                <input matInput [(ngModel)]="inquirySearch" (input)="filterInquiries()" placeholder="Search by PG name...">
+              </mat-form-field>
+            </div>
+
+            <div *ngIf="filteredInquiries.length === 0" class="empty-state">
+              <mat-icon>inbox</mat-icon>
+              <p>No inquiries found.</p>
+            </div>
+
+            <div class="inquiry-list">
+              <div class="inquiry-item" *ngFor="let inq of filteredInquiries">
+                <div class="inquiry-header">
+                  <span class="inquiry-pg">{{ inq.pgName || 'PG Inquiry' }}</span>
+                  <span class="inquiry-status" [class.pending]="inq.status === 'pending'"
+                    [class.responded]="inq.status === 'responded'"
+                    [class.resolved]="inq.status === 'resolved'">
+                    {{ inq.status || 'Pending' }}
+                  </span>
                 </div>
-
-                <div *ngIf="ownerPGs.length === 0" class="empty-state">
-                  <mat-icon>apartment</mat-icon>
-                  <p>You haven't listed any PGs yet.</p>
-                  <button mat-raised-button color="primary" [routerLink]="['/list-property']">
-                    List Your First PG
-                  </button>
+                <div class="inquiry-body">
+                  <p class="inquiry-message">{{ inq.message }}</p>
+                  <div class="inquiry-meta">
+                    <span><mat-icon>person</mat-icon> {{ inq.fullName || 'User' }}</span>
+                    <span><mat-icon>phone</mat-icon> {{ inq.phone || 'N/A' }}</span>
+                    <span><mat-icon>calendar_today</mat-icon> {{ inq.createdAt | date:'medium' }}</span>
+                  </div>
                 </div>
+                <div class="inquiry-actions">
+                  <button mat-button color="primary" (click)="respondToInquiry(inq)">Respond</button>
+                  <button mat-button color="warn" (click)="deleteInquiry(inq)">Delete</button>
+                </div>
+              </div>
+            </div>
 
-                <div class="pg-list" *ngIf="ownerPGs.length > 0">
-                  <div class="pg-card" *ngFor="let pg of ownerPGs">
-                    <div class="pg-image">
-                      <img [src]="pg.coverImageUrl || 'assets/default-pg.jpg'" [alt]="pg.pgName">
-                      <span class="pg-status" [class.active]="pg.active" [class.inactive]="!pg.active">
-                        {{ pg.active ? 'Active' : 'Inactive' }}
-                      </span>
+          </div>
+        </ng-template>
+      </mat-tab>
+
+      <!-- ── Tab 3: Owner Dashboard (Owner Only) ────────────────── -->
+      <mat-tab *ngIf="isOwner" label="My PGs">
+        <ng-template matTabContent>
+          <div class="tab-content owner-dashboard">
+
+            <!-- Stats -->
+            <div class="stats-grid">
+              <div class="stat-card teal">
+                <div class="stat-icon"><mat-icon>apartment</mat-icon></div>
+                <div class="stat-body">
+                  <div class="stat-value">{{ ownerStats.totalPGs }}</div>
+                  <div class="stat-label">Total PGs</div>
+                </div>
+              </div>
+              <div class="stat-card emerald">
+                <div class="stat-icon"><mat-icon>people</mat-icon></div>
+                <div class="stat-body">
+                  <div class="stat-value">{{ ownerStats.totalTenants }}</div>
+                  <div class="stat-label">Total Tenants</div>
+                </div>
+              </div>
+              <div class="stat-card amber">
+                <div class="stat-icon"><mat-icon>question_answer</mat-icon></div>
+                <div class="stat-body">
+                  <div class="stat-value">{{ ownerStats.totalInquiries }}</div>
+                  <div class="stat-label">Inquiries Received</div>
+                </div>
+              </div>
+              <div class="stat-card rose">
+                <div class="stat-icon"><mat-icon>currency_rupee</mat-icon></div>
+                <div class="stat-body">
+                  <div class="stat-value">₹{{ ownerStats.monthlyRevenue | number }}</div>
+                  <div class="stat-label">Monthly Revenue</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PG Listings -->
+            <div class="section-card">
+              <div class="section-header">
+                <h3><mat-icon>apartment</mat-icon> My PG Listings</h3>
+                <button mat-raised-button color="primary" [routerLink]="['/list-property']">
+                  <mat-icon>add</mat-icon> Add New PG
+                </button>
+              </div>
+
+              <div *ngIf="ownerPGs.length === 0" class="empty-state">
+                <mat-icon>apartment</mat-icon>
+                <p>You haven't listed any PGs yet.</p>
+                <button mat-raised-button color="primary" [routerLink]="['/list-property']">
+                  List Your First PG
+                </button>
+              </div>
+
+              <div class="pg-list" *ngIf="ownerPGs.length > 0">
+                <div class="pg-card" *ngFor="let pg of ownerPGs">
+                  <div class="pg-image">
+                    <img [src]="pg.coverImageUrl || 'assets/default-pg.jpg'" [alt]="pg.pgName">
+                    <span class="pg-status" [class.active]="pg.active" [class.inactive]="!pg.active">
+                      {{ pg.active ? 'Active' : 'Inactive' }}
+                    </span>
+                  </div>
+                  <div class="pg-info">
+                    <h4>{{ pg.pgName }}</h4>
+                    <p class="pg-location">{{ pg.locality }}, {{ pg.city }}</p>
+                    <p class="pg-price">₹{{ pg.lowestPrice | number }}/mo</p>
+                    <div class="pg-meta">
+                      <span><mat-icon>people</mat-icon> {{ pg.tenantCount || 0 }} tenants</span>
+                      <span><mat-icon>forum</mat-icon> {{ pg.inquiryCount || 0 }} inquiries</span>
                     </div>
-                    <div class="pg-info">
-                      <h4>{{ pg.pgName }}</h4>
-                      <p class="pg-location">{{ pg.locality }}, {{ pg.city }}</p>
-                      <p class="pg-price">₹{{ pg.lowestPrice | number }}/mo</p>
-                      <div class="pg-actions">
-                        <button mat-button color="primary" (click)="editPG(pg)">
-                          <mat-icon>edit</mat-icon> Edit
-                        </button>
-                        <button mat-button color="warn" (click)="deletePG(pg)">
-                          <mat-icon>delete</mat-icon> Delete
-                        </button>
-                        <button mat-button color="accent" [routerLink]="['/pg', pg.id]">
-                          <mat-icon>visibility</mat-icon> View
-                        </button>
-                      </div>
+                    <div class="pg-actions">
+                      <button mat-button color="primary" (click)="editPG(pg)">
+                        <mat-icon>edit</mat-icon> Edit
+                      </button>
+                      <button mat-button color="warn" (click)="deletePG(pg)">
+                        <mat-icon>delete</mat-icon> Delete
+                      </button>
+                      <button mat-button color="accent" [routerLink]="['/pg', pg.id]">
+                        <mat-icon>visibility</mat-icon> View
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
         </ng-template>
       </mat-tab>
 
-      <!-- ── Tab 4: Inquiries Received (OWNER ONLY) ── -->
+      <!-- ── Tab 4: Inquiries Received (Owner Only) ────────────── -->
       <mat-tab *ngIf="isOwner" label="Inquiries Received">
         <ng-template matTabContent>
           <div class="tab-content">
+
             <div class="filter-bar">
               <mat-form-field appearance="outline" class="filter-field">
                 <mat-label>Status</mat-label>
@@ -134,7 +276,7 @@
               </mat-form-field>
               <mat-form-field appearance="outline" class="filter-field">
                 <mat-label>Search</mat-label>
-                <input matInput [(ngModel)]="receivedInquirySearch" (input)="filterReceivedInquiries()" placeholder="Search by name...">
+                <input matInput [(ngModel)]="receivedInquirySearch" (input)="filterReceivedInquiries()" placeholder="Search by name or PG...">
               </mat-form-field>
             </div>
 
@@ -155,12 +297,11 @@
                 </div>
                 <div class="inquiry-body">
                   <p class="inquiry-message">{{ inq.message }}</p>
-                  <p class="inquiry-meta">
+                  <div class="inquiry-meta">
                     <span><mat-icon>person</mat-icon> {{ inq.fullName || 'User' }}</span>
                     <span><mat-icon>phone</mat-icon> {{ inq.phone || 'N/A' }}</span>
-                    <span><mat-icon>email</mat-icon> {{ inq.email || 'N/A' }}</span>
                     <span><mat-icon>calendar_today</mat-icon> {{ inq.createdAt | date:'medium' }}</span>
-                  </p>
+                  </div>
                 </div>
                 <div class="inquiry-actions">
                   <button mat-button color="primary" (click)="respondToInquiry(inq)">Respond</button>
@@ -168,13 +309,55 @@
                 </div>
               </div>
             </div>
+
           </div>
         </ng-template>
       </mat-tab>
 
-      <!-- ── Tab 5: Account Settings (Everyone) ── -->
+      <!-- ── Tab 5: Account Settings ───────────────────────────────── -->
       <mat-tab label="Account Settings">
-        <!-- Settings (same as before) -->
+        <ng-template matTabContent>
+          <div class="tab-content settings-tab">
+
+            <!-- Change Password -->
+            <div class="settings-card">
+              <h3><mat-icon>lock</mat-icon> Change Password</h3>
+              <form #passwordForm="ngForm" (ngSubmit)="changePassword()">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Current Password</mat-label>
+                  <input matInput [type]="showPassword ? 'text' : 'password'" [(ngModel)]="passwordData.currentPassword" name="currentPassword" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>New Password</mat-label>
+                  <input matInput [type]="showPassword ? 'text' : 'password'" [(ngModel)]="passwordData.newPassword" name="newPassword" required minlength="8">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Confirm New Password</mat-label>
+                  <input matInput [type]="showPassword ? 'text' : 'password'" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required>
+                </mat-form-field>
+                <div class="form-actions">
+                  <button mat-button type="button" (click)="showPassword = !showPassword">
+                    <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    {{ showPassword ? 'Hide' : 'Show' }} Password
+                  </button>
+                  <button mat-raised-button color="primary" type="submit" [disabled]="passwordForm.invalid">
+                    Change Password
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Deactivate Account -->
+            <div class="settings-card danger-zone">
+              <h3><mat-icon>warning</mat-icon> Danger Zone</h3>
+              <p>Deactivating your account will hide your profile and listings. You can reactivate later.</p>
+              <button mat-raised-button color="warn" (click)="deactivateAccount()">
+                Deactivate Account
+              </button>
+            </div>
+
+          </div>
+        </ng-template>
       </mat-tab>
 
     </mat-tab-group>
