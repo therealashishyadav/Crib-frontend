@@ -258,62 +258,6 @@
           </div>
         </ng-template>
       </mat-tab>
-
-      <!-- ── Tab 4: Inquiries Received (Owner Only) ────────────── -->
-      <mat-tab *ngIf="isOwner" label="Inquiries Received">
-        <ng-template matTabContent>
-          <div class="tab-content">
-
-            <div class="filter-bar">
-              <mat-form-field appearance="outline" class="filter-field">
-                <mat-label>Status</mat-label>
-                <mat-select [(ngModel)]="receivedInquiryFilter" (selectionChange)="filterReceivedInquiries()">
-                  <mat-option value="all">All</mat-option>
-                  <mat-option value="pending">Pending</mat-option>
-                  <mat-option value="responded">Responded</mat-option>
-                  <mat-option value="resolved">Resolved</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="filter-field">
-                <mat-label>Search</mat-label>
-                <input matInput [(ngModel)]="receivedInquirySearch" (input)="filterReceivedInquiries()" placeholder="Search by name or PG...">
-              </mat-form-field>
-            </div>
-
-            <div *ngIf="filteredReceivedInquiries.length === 0" class="empty-state">
-              <mat-icon>inbox</mat-icon>
-              <p>No inquiries received yet.</p>
-            </div>
-
-            <div class="inquiry-list">
-              <div class="inquiry-item" *ngFor="let inq of filteredReceivedInquiries">
-                <div class="inquiry-header">
-                  <span class="inquiry-pg">{{ inq.pgName || 'PG Inquiry' }}</span>
-                  <span class="inquiry-status" [class.pending]="inq.status === 'pending'"
-                    [class.responded]="inq.status === 'responded'"
-                    [class.resolved]="inq.status === 'resolved'">
-                    {{ inq.status || 'Pending' }}
-                  </span>
-                </div>
-                <div class="inquiry-body">
-                  <p class="inquiry-message">{{ inq.message }}</p>
-                  <div class="inquiry-meta">
-                    <span><mat-icon>person</mat-icon> {{ inq.fullName || 'User' }}</span>
-                    <span><mat-icon>phone</mat-icon> {{ inq.phone || 'N/A' }}</span>
-                    <span><mat-icon>calendar_today</mat-icon> {{ inq.createdAt | date:'medium' }}</span>
-                  </div>
-                </div>
-                <div class="inquiry-actions">
-                  <button mat-button color="primary" (click)="respondToInquiry(inq)">Respond</button>
-                  <button mat-button color="warn" (click)="deleteReceivedInquiry(inq)">Delete</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </ng-template>
-      </mat-tab>
-
       <!-- ── Tab 5: Account Settings ───────────────────────────────── -->
       <mat-tab label="Account Settings">
         <ng-template matTabContent>
