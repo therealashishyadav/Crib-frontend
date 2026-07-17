@@ -1,0 +1,90 @@
+<nav class="management-navbar">
+  <!-- ── Left: Logo ────────────────────────────────────────────────────────── -->
+  <div class="navbar-left">
+    <a routerLink="/management" class="navbar-brand">
+      <span class="brand-icon">🏢</span>
+      <span class="brand-text">CribUp <span class="brand-tag">Admin</span></span>
+    </a>
+  </div>
+
+  <!-- ── Center: Navigation Links ────────────────────────────────────────── -->
+  <div class="navbar-center" *ngIf="!isMobile">
+    <a class="nav-link" routerLink="/management" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <mat-icon>dashboard</mat-icon> Dashboard
+    </a>
+    <a class="nav-link" routerLink="/management/users" routerLinkActive="active">
+      <mat-icon>people</mat-icon> Users
+    </a>
+    <a class="nav-link" routerLink="/management/listings" routerLinkActive="active">
+      <mat-icon>apartment</mat-icon> Listings
+    </a>
+    <a class="nav-link" routerLink="/management/inquiries" routerLinkActive="active">
+      <mat-icon>forum</mat-icon> Inquiries
+    </a>
+    <a class="nav-link" routerLink="/management/revenue" routerLinkActive="active">
+      <mat-icon>payments</mat-icon> Revenue
+    </a>
+    <a class="nav-link" routerLink="/management/settings" routerLinkActive="active">
+      <mat-icon>settings</mat-icon> Settings
+    </a>
+  </div>
+
+  <!-- ── Right: User Profile ──────────────────────────────────────────────── -->
+  <div class="navbar-right">
+    <!-- Live badge -->
+    <span class="live-badge">
+      <span class="pulse"></span> LIVE
+    </span>
+
+    <!-- User profile dropdown -->
+    <div class="profile-dropdown" (click)="toggleDropdown()">
+      <div class="profile-avatar">{{ currentUserInitial }}</div>
+      <div class="profile-info">
+        <span class="profile-name">{{ currentUserName }}</span>
+        <span class="profile-role">{{ currentUserRole }}</span>
+      </div>
+      <mat-icon class="dropdown-arrow">expand_more</mat-icon>
+    </div>
+
+    <!-- Dropdown menu -->
+    <div class="dropdown-menu" *ngIf="dropdownOpen">
+      <a class="dropdown-item" (click)="goToProfile()">
+        <mat-icon>person</mat-icon> Profile
+      </a>
+      <a class="dropdown-item" (click)="goToSettings()">
+        <mat-icon>settings</mat-icon> Settings
+      </a>
+      <hr>
+      <a class="dropdown-item logout" (click)="logout()">
+        <mat-icon>logout</mat-icon> Logout
+      </a>
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button class="mobile-toggle" (click)="toggleMobileMenu()" *ngIf="isMobile">
+      <mat-icon>{{ mobileMenuOpen ? 'close' : 'menu' }}</mat-icon>
+    </button>
+  </div>
+</nav>
+
+<!-- ── Mobile menu (overlay) ──────────────────────────────────────────────── -->
+<div class="mobile-menu" *ngIf="isMobile && mobileMenuOpen">
+  <a class="mobile-nav-link" routerLink="/management" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">
+    <mat-icon>dashboard</mat-icon> Dashboard
+  </a>
+  <a class="mobile-nav-link" routerLink="/management/users" routerLinkActive="active" (click)="closeMobileMenu()">
+    <mat-icon>people</mat-icon> Users
+  </a>
+  <a class="mobile-nav-link" routerLink="/management/listings" routerLinkActive="active" (click)="closeMobileMenu()">
+    <mat-icon>apartment</mat-icon> Listings
+  </a>
+  <a class="mobile-nav-link" routerLink="/management/inquiries" routerLinkActive="active" (click)="closeMobileMenu()">
+    <mat-icon>forum</mat-icon> Inquiries
+  </a>
+  <a class="mobile-nav-link" routerLink="/management/revenue" routerLinkActive="active" (click)="closeMobileMenu()">
+    <mat-icon>payments</mat-icon> Revenue
+  </a>
+  <a class="mobile-nav-link" routerLink="/management/settings" routerLinkActive="active" (click)="closeMobileMenu()">
+    <mat-icon>settings</mat-icon> Settings
+  </a>
+</div>

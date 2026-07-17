@@ -27,6 +27,7 @@ import { Inquiry } from '../../entity/Inquiry';
 import { RevenueSummary } from '../../entity/RevenueSummary';
 import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
 import { FooterComponent } from '../footer/footer.component';
+import { ManagementNavbarComponent } from '../management-navbar/management-navbar.component';
 
 @Component({
   selector: 'app-management',
@@ -35,8 +36,7 @@ import { FooterComponent } from '../footer/footer.component';
     CommonModule, FormsModule, RouterModule,
     MatTableModule, MatPaginatorModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatIconModule, MatSnackBarModule, MatTooltipModule,
-     FooterComponent,
+    MatButtonModule, MatIconModule, MatSnackBarModule, MatTooltipModule, ManagementNavbarComponent
   ],
   templateUrl: './management.component.html',
   styleUrls: ['./management.component.css'],
