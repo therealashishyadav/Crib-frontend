@@ -20,7 +20,6 @@ import { TenantListComponent } from '../components/tenant-list/tenant-list.compo
 import { AddTenantComponent } from '../components/add-tenant/add-tenant.component';
 import { RentSheetComponent } from '../components/rent-sheet/rent-sheet.component';
 import { OwnerGuard } from '../OwnerGuard';
-import { RoleGuard } from '../service/role.guard';
 import { OwnerNavbarComponent } from '../components/owner-navbar/owner-navbar.component';
 import { AddFlatComponent } from '../components/add-flat/add-flat.component';
 import { ManagementComponent } from '../components/management/management.component';
@@ -51,12 +50,12 @@ export const routes: Routes = [
   },
     { path: 'forgot-password', component: ForgotPasswordComponent },
     { path: 'owner-navbar', component: OwnerNavbarComponent },
-    { path: 'ownerpage', component: OwnerpageComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] } },
-    { path: 'addpglist', component: ListPropertyComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] } },
-    { path: 'owner/add-tenant', component: AddTenantComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] } },
-    { path: 'owner/tenants', component: TenantListComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] } },
-    { path: 'owner/rent-sheet', component: RentSheetComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] } },
-    { path: 'owner/add-flat', component: AddFlatComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] } },
+    { path: 'ownerpage', component: OwnerpageComponent },
+    { path: 'addpglist', component: ListPropertyComponent },
+    { path: 'owner/add-tenant', component: AddTenantComponent },
+    { path: 'owner/tenants', component: TenantListComponent },
+    { path: 'owner/rent-sheet', component: RentSheetComponent },
+    { path: 'owner/add-flat', component: AddFlatComponent },
     { path: 'listproperty', redirectTo: '/addpglist', pathMatch: 'full' },
     { path: 'listings/flats', redirectTo: '/listings', pathMatch: 'full' },
     { path: 'listings/duplexes', redirectTo: '/listings', pathMatch: 'full' },
@@ -70,10 +69,10 @@ export const routes: Routes = [
     { path: 'privacy-policy', component: PolicyComponentComponent },
     { path: 'terms-of-service', component: PolicyComponentComponent },
     { path: 'cookie-policy', component: PolicyComponentComponent },
-    { path: 'management', component: ManagementComponent, canActivate: [RoleGuard], data: { roles: ['MANAGEMENT','ADMIN'] } },
+    { path: 'management', component: ManagementComponent },
     { path: 'comingsoonpage', component: ComingSoonPageComponent },
     { path: 'termsandservices', component: TermsOfServiceComponent },
-    { path: 'management/add-user', component: AddUserComponent, canActivate: [RoleGuard], data: { roles: ['MANAGEMENT','ADMIN'] } }
+    { path: 'management/add-user', component: AddUserComponent }
 
 
 ];

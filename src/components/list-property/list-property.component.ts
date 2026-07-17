@@ -19,7 +19,6 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { PgModel, SharingOptionModel } from '../../entity/PgModel';
 import { PgListingService } from '../../service/pg-listing.service';
-import { FileValidationService } from '../../service/file-validation.service';
 import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
 import { MetaService } from '../../service/meta.service';
 
@@ -125,8 +124,7 @@ export class ListPropertyComponent implements OnInit {
     private pgListingService: PgListingService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private metaService: MetaService,
-    private fileValidator: FileValidationService
+    private metaService: MetaService
   ) {}
 
   ngOnInit(): void {
@@ -137,18 +135,12 @@ export class ListPropertyComponent implements OnInit {
   onCoverImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const res = this.fileValidator.validateFile(file, 'image');
-      if (!res.ok) {
-        this.snackBar.open(res.message || 'Invalid image file', 'Close', { duration: 4000 });
-        return;
-      }
-      this.coverImageFile = res.file || file;
+      this.coverImageFile = input.files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
         this.coverImagePreview = e.target?.result as string;
       };
-      reader.readAsDataURL(this.coverImageFile);
+      reader.readAsDataURL(input.files[0]);
     }
   }
 
@@ -162,14 +154,7 @@ export class ListPropertyComponent implements OnInit {
   onGalleryFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) {
-      Array.from(input.files).forEach(file => {
-        const res = this.fileValidator.validateFile(file, 'image');
-        if (res.ok && res.file) {
-          this.galleryImageFiles.push(res.file);
-        } else {
-          this.snackBar.open(res.message || 'Invalid gallery image', 'Close', { duration: 4000 });
-        }
-      });
+      Array.from(input.files).forEach(file => this.galleryImageFiles.push(file));
     }
   }
 
@@ -180,14 +165,7 @@ export class ListPropertyComponent implements OnInit {
   // ── Video ─────────────────────────────────────────────────────────────────
   onVideoFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files?.length) {
-      const res = this.fileValidator.validateFile(input.files[0], 'video');
-      if (!res.ok) {
-        this.snackBar.open(res.message || 'Invalid video file', 'Close', { duration: 4000 });
-        return;
-      }
-      this.videoFile = res.file || input.files[0];
-    }
+    if (input.files?.length) this.videoFile = input.files[0];
   }
 
   removeVideo(): void {
