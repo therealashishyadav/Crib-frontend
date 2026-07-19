@@ -11,8 +11,8 @@ import { JwtToken } from '../../entity/JwtToken';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from '../../environments/environment';
 
-// ✅ Declare the Google namespace for TypeScript
 declare const google: any;
 
 @Component({
@@ -26,7 +26,7 @@ declare const google: any;
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnInit, AfterViewInit
+export class LoginComponent implements OnInit, AfterViewInit {
 
   user: LoginEntity = new LoginEntity();
   jwtToken: JwtToken = new JwtToken();
@@ -41,16 +41,17 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
     private snackBar: MatSnackBar
   ) {}
 
-  // ✅ 1. Load Google script when component initializes
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.loadGoogleScript().then(() => {
         console.log('✅ Google script loaded.');
+      }).catch(() => {
+        console.error('❌ Google script failed to load.');
+        this.snackBar.open('Failed to load Google Sign-In. Please refresh.', 'Close', { duration: 3000 });
       });
     }
   }
 
-  // ✅ 2. Render the Google button after the DOM is ready
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       setTimeout(() => {
@@ -59,9 +60,9 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
     }
   }
 
-  // ✅ 3. Load Google Identity Services script
+  // ✅ Fixed: added 'reject' parameter and call it on error
   loadGoogleScript(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (document.getElementById('google-script')) {
         resolve();
         return;
@@ -77,12 +78,12 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
       };
       script.onerror = () => {
         console.error('❌ Failed to load Google script.');
+        reject(new Error('Google script load failed'));
       };
       document.head.appendChild(script);
     });
   }
 
-  // ✅ 4. Initialize and render the Google Sign-In button
   initializeGoogleButton(): void {
     const container = document.getElementById('googleButton');
     if (!container) {
@@ -96,8 +97,13 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
       return;
     }
 
-    // ⚠️ REPLACE WITH YOUR ACTUAL GOOGLE CLIENT ID
-    const GOOGLE_CLIENT_ID = '287517103772-o212...YOUR_FULL_ID...apps.googleusercontent.com';
+    // ✅ Read client ID from environment
+    const GOOGLE_CLIENT_ID = environment.googleClientId;
+    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('YOUR_')) {
+      console.error('❌ Google Client ID is not properly set in environment.');
+      this.snackBar.open('Google login is not configured. Contact support.', 'Close', { duration: 5000 });
+      return;
+    }
 
     google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
@@ -117,10 +123,9 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
       }
     );
 
-    console.log('✅ Google button rendered successfully!');
+    console.log('✅ Google button rendered with client ID:', GOOGLE_CLIENT_ID);
   }
 
-  // ✅ 5. Handle Google credential response
   handleGoogleCredential(response: any): void {
     const idToken = response.credential;
     console.log('✅ Google ID token received');
@@ -132,7 +137,6 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
           localStorage.setItem('refreshToken', jwtResponse.refreshToken);
         }
 
-        // Decode email from token and fetch role
         const emailFromToken = this.getEmailFromToken(jwtResponse.token);
         this.fetchUserRole(emailFromToken);
       },
@@ -143,7 +147,6 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
     });
   }
 
-  // ✅ 6. Your existing login() method (unchanged)
   login(): void {
     const input = this.user.email.trim();
     const password = this.user.password.trim();
@@ -183,7 +186,6 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
     });
   }
 
-  // ✅ 7. Helper: Decode JWT to get email
   private getEmailFromToken(token: string): string {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -193,7 +195,6 @@ export class LoginComponent implements OnInit, AfterViewInit { // <-- Added OnIn
     }
   }
 
-  // ✅ 8. Helper: Fetch user role and navigate
   private fetchUserRole(email: string): void {
     this.loginService.getRole(email).subscribe({
       next: (role) => {
