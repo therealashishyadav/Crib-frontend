@@ -51,7 +51,7 @@ export const routes: Routes = [
     },
     { path: 'forgot-password', component: ForgotPasswordComponent },
     { path: 'owner-navbar', component: OwnerNavbarComponent },
-    { path: 'ownerpage', component: OwnerpageComponent, canActivate: [OwnerGuard], data: { roles: ['OWNER'] }, runGuardsAndResolvers: 'always' },
+    { path: 'ownerpage', component: OwnerpageComponent},
     { path: 'addpglist', component: ListPropertyComponent },
     { path: 'owner/add-tenant', component: AddTenantComponent },
     { path: 'owner/tenants', component: TenantListComponent },
@@ -70,7 +70,7 @@ export const routes: Routes = [
     { path: 'privacy-policy', component: PolicyComponentComponent },
     { path: 'terms-of-service', component: PolicyComponentComponent },
     { path: 'cookie-policy', component: PolicyComponentComponent },
-    { path: 'management', component: ManagementComponent , canActivate: [ManagementGuard], data: { roles: ['MANAGEMENT'] }, runGuardsAndResolvers: 'always' },
+    { path: 'management', component: ManagementComponent},
     { path: 'comingsoonpage', component: ComingSoonPageComponent },
     { path: 'termsandservices', component: TermsOfServiceComponent },
     { path: 'management/add-user', component: AddUserComponent }

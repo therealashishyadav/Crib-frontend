@@ -1,393 +1,361 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-
 :host {
+  /* Brand Palette */
   --nookly-azure: #4A90E2;
   --nookly-mist: #D9E6F1;
   --nookly-slate: #A7B3C6;
   --nookly-midnight: #2C3E50;
   --nookly-white: #FFFFFF;
+
   --nookly-azure-deep: #2d6abf;
   --nookly-azure-glow: rgba(74, 144, 226, 0.12);
   --nookly-azure-line: rgba(74, 144, 226, 0.25);
   --nookly-midnight-05: rgba(44, 62, 80, 0.05);
   --nookly-gold: #C9A96E;
-  --nookly-gold-soft: rgba(201, 169, 110, 0.15);
 
-  --font-display: 'Poppins', 'Segoe UI', sans-serif;
-  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Jost', 'Segoe UI', sans-serif;
 
-  --dur-fast: 180ms;
-  --dur-mid: 300ms;
+  /* Compact spacing scale */
+  --space-xs: 0.35rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
   --ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-mid: 420ms;
+  --dur-slow: 700ms;
+
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 8px 24px rgba(44, 62, 80, 0.08), 0 1px 3px rgba(44, 62, 80, 0.04);
+  --shadow-hover: 0 20px 40px rgba(44, 62, 80, 0.12), 0 4px 12px rgba(74, 144, 226, 0.1);
+  --shadow-azure: 0 8px 32px rgba(74, 144, 226, 0.18);
 
   display: block;
-  font-family: var(--font-body);
-}
-
-.signup-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
-  background: linear-gradient(160deg, var(--nookly-mist) 0%, var(--nookly-white) 55%, var(--nookly-mist) 100%);
-}
+  padding: var(--space-xl) var(--space-sm);
 
-.signup-card {
-  width: 100%;
-  max-width: 980px;
-  min-height: 620px;
-  display: grid;
-  grid-template-columns: 0.85fr 1.15fr;
-  background: var(--nookly-white);
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 24px 60px var(--nookly-midnight-05), 0 4px 16px rgba(44, 62, 80, 0.06);
-}
+  /* Background image from Unsplash (luxury real estate / clean architecture) */
+  background-image:
+    linear-gradient(135deg, rgba(44, 62, 80, 0.75) 0%, rgba(74, 144, 226, 0.65) 100%),
+    url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
 
-.brand-panel {
-  position: relative;
-  background: linear-gradient(160deg, var(--nookly-azure) 0%, var(--nookly-azure-deep) 100%);
-  color: var(--nookly-white);
-  clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
-  padding: 2.5rem 3rem 2.5rem 2.5rem;
-}
-
-.brand-panel__inner {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  max-width: 260px;
-}
-
-.brand-logo {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--nookly-white);
-  text-decoration: none;
-  letter-spacing: 0.01em;
-}
-
-.brand-message {
-  margin-top: auto;
-}
-
-.brand-message__title {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin: 0 0 0.75rem;
-}
-
-.brand-message__text {
   font-family: var(--font-body);
-  font-size: 0.85rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 0 0 1.5rem;
-}
-
-.brand-message__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.65rem 1.75rem;
-  border: 1.5px solid var(--nookly-white);
-  border-radius: 9999px;
   color: var(--nookly-white);
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: 0.03em;
-  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease;
+  /* base text adjusts inside the card */
+  -webkit-font-smoothing: antialiased;
 }
 
-.brand-message__cta:hover {
-  background: var(--nookly-white);
-  color: var(--nookly-azure-deep);
+/* Subtle floating orbs – toned down to not compete with background */
+:host::before,
+:host::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: orbitFloat 16s ease-in-out infinite alternate;
+  opacity: 0.25;
 }
 
+:host::before {
+  width: 480px;
+  height: 480px;
+  top: -150px;
+  right: -120px;
+  background: radial-gradient(circle, var(--nookly-mist) 0%, transparent 70%);
+  animation-duration: 20s;
+}
+
+:host::after {
+  width: 320px;
+  height: 320px;
+  bottom: 40px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, transparent 70%);
+  animation-duration: 24s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes orbitFloat {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(25px, 20px) scale(1.05);
+  }
+}
+
+/* Compact main container – smaller width, tighter padding */
 .account-container {
-  padding: 2.75rem 3rem;
-  overflow-y: auto;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-lg);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(2px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  z-index: 2;
+  animation: pageReveal 0.6s var(--ease-luxury) both;
 }
 
+@keyframes pageReveal {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form title – elegant but compact */
 .form-title {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
   font-weight: 600;
   color: var(--nookly-midnight);
-  margin: 0 0 0.4rem;
+  margin: 0 0 var(--space-sm) 0;
+  padding-bottom: var(--space-xs);
+  position: relative;
+  display: inline-block;
 }
 
-.form-subtitle {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  color: var(--nookly-slate);
-  margin: 0 0 1.5rem;
-  max-width: 420px;
-  line-height: 1.5;
+.form-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--nookly-gold), var(--nookly-azure));
+  border-radius: var(--radius-pill);
+  transition: width var(--dur-slow) var(--ease-luxury);
 }
 
+.form-title:hover::after {
+  width: 100%;
+}
+
+/* Form grid – slightly reduced gap */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.25rem 1.25rem;
+  gap: 1rem 1.5rem;
+  margin: var(--space-md) 0 var(--space-md);
 }
 
-.form-field {
+/* Angular Material outline overrides – tighter field height */
+::ng-deep .mat-mdc-form-field {
   width: 100%;
 }
 
-.form-field--full {
-  grid-column: 1 / -1;
-}
-
-::ng-deep .account-container .mat-mdc-form-field {
-  width: 100%;
-}
-
-::ng-deep .account-container .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
+::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
   background-color: var(--nookly-white);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   transition: all var(--dur-mid) var(--ease-luxury);
 }
 
-::ng-deep .account-container .mdc-notched-outline__leading,
-::ng-deep .account-container .mdc-notched-outline__notch,
-::ng-deep .account-container .mdc-notched-outline__trailing {
+::ng-deep .mdc-notched-outline__leading,
+::ng-deep .mdc-notched-outline__notch,
+::ng-deep .mdc-notched-outline__trailing {
   border-color: var(--nookly-mist) !important;
   transition: border-color var(--dur-mid);
 }
 
-::ng-deep .account-container .mat-mdc-form-field:hover .mdc-notched-outline__leading,
-::ng-deep .account-container .mat-mdc-form-field:hover .mdc-notched-outline__notch,
-::ng-deep .account-container .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
   border-color: var(--nookly-azure) !important;
 }
 
-::ng-deep .account-container .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-::ng-deep .account-container .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-::ng-deep .account-container .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+/* ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
   border-color: var(--nookly-azure) !important;
   border-width: 2px !important;
-}
+} */
 
-::ng-deep .account-container .mat-mdc-form-field-label {
+/* ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline {
+  box-shadow: 0 0 0 3px var(--nookly-azure-glow);
+  border-radius: var(--radius-md);
+} */
+
+::ng-deep .mat-mdc-form-field-label {
   font-family: var(--font-body);
   font-weight: 500;
   color: var(--nookly-slate);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
-::ng-deep .account-container .mat-mdc-input-element {
+::ng-deep .mat-mdc-input-element {
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--nookly-midnight);
   caret-color: var(--nookly-azure);
 }
 
-::ng-deep .account-container .mat-mdc-form-field-hint {
+::ng-deep .mat-mdc-form-field-hint {
   font-family: var(--font-body);
   font-size: 0.7rem;
   color: var(--nookly-slate);
 }
 
-::ng-deep .account-container .mat-mdc-form-field-error {
+::ng-deep .mat-mdc-form-field-error {
   font-family: var(--font-body);
   font-size: 0.7rem;
   color: #d9534f;
 }
 
-::ng-deep .account-container .mat-mdc-icon-button .mat-icon {
-  color: var(--nookly-slate);
-  font-size: 18px;
-  height: 18px;
-  width: 18px;
-}
-
-.form-terms {
-  margin: 0.5rem 0 0.25rem;
-}
-
-::ng-deep .form-terms .mdc-form-field {
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  color: var(--nookly-slate);
-}
-
-::ng-deep .form-terms .mdc-checkbox__background {
-  border-color: var(--nookly-slate) !important;
-}
-
-::ng-deep .form-terms .mat-mdc-checkbox-checked .mdc-checkbox__background {
-  background-color: var(--nookly-azure) !important;
-  border-color: var(--nookly-azure) !important;
-}
-
-.form-terms__link {
-  color: var(--nookly-azure);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.form-terms__link:hover {
-  color: var(--nookly-azure-deep);
-  text-decoration: underline;
-}
-
+/* Button & link – compact version */
 .form-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: var(--space-md);
   flex-wrap: wrap;
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--nookly-mist);
 }
 
-::ng-deep .submit-btn.mat-mdc-raised-button.mat-primary {
-  width: 100%;
-  height: 46px;
-  background-color: var(--nookly-azure);
-  border-radius: 10px;
+button.mat-mdc-raised-button.mat-primary {
+  background: linear-gradient(105deg, var(--nookly-midnight) 100%, var(--nookly-azure-glow) 100%);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0.6rem 1.8rem;
   font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  box-shadow: 0 8px 20px var(--nookly-azure-glow);
-  transition: background-color var(--dur-fast) ease, transform var(--dur-fast) ease;
+  letter-spacing: 0.3px;
+  color: var(--nookly-white);
+  box-shadow: var(--shadow-azure);
+  transition: all 0.3s var(--ease-bounce);
+  cursor: pointer;
 }
 
-::ng-deep .submit-btn.mat-mdc-raised-button.mat-primary:hover:not([disabled]) {
-  background-color: var(--nookly-azure-deep);
-  transform: translateY(-1px);
+button.mat-mdc-raised-button.mat-primary:hover:not([disabled]) {
+  background: linear-gradient(105deg, #1F3348 0%, var(--nookly-azure-deep) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
 }
 
-::ng-deep .submit-btn.mat-mdc-raised-button.mat-primary[disabled] {
-  background-color: var(--nookly-mist) !important;
-  color: var(--nookly-slate) !important;
-  box-shadow: none;
+button.mat-mdc-raised-button.mat-primary[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.form-actions__login-link {
+.form-actions li {
+  list-style: none;
+}
+
+.form-actions a {
   font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   color: var(--nookly-azure);
   text-decoration: none;
-  font-weight: 500;
-  margin: 0 auto;
-  transition: color var(--dur-fast) ease;
+  transition: color var(--dur-mid), transform var(--dur-mid);
+  display: inline-block;
 }
 
-.form-actions__login-link:hover {
-  color: var(--nookly-azure-deep);
+.form-actions a:hover {
+  color: var(--nookly-midnight);
+  transform: translateX(3px);
   text-decoration: underline;
 }
 
-.social-divider {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 1.5rem 0 1rem;
-  color: var(--nookly-slate);
-  font-size: 0.75rem;
-}
-
-.social-divider::before,
-.social-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--nookly-mist);
-}
-
-.social-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.9rem;
-}
-
-.social-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid var(--nookly-mist);
-  background: var(--nookly-white);
-  cursor: pointer;
-  transition: border-color var(--dur-fast) ease, transform var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
-}
-
-.social-btn:hover {
-  border-color: var(--nookly-azure-line);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px var(--nookly-midnight-05);
-}
-
-@media (max-width: 860px) {
-  .signup-card {
-    grid-template-columns: 1fr;
-    min-height: unset;
-  }
-
-  .brand-panel {
-    clip-path: none;
-    padding: 2rem;
-  }
-
-  .brand-panel__inner {
-    max-width: 100%;
-  }
-
-  .brand-message {
-    margin-top: 1.5rem;
+/* Responsive – compact on tablets & phones */
+@media (max-width: 900px) {
+  :host {
+    padding: var(--space-lg) var(--space-sm);
   }
 
   .account-container {
-    padding: 2rem 1.75rem;
+    margin: 0 1rem;
+    padding: var(--space-md);
   }
 
   .form-grid {
     grid-template-columns: 1fr;
-  }
-
-  .form-field--full {
-    grid-column: 1;
-  }
-}
-
-@media (max-width: 480px) {
-  .signup-page {
-    padding: 1rem 0.5rem;
-  }
-
-  .signup-card {
-    border-radius: 18px;
-  }
-
-  .form-title {
-    font-size: 1.4rem;
+    gap: 0.8rem;
   }
 
   .form-actions {
     flex-direction: column;
     align-items: stretch;
+    text-align: center;
   }
 
-  .form-actions__login-link {
-    margin: 0;
-    text-align: center;
+  button.mat-mdc-raised-button.mat-primary {
+    width: 100%;
+    justify-content: center;
   }
 }
 
+@media (max-width: 640px) {
+  .account-container {
+    padding: var(--space-sm);
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+  }
+
+  ::ng-deep .mat-mdc-input-element {
+    font-size: 0.85rem;
+  }
+
+  button.mat-mdc-raised-button.mat-primary {
+    padding: 0.5rem 1.2rem;
+  }
+
+  :host::before,
+  :host::after {
+    display: none;
+  }
+}
+
+/* Accessibility */
+:host ::selection {
+  background: var(--nookly-mist);
+  color: var(--nookly-midnight);
+}
+
 :host *:focus-visible {
-  outline: 2px solid var(--nookly-azure);
+  /* outline: 2px solid var(--nookly-azure); */
   outline-offset: 3px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* Print styles */
+@media print {
+  :host {
+    background: white;
+    padding: 0;
+  }
+
+  .account-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  :host::before,
+  :host::after {
+    display: none;
+  }
 }
