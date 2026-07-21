@@ -120,7 +120,7 @@ interface NotificationItem {
   templateUrl: './management.component.html',
   styleUrls: ['./management.component.css'],
 })
-export class ManagementPortalComponent implements OnInit, OnDestroy {
+export class ManagementComponent implements OnInit, OnDestroy {
 
   sidebarCollapsed = false;
   activeTab = 0;
@@ -221,7 +221,7 @@ export class ManagementPortalComponent implements OnInit, OnDestroy {
 
   private clockTimer: any;
 
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.loadDashboard();
