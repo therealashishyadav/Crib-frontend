@@ -1,5 +1,7 @@
-<div class="portal-wrapper" [class.light-theme]="!isDarkTheme">
 
+<div class="portal-wrapper">
+
+  <!-- ── Sidebar ────────────────────────────────────────────────────────────── -->
   <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
     <div class="sidebar-header">
       <div class="logo" *ngIf="!sidebarCollapsed">
@@ -24,7 +26,7 @@
       <button mat-button routerLink="/management/add-user">
         <mat-icon>person_add</mat-icon> Add User
       </button>
-      <button class="nav-item" [class.active]="activeTab === 0" (click)="setTab(0)">
+      <button class="nav-item" [class.active]="activeTab === 0" (click)="activeTab = 0">
         <mat-icon>dashboard</mat-icon>
         <span *ngIf="!sidebarCollapsed">Dashboard</span>
       </button>
@@ -51,169 +53,93 @@
     </nav>
 
     <div class="sidebar-footer" *ngIf="!sidebarCollapsed">
-      <button class="theme-toggle" (click)="toggleTheme()">
-        <mat-icon>{{ isDarkTheme ? 'light_mode' : 'dark_mode' }}</mat-icon>
-        {{ isDarkTheme ? 'Light mode' : 'Dark mode' }}
-      </button>
       <button class="logout-btn" (click)="logout()">
         <mat-icon>logout</mat-icon> Logout
       </button>
     </div>
   </aside>
 
+  <!-- ── Main Content ─────────────────────────────────────────────────────── -->
   <main class="main-content">
 
+    <!-- Top bar -->
     <header class="topbar">
-      <div class="topbar-left">
-        <h1 class="page-title">{{ tabTitles[activeTab] }}</h1>
-        <p class="page-subtitle" *ngIf="activeTab === 0">Monitor platform health and growth in one place.</p>
-        <p class="page-subtitle" *ngIf="activeTab === 1">Search, filter and manage every registered account.</p>
-        <p class="page-subtitle" *ngIf="activeTab === 2">Review, verify and manage listed PGs across cities.</p>
-        <p class="page-subtitle" *ngIf="activeTab === 3">Track and respond to inbound tenant and owner inquiries.</p>
-        <p class="page-subtitle" *ngIf="activeTab === 4">Keep an eye on finder fees collected and outstanding.</p>
-        <p class="page-subtitle" *ngIf="activeTab === 5">Control featured listings and platform-wide announcements.</p>
-      </div>
+      <h1 class="page-title">{{ tabTitles[activeTab] }}</h1>
       <div class="topbar-right">
         <span class="live-badge">
           <span class="pulse"></span> LIVE
         </span>
-        <span class="current-date">{{ today | date:'EEEE, d MMM yyyy' }} &middot; {{ clockLabel }}</span>
-
-        <button class="icon-pill" (click)="refreshDashboard()" matTooltip="Refresh dashboard" [class.spinning]="isDashboardRefreshing">
-          <mat-icon>refresh</mat-icon>
-        </button>
-
-        <button class="icon-pill" [matMenuTriggerFor]="notifMenu" matTooltip="Notifications"
-          [matBadge]="unreadNotificationCount()" [matBadgeHidden]="unreadNotificationCount() === 0"
-          matBadgeColor="warn" matBadgeSize="small">
-          <mat-icon>notifications</mat-icon>
-        </button>
-        <mat-menu #notifMenu="matMenu" class="notif-menu">
-          <div class="notif-header">
-            <span>Notifications</span>
-            <button class="notif-mark-read" (click)="markAllNotificationsRead()">Mark all read</button>
-          </div>
-          <button mat-menu-item *ngFor="let n of notifications" class="notif-item" [class.unread]="!n.read">
-            <span class="notif-title">{{ n.title }}</span>
-            <span class="notif-detail">{{ n.detail }}</span>
-            <span class="notif-time">{{ n.time }}</span>
-          </button>
-        </mat-menu>
-
-        <div class="topbar-avatar">{{ currentUserInitial }}</div>
+        <span class="current-date">{{ today | date:'EEEE, d MMM yyyy' }}</span>
       </div>
     </header>
 
+    <!-- ── DASHBOARD TAB ──────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 0" class="tab-panel">
 
+      <!-- loading shown when dashboardStats not yet loaded -->
       <div class="loading" *ngIf="!dashboardStats">Loading dashboard…</div>
 
+      <!-- Stat cards -->
       <div class="stats-grid" *ngIf="dashboardStats">
         <div class="stat-card indigo">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>apartment</mat-icon></div>
-            <span class="stat-trend" [class.down]="trendFor('totalPGs').direction === 'down'">
-              <mat-icon>{{ trendFor('totalPGs').direction === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ trendFor('totalPGs').percent }}%
-            </span>
+          <div class="stat-icon"><mat-icon>apartment</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">{{ dashboardStats.totalPGs | number }}</div>
+            <div class="stat-label">Total PGs</div>
           </div>
-          <div class="stat-value">{{ dashboardStats.totalPGs | number }}</div>
-          <div class="stat-label">Total PGs</div>
-          <div class="stat-caption">{{ trendFor('totalPGs').caption }}</div>
         </div>
-
         <div class="stat-card teal">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>people</mat-icon></div>
-            <span class="stat-trend" [class.down]="trendFor('totalUsers').direction === 'down'">
-              <mat-icon>{{ trendFor('totalUsers').direction === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ trendFor('totalUsers').percent }}%
-            </span>
+          <div class="stat-icon"><mat-icon>people</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">{{ dashboardStats.totalUsers | number }}</div>
+            <div class="stat-label">Registered Users</div>
           </div>
-          <div class="stat-value">{{ dashboardStats.totalUsers | number }}</div>
-          <div class="stat-label">Registered Users</div>
-          <div class="stat-caption">{{ trendFor('totalUsers').caption }}</div>
         </div>
-
         <div class="stat-card amber">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>business</mat-icon></div>
-            <span class="stat-trend" [class.down]="trendFor('totalOwners').direction === 'down'">
-              <mat-icon>{{ trendFor('totalOwners').direction === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ trendFor('totalOwners').percent }}%
-            </span>
+          <div class="stat-icon"><mat-icon>business</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">{{ dashboardStats.totalOwners | number }}</div>
+            <div class="stat-label">Owners</div>
           </div>
-          <div class="stat-value">{{ dashboardStats.totalOwners | number }}</div>
-          <div class="stat-label">Owners</div>
-          <div class="stat-caption">{{ trendFor('totalOwners').caption }}</div>
         </div>
-
         <div class="stat-card rose">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>question_answer</mat-icon></div>
-            <span class="stat-trend" [class.down]="trendFor('monthlyInquiries').direction === 'down'">
-              <mat-icon>{{ trendFor('monthlyInquiries').direction === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ trendFor('monthlyInquiries').percent }}%
-            </span>
+          <div class="stat-icon"><mat-icon>question_answer</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">{{ dashboardStats.monthlyInquiries | number }}</div>
+            <div class="stat-label">Inquiries (Month)</div>
           </div>
-          <div class="stat-value">{{ dashboardStats.monthlyInquiries | number }}</div>
-          <div class="stat-label">Inquiries (Month)</div>
-          <div class="stat-caption">{{ trendFor('monthlyInquiries').caption }}</div>
         </div>
-
         <div class="stat-card emerald">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>person_add</mat-icon></div>
-            <span class="stat-trend" [class.down]="trendFor('weeklySignups').direction === 'down'">
-              <mat-icon>{{ trendFor('weeklySignups').direction === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ trendFor('weeklySignups').percent }}%
-            </span>
+          <div class="stat-icon"><mat-icon>person_add</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">{{ dashboardStats.weeklySignups | number }}</div>
+            <div class="stat-label">New Signups (Week)</div>
           </div>
-          <div class="stat-value">{{ dashboardStats.weeklySignups | number }}</div>
-          <div class="stat-label">New Signups (Week)</div>
-          <div class="stat-caption">{{ trendFor('weeklySignups').caption }}</div>
         </div>
-
         <div class="stat-card violet">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>currency_rupee</mat-icon></div>
-            <span class="stat-trend" [class.down]="trendFor('totalFinderFeesCollected').direction === 'down'">
-              <mat-icon>{{ trendFor('totalFinderFeesCollected').direction === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ trendFor('totalFinderFeesCollected').percent }}%
-            </span>
+          <div class="stat-icon"><mat-icon>currency_rupee</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">₹{{ dashboardStats.totalFinderFeesCollected | number }}</div>
+            <div class="stat-label">Fees Collected</div>
           </div>
-          <div class="stat-value">₹{{ dashboardStats.totalFinderFeesCollected | number }}</div>
-          <div class="stat-label">Fees Collected</div>
-          <div class="stat-caption">{{ trendFor('totalFinderFeesCollected').caption }}</div>
         </div>
-
         <div class="stat-card orange">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>pending_actions</mat-icon></div>
-            <span class="stat-trend" [class.down]="trendFor('pendingFinderFees').direction === 'down'">
-              <mat-icon>{{ trendFor('pendingFinderFees').direction === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ trendFor('pendingFinderFees').percent }}%
-            </span>
+          <div class="stat-icon"><mat-icon>pending_actions</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">₹{{ dashboardStats.pendingFinderFees | number }}</div>
+            <div class="stat-label">Pending Fees</div>
           </div>
-          <div class="stat-value">₹{{ dashboardStats.pendingFinderFees | number }}</div>
-          <div class="stat-label">Pending Fees</div>
-          <div class="stat-caption">{{ trendFor('pendingFinderFees').caption }}</div>
         </div>
-
         <div class="stat-card blue">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>verified</mat-icon></div>
-            <span class="stat-trend" [class.down]="trendFor('totalTenants').direction === 'down'">
-              <mat-icon>{{ trendFor('totalTenants').direction === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ trendFor('totalTenants').percent }}%
-            </span>
+          <div class="stat-icon"><mat-icon>verified</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">{{ dashboardStats.totalTenants | number }}</div>
+            <div class="stat-label">Total Tenants</div>
           </div>
-          <div class="stat-value">{{ dashboardStats.totalTenants | number }}</div>
-          <div class="stat-label">Total Tenants</div>
-          <div class="stat-caption">{{ trendFor('totalTenants').caption }}</div>
         </div>
       </div>
 
+      <!-- Service health -->
       <div class="section-card" *ngIf="dashboardStats">
         <h2 class="section-title"><mat-icon>monitor_heart</mat-icon> Service Health</h2>
         <div class="health-grid">
@@ -225,6 +151,7 @@
         </div>
       </div>
 
+      <!-- Recent inquiries preview -->
       <div class="section-card" *ngIf="recentInquiries.length > 0">
         <h2 class="section-title"><mat-icon>inbox</mat-icon> Recent Inquiries</h2>
         <div class="mini-table">
@@ -241,11 +168,12 @@
       </div>
     </div>
 
+    <!-- ── USER MANAGEMENT TAB ────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 1" class="tab-panel">
       <div class="filter-row">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Search by name, email, phone</mat-label>
-          <input matInput [ngModel]="userSearch" (ngModelChange)="onUserSearchInput($event)" (keyup.enter)="onUserSearch()">
+          <input matInput [(ngModel)]="userSearch" (keyup.enter)="onUserSearch()">
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
         <mat-form-field appearance="outline" class="small-field">
@@ -259,10 +187,6 @@
           </mat-select>
         </mat-form-field>
         <button mat-raised-button color="primary" (click)="onUserSearch()">Search</button>
-        <span class="active-filters" *ngIf="activeFilterCount > 0">
-          Active filters {{ activeFilterCount }}
-          <button class="clear-filters" (click)="clearFilters()">Clear</button>
-        </span>
       </div>
 
       <div class="table-card">
@@ -308,12 +232,12 @@
             <td mat-cell *matCellDef="let u">
               <button mat-icon-button [matTooltip]="u.active === false ? 'Activate' : 'Deactivate'"
                 (click)="toggleUserStatus(u)">
-                <mat-icon [style.color]="u.active === false ? '#2fae7a' : '#d9534f'">
+                <mat-icon [style.color]="u.active === false ? '#10b981' : '#ef4444'">
                   {{ u.active === false ? 'check_circle' : 'block' }}
                 </mat-icon>
               </button>
               <button mat-icon-button matTooltip="View PGs" (click)="viewUserPGs(u)" *ngIf="u.role === 'OWNER'">
-                <mat-icon style="color:#4A90E2">apartment</mat-icon>
+                <mat-icon style="color:#6366f1">apartment</mat-icon>
               </button>
             </td>
           </ng-container>
@@ -325,6 +249,7 @@
       </div>
     </div>
 
+    <!-- ── PG LISTINGS TAB ────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 2" class="tab-panel">
       <div class="filter-row">
         <mat-form-field appearance="outline" class="small-field">
@@ -349,10 +274,6 @@
           </mat-select>
         </mat-form-field>
         <button mat-raised-button color="primary" (click)="onPgFilter()">Filter</button>
-        <span class="active-filters" *ngIf="activeFilterCount > 0">
-          Active filters {{ activeFilterCount }}
-          <button class="clear-filters" (click)="clearFilters()">Clear</button>
-        </span>
       </div>
 
       <div class="table-card">
@@ -401,10 +322,10 @@
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let pg">
               <button mat-icon-button matTooltip="Verify PG" *ngIf="!pg.verified" (click)="verifyPg(pg)">
-                <mat-icon style="color:#2fae7a">verified</mat-icon>
+                <mat-icon style="color:#10b981">verified</mat-icon>
               </button>
               <button mat-icon-button matTooltip="Delete PG" (click)="deletePg(pg)">
-                <mat-icon style="color:#d9534f">delete</mat-icon>
+                <mat-icon style="color:#ef4444">delete</mat-icon>
               </button>
             </td>
           </ng-container>
@@ -416,6 +337,7 @@
       </div>
     </div>
 
+    <!-- ── INQUIRIES TAB ──────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 3" class="tab-panel">
       <div class="filter-row">
         <mat-form-field appearance="outline" class="search-field">
@@ -440,10 +362,6 @@
         <button mat-raised-button color="accent" (click)="exportInquiries()">
           <mat-icon>download</mat-icon> Export CSV
         </button>
-        <span class="active-filters" *ngIf="activeFilterCount > 0">
-          Active filters {{ activeFilterCount }}
-          <button class="clear-filters" (click)="clearFilters()">Clear</button>
-        </span>
       </div>
 
       <div class="table-card">
@@ -488,35 +406,36 @@
       </div>
     </div>
 
+    <!-- ── REVENUE TAB ────────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 4" class="tab-panel">
       <div class="stats-grid" *ngIf="revenueSummary">
         <div class="stat-card emerald">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>paid</mat-icon></div>
+          <div class="stat-icon"><mat-icon>paid</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">₹{{ revenueSummary.totalCollected | number }}</div>
+            <div class="stat-label">Total Collected</div>
           </div>
-          <div class="stat-value">₹{{ revenueSummary.totalCollected | number }}</div>
-          <div class="stat-label">Total Collected</div>
         </div>
         <div class="stat-card amber">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>pending_actions</mat-icon></div>
+          <div class="stat-icon"><mat-icon>pending_actions</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">₹{{ revenueSummary.totalPending | number }}</div>
+            <div class="stat-label">Pending</div>
           </div>
-          <div class="stat-value">₹{{ revenueSummary.totalPending | number }}</div>
-          <div class="stat-label">Pending</div>
         </div>
         <div class="stat-card teal">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>check_circle</mat-icon></div>
+          <div class="stat-icon"><mat-icon>check_circle</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">{{ revenueSummary.totalPaidOwners | number }}</div>
+            <div class="stat-label">Paid Owners</div>
           </div>
-          <div class="stat-value">{{ revenueSummary.totalPaidOwners | number }}</div>
-          <div class="stat-label">Paid Owners</div>
         </div>
         <div class="stat-card rose">
-          <div class="stat-top">
-            <div class="stat-icon"><mat-icon>schedule</mat-icon></div>
+          <div class="stat-icon"><mat-icon>schedule</mat-icon></div>
+          <div class="stat-body">
+            <div class="stat-value">{{ revenueSummary.totalPendingOwners | number }}</div>
+            <div class="stat-label">Pending Owners</div>
           </div>
-          <div class="stat-value">{{ revenueSummary.totalPendingOwners | number }}</div>
-          <div class="stat-label">Pending Owners</div>
         </div>
       </div>
 
@@ -526,8 +445,10 @@
       </div>
     </div>
 
+    <!-- ── SETTINGS TAB ───────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 5" class="tab-panel">
       <div class="settings-grid">
+        <!-- Featured Listings -->
         <div class="section-card">
           <h2 class="section-title"><mat-icon>star</mat-icon> Featured Listings</h2>
           <mat-form-field appearance="outline" class="full-width">
@@ -547,6 +468,7 @@
           </button>
         </div>
 
+        <!-- Broadcast -->
         <div class="section-card">
           <h2 class="section-title"><mat-icon>campaign</mat-icon> Broadcast Announcement</h2>
           <mat-form-field appearance="outline" class="full-width">
