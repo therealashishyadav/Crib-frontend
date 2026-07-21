@@ -19,7 +19,6 @@ import { ForgotPasswordComponent } from '../components/forgot-password/forgot-pa
 import { TenantListComponent } from '../components/tenant-list/tenant-list.component';
 import { AddTenantComponent } from '../components/add-tenant/add-tenant.component';
 import { RentSheetComponent } from '../components/rent-sheet/rent-sheet.component';
-import { OwnerGuard } from '../OwnerGuard';
 import { OwnerNavbarComponent } from '../components/owner-navbar/owner-navbar.component';
 import { AddFlatComponent } from '../components/add-flat/add-flat.component';
 import { ManagementComponent } from '../components/management/management.component';
@@ -28,7 +27,7 @@ import { ComingSoonPageComponent } from '../components/coming-soon-page/coming-s
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { AddUserComponent } from '../components/add-user/add-user.component';
 import { ProfileComponent } from '../components/profile/profile.component';
-import { ManagementGuard } from '../ManagementGuard';
+import { RoleGuard } from '../RoleGuard';
 // import { Navbar2Component } from '../components/navbar2/navbar2.component';
 
 export const routes: Routes = [
@@ -51,7 +50,7 @@ export const routes: Routes = [
     },
     { path: 'forgot-password', component: ForgotPasswordComponent },
     { path: 'owner-navbar', component: OwnerNavbarComponent },
-    { path: 'ownerpage', component: OwnerpageComponent},
+    { path: 'ownerpage', component: OwnerpageComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] }, runGuardsAndResolvers: 'always' },
     { path: 'addpglist', component: ListPropertyComponent },
     { path: 'owner/add-tenant', component: AddTenantComponent },
     { path: 'owner/tenants', component: TenantListComponent },
@@ -70,7 +69,7 @@ export const routes: Routes = [
     { path: 'privacy-policy', component: PolicyComponentComponent },
     { path: 'terms-of-service', component: PolicyComponentComponent },
     { path: 'cookie-policy', component: PolicyComponentComponent },
-    { path: 'management', component: ManagementComponent},
+    { path: 'management', component: ManagementComponent , canActivate: [RoleGuard], data: { roles: ['MANAGEMENT'] }, runGuardsAndResolvers: 'always' },
     { path: 'comingsoonpage', component: ComingSoonPageComponent },
     { path: 'termsandservices', component: TermsOfServiceComponent },
     { path: 'management/add-user', component: AddUserComponent }

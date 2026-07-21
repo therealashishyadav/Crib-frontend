@@ -199,6 +199,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.loginService.getRole(email).subscribe({
       next: (role) => {
         this.partyRoles = role;
+        localStorage.setItem('role', role);
         console.log('User Role:', this.partyRoles);
         switch (this.partyRoles) {
           case 'USER': this.route.navigate(['/homepage']); break;
