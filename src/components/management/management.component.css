@@ -603,7 +603,7 @@
 ::ng-deep .filter-row .mat-mdc-form-field-label {
   font-family: var(--font-body);
   font-size: 0.85rem;
-  color: var(--nookly-slate);
+  /* color: var(--nookly-slate); */
 }
 
 ::ng-deep .filter-row .mat-mdc-input-element {
@@ -861,4 +861,8 @@
   outline: 2px solid var(--nookly-azure);
   outline-offset: 2px;
   border-radius: 6px;
+}
+
+.topbar {
+  border-bottom: none !important;
 }
