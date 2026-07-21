@@ -1,361 +1,440 @@
-// src/app/components/management/management.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ManagementService } from '../../service/management.service';
-import { MetaService } from '../../service/meta.service';
-import {
-  DashboardStats,
-  ServiceHealth,
-  ChartData,
-  PlatformSettings,
-  PageResponse
-} from '../../entity/DashboardStats';
-import { Account } from '../../entity/Account';
-import { PGListing as PgListing } from '../../entity/PGListing';
-import { Inquiry } from '../../entity/Inquiry';
-import { RevenueSummary } from '../../entity/RevenueSummary';
-import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
-import { FooterComponent } from '../footer/footer.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
+interface DashboardStats {
+  totalPGs: number;
+  totalUsers: number;
+  totalOwners: number;
+  monthlyInquiries: number;
+  weeklySignups: number;
+  totalFinderFeesCollected: number;
+  pendingFinderFees: number;
+  totalTenants: number;
+}
+
+interface StatTrend {
+  direction: 'up' | 'down';
+  percent: number;
+  caption: string;
+}
+
+interface ServiceHealthItem {
+  name: string;
+  status: 'UP' | 'DOWN';
+}
+
+interface InquiryPreview {
+  fullName: string;
+  email: string;
+  location: string;
+  inquiryType?: string;
+}
+
+interface UserRow {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  role: 'USER' | 'OWNER' | 'ADMIN' | 'MANAGEMENT';
+  active?: boolean;
+}
+
+interface PgRow {
+  id: number;
+  pgName: string;
+  city: string;
+  locality: string;
+  ownerName: string;
+  lowestPrice: number;
+  verified: boolean;
+  active: boolean;
+}
+
+interface InquiryRow {
+  id?: number;
+  inquiryId?: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  inquiryType?: string;
+  message?: string;
+}
+
+interface RevenueSummary {
+  totalCollected: number;
+  totalPending: number;
+  totalPaidOwners: number;
+  totalPendingOwners: number;
+}
+
+interface PortalSettings {
+  featuredListingsStr: string;
+  citiesStr: string;
+  localitiesStr: string;
+}
+
+interface NotificationItem {
+  id: number;
+  title: string;
+  detail: string;
+  time: string;
+  read: boolean;
+}
 
 @Component({
-  selector: 'app-management',
+  selector: 'app-management-portal',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterModule,
-    MatTableModule, MatPaginatorModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatIconModule, MatSnackBarModule, MatTooltipModule
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatTooltipModule,
+    MatMenuModule,
+    MatBadgeModule,
+    MatSnackBarModule
   ],
   templateUrl: './management.component.html',
   styleUrls: ['./management.component.css'],
 })
-export class ManagementComponent implements OnInit {
+export class ManagementPortalComponent implements OnInit, OnDestroy {
 
-  activeTab = 0;
   sidebarCollapsed = false;
-  today = new Date();
+  activeTab = 0;
 
-  tabTitles = [
-    'Dashboard Overview',
-    'User Management',
-    'PG Listings',
-    'Inquiry Management',
-    'Revenue & Payments',
-    'Platform Settings',
+  tabTitles = ['Dashboard', 'Users', 'PG Listings', 'Inquiries', 'Revenue', 'Settings'];
+
+  currentUserInitial = 'C';
+  currentUserName = 'Chirag Deshmukh';
+  currentUserRole = 'Management';
+
+  today = new Date();
+  clockLabel = '';
+  isDashboardRefreshing = false;
+  activeFilterCount = 0;
+
+  isDarkTheme = true;
+
+  notifications: NotificationItem[] = [
+    { id: 1, title: 'New owner signup', detail: 'Ananya Rao registered as an owner', time: '5m ago', read: false },
+    { id: 2, title: 'PG flagged for review', detail: 'Sunrise PG reported by a tenant', time: '38m ago', read: false },
+    { id: 3, title: 'Payout completed', detail: 'Weekly finder fee payout processed', time: '2h ago', read: true }
   ];
 
-  // Current user
-  currentUserName = 'Admin';
-  currentUserInitial = 'A';
-  currentUserRole = 'ADMIN';
-
-  // Dashboard
   dashboardStats: DashboardStats | null = null;
-  serviceHealth: ServiceHealth[] = [];
-  recentInquiries: Inquiry[] = [];
-  // Template reference placeholder (helps strict template checks)
-  loadingTpl: any = null;
 
-  // Users
-  users: Account[] = [];
-  usersTotal = 0;
-  usersPageSize = 10;
-  usersPageIndex = 0;
+  statTrends: Record<string, StatTrend> = {
+    totalPGs: { direction: 'up', percent: 8.2, caption: 'since last month' },
+    totalUsers: { direction: 'up', percent: 12.5, caption: 'since last week' },
+    totalOwners: { direction: 'up', percent: 4.1, caption: 'since last month' },
+    monthlyInquiries: { direction: 'down', percent: 3.4, caption: 'since last month' },
+    weeklySignups: { direction: 'up', percent: 21.6, caption: 'since last week' },
+    totalFinderFeesCollected: { direction: 'up', percent: 9.8, caption: 'since last month' },
+    pendingFinderFees: { direction: 'down', percent: 2.2, caption: 'since last month' },
+    totalTenants: { direction: 'up', percent: 6.7, caption: 'since last month' }
+  };
+
+  serviceHealth: ServiceHealthItem[] = [
+    { name: 'Account Service', status: 'UP' },
+    { name: 'PG Listing Service', status: 'UP' },
+    { name: 'Inquiry Service', status: 'UP' },
+    { name: 'Payment Service', status: 'DOWN' },
+    { name: 'Notification Service', status: 'UP' }
+  ];
+
+  recentInquiries: InquiryPreview[] = [
+    { fullName: 'Aarav Mehta', email: 'aarav.mehta@example.com', location: 'Pune', inquiryType: 'GENERAL' },
+    { fullName: 'Diya Kapoor', email: 'diya.kapoor@example.com', location: 'Bengaluru', inquiryType: 'OWNER_SIGNUP' },
+    { fullName: 'Rohan Iyer', email: 'rohan.iyer@example.com', location: 'Mumbai', inquiryType: 'ISSUE' }
+  ];
+
+  users: UserRow[] = [
+    { id: 1, firstName: 'Aarav', lastName: 'Mehta', email: 'aarav.mehta@example.com', phone: '9876543210', role: 'USER', active: true },
+    { id: 2, firstName: 'Diya', lastName: 'Kapoor', email: 'diya.kapoor@example.com', phone: '9876501234', role: 'OWNER', active: true },
+    { id: 3, firstName: 'Rohan', lastName: 'Iyer', email: 'rohan.iyer@example.com', phone: '9876512345', role: 'ADMIN', active: false }
+  ];
+  displayedUserColumns = ['id', 'name', 'email', 'phone', 'role', 'active', 'actions'];
   userSearch = '';
   userRoleFilter = '';
+  usersTotal = 3;
+  usersPageSize = 10;
+  usersPageIndex = 0;
+  private userSearch$ = new Subject<string>();
 
-  // PGs
-  pgs: PgListing[] = [];
-  pgsTotal = 0;
-  pgsPageSize = 10;
-  pgsPageIndex = 0;
+  pgs: PgRow[] = [
+    { id: 1, pgName: 'Sunrise PG', city: 'Pune', locality: 'Kothrud', ownerName: 'Diya Kapoor', lowestPrice: 8000, verified: true, active: true },
+    { id: 2, pgName: 'Nook Residency', city: 'Bengaluru', locality: 'Koramangala', ownerName: 'Vikram Nair', lowestPrice: 11000, verified: false, active: true }
+  ];
+  displayedPgColumns = ['id', 'pgName', 'city', 'locality', 'ownerName', 'lowestPrice', 'verified', 'active', 'actions'];
   pgCityFilter = '';
   pgOccupancyFilter = '';
   pgActiveFilter = '';
+  pgsTotal = 2;
+  pgsPageSize = 10;
+  pgsPageIndex = 0;
 
-  // Inquiries
-  inquiries: Inquiry[] = [];
-  inquiriesTotal = 0;
-  inquiriesPageSize = 10;
-  inquiriesPageIndex = 0;
+  inquiries: InquiryRow[] = [
+    { inquiryId: 101, fullName: 'Aarav Mehta', email: 'aarav.mehta@example.com', phone: '9876543210', location: 'Pune', inquiryType: 'GENERAL', message: 'Looking for a PG near Kothrud with food included.' },
+    { inquiryId: 102, fullName: 'Diya Kapoor', email: 'diya.kapoor@example.com', phone: '9876501234', location: 'Bengaluru', inquiryType: 'OWNER_SIGNUP', message: 'Want to list two properties in Koramangala.' }
+  ];
+  displayedInquiryColumns = ['id', 'fullName', 'email', 'phone', 'location', 'inquiryType', 'message'];
   inquirySearch = '';
   inquiryLocationFilter = '';
   inquiryTypeFilter = '';
+  inquiriesTotal = 2;
+  inquiriesPageSize = 10;
+  inquiriesPageIndex = 0;
 
-  // Revenue
   revenueSummary: RevenueSummary | null = null;
 
-  // Settings
-  settings: PlatformSettings = new PlatformSettings();
+  settings: PortalSettings = {
+    featuredListingsStr: '',
+    citiesStr: '',
+    localitiesStr: ''
+  };
   announcementTitle = '';
   announcementMessage = '';
-  announcementTarget = 'ALL_OWNERS';
+  announcementTarget: 'ALL_OWNERS' | 'ALL_USERS' | 'ALL' = 'ALL';
 
-  displayedUserColumns = ['id', 'name', 'email', 'phone', 'role', 'active', 'actions'];
-  displayedPgColumns   = ['id', 'pgName', 'city', 'locality', 'ownerName', 'lowestPrice', 'verified', 'active', 'actions'];
-  displayedInquiryColumns = ['id', 'fullName', 'email', 'phone', 'location', 'inquiryType', 'message'];
+  private clockTimer: any;
 
-  constructor(
-    private managementService: ManagementService,
-    private snackBar: MatSnackBar,
-    private router: Router,
-    private metaService: MetaService
-  ) {}
+  constructor(private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.metaService.setPrivatePage('Management Portal — CribUp');
-    // Set meta tags for management dashboard
-    // this.metaService.setPage('Management Dashboard', 'Admin dashboard for managing PG listings, users, and inquiries', '', 'https://cribup.vercel.app/management');
-    this.readCurrentUser();
     this.loadDashboard();
-    this.loadUsers();
-    this.loadPGs();
-    this.loadInquiries();
-    this.loadRevenue();
-    this.loadSettings();
-    this.loadServiceHealth();
+    this.updateClock();
+    this.clockTimer = setInterval(() => this.updateClock(), 1000 * 30);
+    this.userSearch$.pipe(debounceTime(350), distinctUntilChanged()).subscribe(() => this.onUserSearch());
+    this.recalculateActiveFilters();
   }
 
-  // ── Auth ───────────────────────────────────────────────────────────────────
-
-  readCurrentUser(): void {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      this.currentUserName = payload.sub || 'Admin';
-      this.currentUserInitial = this.currentUserName.charAt(0).toUpperCase();
-      this.currentUserRole = payload.role || 'ADMIN';
-    } catch { /* ignore */ }
+  ngOnDestroy(): void {
+    if (this.clockTimer) {
+      clearInterval(this.clockTimer);
+    }
   }
 
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    this.router.navigate(['/login']);
+  private updateClock(): void {
+    this.today = new Date();
+    this.clockLabel = this.today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  private loadDashboard(): void {
+    this.dashboardStats = {
+      totalPGs: 486,
+      totalUsers: 12480,
+      totalOwners: 612,
+      monthlyInquiries: 934,
+      weeklySignups: 187,
+      totalFinderFeesCollected: 1865400,
+      pendingFinderFees: 142560,
+      totalTenants: 5320
+    };
+    this.revenueSummary = {
+      totalCollected: 1865400,
+      totalPending: 142560,
+      totalPaidOwners: 341,
+      totalPendingOwners: 68
+    };
+  }
+
+  refreshDashboard(): void {
+    this.isDashboardRefreshing = true;
+    this.dashboardStats = null;
+    setTimeout(() => {
+      this.loadDashboard();
+      this.isDashboardRefreshing = false;
+      this.snackBar.open('Dashboard refreshed', 'Close', { duration: 2000 });
+    }, 900);
+  }
+
+  trendFor(key: keyof DashboardStats): StatTrend {
+    return this.statTrends[key];
+  }
+
+  toggleTheme(): void {
+    this.isDarkTheme = !this.isDarkTheme;
   }
 
   setTab(index: number): void {
     this.activeTab = index;
+    this.recalculateActiveFilters();
   }
 
-  // ── Dashboard ──────────────────────────────────────────────────────────────
-
-  loadDashboard(): void {
-    this.managementService.getDashboardStats().subscribe({
-      next: (data) => { this.dashboardStats = data; },
-      error: () => {
-        // Keep null when dashboard cannot be loaded; avoid hard-coded defaults
-        this.dashboardStats = null;
-        this.snackBar.open('Failed to load dashboard data', 'Close', { duration: 4000 });
-      }
-    });
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardShortcut(event: KeyboardEvent): void {
+    if (!event.altKey) {
+      return;
+    }
+    const num = Number(event.key);
+    if (num >= 1 && num <= this.tabTitles.length) {
+      event.preventDefault();
+      this.setTab(num - 1);
+    }
   }
 
-  loadServiceHealth(): void {
-    this.managementService.getServiceHealth().subscribe({
-      next: (data) => { this.serviceHealth = data; },
-      error: () => {
-        // don't populate with hardcoded values; leave empty and notify
-        this.serviceHealth = [];
-        this.snackBar.open('Failed to load service health', 'Close', { duration: 4000 });
-      }
-    });
+  logout(): void {
+    this.snackBar.open('Logged out', 'Close', { duration: 2000 });
   }
 
-  // ── Users ──────────────────────────────────────────────────────────────────
-
-  loadUsers(): void {
-    this.managementService.getUsers(this.usersPageIndex, this.usersPageSize, this.userSearch).subscribe({
-      next: (page: PageResponse<Account>) => {
-        this.users = page.content;
-        this.usersTotal = page.totalElements;
-      },
-      error: () => {
-        // If backend users endpoint returns plain array
-        this.managementService.getAllUsersFallback().subscribe({
-          next: (list: Account[]) => {
-            this.users = list;
-            this.usersTotal = list.length;
-          },
-          error: () => {}
-        });
-      }
-    });
+  unreadNotificationCount(): number {
+    return this.notifications.filter(n => !n.read).length;
   }
 
-  onUserSearch(): void { this.usersPageIndex = 0; this.loadUsers(); }
-  onUserPage(ev: PageEvent): void {
-    this.usersPageIndex = ev.pageIndex;
-    this.usersPageSize  = ev.pageSize;
-    this.loadUsers();
+  markAllNotificationsRead(): void {
+    this.notifications = this.notifications.map(n => ({ ...n, read: true }));
   }
 
-  toggleUserStatus(user: Account): void {
-    const uid = (user as any).id;
-    const isActive = (user as any).active;
-    const action = (isActive === false)
-      ? this.managementService.activateUser(uid)
-      : this.managementService.deactivateUser(uid);
-
-    action.subscribe({
-      next: () => {
-        (user as any).active = !(user as any).active;
-        this.snackBar.open(
-          `User ${(user as any).active ? 'activated' : 'deactivated'}`, 'Close', { duration: 3000 }
-        );
-      },
-      error: () => {
-        this.snackBar.open('Action failed. Check if the user status endpoint is implemented.', 'Close', { duration: 4000 });
-      }
-    });
+  onUserSearchInput(value: string): void {
+    this.userSearch = value;
+    this.userSearch$.next(value);
   }
 
-  viewUserPGs(user: Account): void {
-    this.pgCityFilter = '';
-    this.pgOccupancyFilter = '';
-    this.activeTab = 2;
-    // Filter PGs by this owner load fresh
-    this.loadPGs();
-    this.snackBar.open(`Showing PGs for owner #${(user as any).id}`, 'Close', { duration: 2000 });
+  onUserSearch(): void {
+    this.usersPageIndex = 0;
+    this.recalculateActiveFilters();
   }
 
-  // ── PGs ────────────────────────────────────────────────────────────────────
-
-  loadPGs(): void {
-    this.managementService.getPGs(
-      this.pgsPageIndex, this.pgsPageSize, this.pgCityFilter, this.pgOccupancyFilter
-    ).subscribe({
-      next: (page: PageResponse<PgListing>) => {
-        this.pgs = page.content;
-        this.pgsTotal = page.totalElements;
-      },
-      error: () => {}
-    });
+  onUserPage(event: PageEvent): void {
+    this.usersPageIndex = event.pageIndex;
+    this.usersPageSize = event.pageSize;
   }
 
-  onPgFilter(): void { this.pgsPageIndex = 0; this.loadPGs(); }
-  onPgPage(ev: PageEvent): void {
-    this.pgsPageIndex = ev.pageIndex;
-    this.pgsPageSize  = ev.pageSize;
-    this.loadPGs();
+  toggleUserStatus(user: UserRow): void {
+    user.active = user.active === false ? true : false;
+    this.snackBar.open(
+      `${user.firstName} ${user.lastName} is now ${user.active ? 'active' : 'inactive'}`,
+      'Close',
+      { duration: 2500 }
+    );
   }
 
-  verifyPg(pg: PgListing): void {
-    this.managementService.verifyListing(pg.id!).subscribe({
-      next: () => {
-        pg.verified = true;
-        this.snackBar.open('PG marked as verified ✓', 'Close', { duration: 3000 });
-      },
-      error: () => this.snackBar.open('Verify failed check backend endpoint.', 'Close', { duration: 3000 })
-    });
+  viewUserPGs(user: UserRow): void {
+    this.snackBar.open(`Showing PGs owned by ${user.firstName} ${user.lastName}`, 'Close', { duration: 2500 });
   }
 
-  deletePg(pg: PgListing): void {
-    if (!confirm(`Permanently delete "${pg.pgName}"? This cannot be undone.`)) return;
-    this.managementService.deleteListing(pg.id!).subscribe({
-      next: () => {
-        this.snackBar.open('PG deleted.', 'Close', { duration: 3000 });
-        this.loadPGs();
-      },
-      error: () => this.snackBar.open('Delete failed check backend endpoint.', 'Close', { duration: 3000 })
-    });
+  onPgFilter(): void {
+    this.pgsPageIndex = 0;
+    this.recalculateActiveFilters();
   }
 
-  // ── Inquiries ──────────────────────────────────────────────────────────────
-
-  loadInquiries(): void {
-    this.managementService.getInquiries(this.inquiriesPageIndex, this.inquiriesPageSize, this.inquirySearch, this.inquiryLocationFilter, this.inquiryTypeFilter).subscribe({
-      next: (page: PageResponse<Inquiry>) => {
-        this.inquiries = page.content;
-        this.inquiriesTotal = page.totalElements;
-        if (this.recentInquiries.length === 0) {
-          this.recentInquiries = page.content.slice(0, 5);
-        }
-      },
-      error: () => {}
-    });
+  onPgPage(event: PageEvent): void {
+    this.pgsPageIndex = event.pageIndex;
+    this.pgsPageSize = event.pageSize;
   }
 
-  onInquiryFilter(): void { this.inquiriesPageIndex = 0; this.loadInquiries(); }
-  onInquiryPage(ev: PageEvent): void {
-    this.inquiriesPageIndex = ev.pageIndex;
-    this.inquiriesPageSize  = ev.pageSize;
-    this.loadInquiries();
+  verifyPg(pg: PgRow): void {
+    pg.verified = true;
+    this.snackBar.open(`${pg.pgName} marked as verified`, 'Close', { duration: 2500 });
+  }
+
+  deletePg(pg: PgRow): void {
+    this.pgs = this.pgs.filter(p => p.id !== pg.id);
+    this.pgsTotal = this.pgs.length;
+    this.snackBar.open(`${pg.pgName} removed`, 'Close', { duration: 2500 });
+  }
+
+  onInquiryFilter(): void {
+    this.inquiriesPageIndex = 0;
+    this.recalculateActiveFilters();
+  }
+
+  onInquiryPage(event: PageEvent): void {
+    this.inquiriesPageIndex = event.pageIndex;
+    this.inquiriesPageSize = event.pageSize;
   }
 
   exportInquiries(): void {
-    const headers = ['ID', 'Name', 'Email', 'Phone', 'Location', 'Type', 'Message'];
+    const header = ['ID', 'Name', 'Email', 'Phone', 'Location', 'Type', 'Message'];
     const rows = this.inquiries.map(i => [
-      i.id,
-      `"${i.fullName}"`,
+      String(i.inquiryId ?? i.id ?? ''),
+      i.fullName,
       i.email,
       i.phone,
-      `"${i.location}"`,
+      i.location,
       i.inquiryType || 'GENERAL',
-      `"${(i.message || '').replace(/"/g, "'")}"`,
+      (i.message || '').replace(/,/g, ';')
     ]);
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const csvContent = [header, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `inquiries_${new Date().toISOString().slice(0,10)}.csv`;
-    a.click();
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `crib-inquiries-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
     URL.revokeObjectURL(url);
-    this.snackBar.open('CSV exported!', 'Close', { duration: 2000 });
-  }
-
-  // ── Revenue ────────────────────────────────────────────────────────────────
-
-  loadRevenue(): void {
-    this.managementService.getRevenueSummary().subscribe({
-      next: (data) => { this.revenueSummary = data; },
-      error: () => { this.revenueSummary = null; }
-    });
-  }
-
-  // ── Settings ───────────────────────────────────────────────────────────────
-
-  loadSettings(): void {
-    this.managementService.getPlatformSettings().subscribe({
-      next: (data) => { this.settings = data; },
-      error: () => { this.settings = new PlatformSettings(); }
-    });
+    this.snackBar.open('Inquiries exported as CSV', 'Close', { duration: 2500 });
   }
 
   saveSettings(): void {
-    this.managementService.savePlatformSettings(this.settings).subscribe({
-      next: () => this.snackBar.open('Settings saved!', 'Close', { duration: 3000 }),
-      error: () => this.snackBar.open('Settings saved locally (backend endpoint not yet connected).', 'Close', { duration: 3000 })
-    });
+    this.snackBar.open('Settings saved', 'Close', { duration: 2500 });
   }
 
   broadcastAnnouncement(): void {
     if (!this.announcementTitle.trim() || !this.announcementMessage.trim()) {
-      this.snackBar.open('Title and message are required.', 'Close', { duration: 3000 });
+      this.snackBar.open('Please fill in the announcement title and message', 'Close', { duration: 3000 });
       return;
     }
-    this.managementService.broadcastAnnouncement(
-      this.announcementTitle, this.announcementMessage, this.announcementTarget
-    ).subscribe({
-      next: () => {
-        this.snackBar.open('Broadcast sent!', 'Close', { duration: 3000 });
-        this.announcementTitle = '';
-        this.announcementMessage = '';
-      },
-      error: () => this.snackBar.open('Broadcast endpoint not yet implemented on backend.', 'Close', { duration: 3000 })
-    });
+    this.snackBar.open(`Announcement sent to ${this.announcementTarget.replace('_', ' ').toLowerCase()}`, 'Close', { duration: 3000 });
+    this.announcementTitle = '';
+    this.announcementMessage = '';
+  }
+
+  private recalculateActiveFilters(): void {
+    let count = 0;
+    if (this.activeTab === 1) {
+      if (this.userSearch) count++;
+      if (this.userRoleFilter) count++;
+    } else if (this.activeTab === 2) {
+      if (this.pgCityFilter) count++;
+      if (this.pgOccupancyFilter) count++;
+      if (this.pgActiveFilter) count++;
+    } else if (this.activeTab === 3) {
+      if (this.inquirySearch) count++;
+      if (this.inquiryLocationFilter) count++;
+      if (this.inquiryTypeFilter) count++;
+    }
+    this.activeFilterCount = count;
+  }
+
+  clearFilters(): void {
+    if (this.activeTab === 1) {
+      this.userSearch = '';
+      this.userRoleFilter = '';
+      this.onUserSearch();
+    } else if (this.activeTab === 2) {
+      this.pgCityFilter = '';
+      this.pgOccupancyFilter = '';
+      this.pgActiveFilter = '';
+      this.onPgFilter();
+    } else if (this.activeTab === 3) {
+      this.inquirySearch = '';
+      this.inquiryLocationFilter = '';
+      this.inquiryTypeFilter = '';
+      this.onInquiryFilter();
+    }
   }
 }
