@@ -42,6 +42,7 @@ import { FooterComponent } from '../footer/footer.component';
 })
 export class ManagementComponent implements OnInit {
 
+  mobileNavOpen = false;
   activeTab = 0;
   sidebarCollapsed = false;
   today = new Date();

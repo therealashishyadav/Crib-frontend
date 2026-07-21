@@ -1,68 +1,56 @@
-
 <div class="portal-wrapper">
 
-  <!-- ── Sidebar ────────────────────────────────────────────────────────────── -->
-  <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
-    <div class="sidebar-header">
-      <div class="logo" *ngIf="!sidebarCollapsed">
+  <header class="topnav">
+    <div class="topnav-inner">
+      <a class="topnav-brand" routerLink="/management">
         <span class="logo-icon"></span>
         <span class="logo-text">CribUp</span>
+      </a>
+
+      <nav class="topnav-links" [class.open]="mobileNavOpen">
+        <button class="nav-item" [class.active]="activeTab === 0" (click)="setTab(0)">
+          <mat-icon>dashboard</mat-icon><span>Dashboard</span>
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 1" (click)="setTab(1)">
+          <mat-icon>people</mat-icon><span>Users</span>
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 2" (click)="setTab(2)">
+          <mat-icon>apartment</mat-icon><span>PG Listings</span>
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 3" (click)="setTab(3)">
+          <mat-icon>forum</mat-icon><span>Inquiries</span>
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 4" (click)="setTab(4)">
+          <mat-icon>payments</mat-icon><span>Revenue</span>
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 5" (click)="setTab(5)">
+          <mat-icon>settings</mat-icon><span>Settings</span>
+        </button>
+        <button class="nav-item nav-item-add" routerLink="/management/add-user">
+          <mat-icon>person_add</mat-icon><span>Add User</span>
+        </button>
+      </nav>
+
+      <div class="topnav-actions">
+        <div class="user-badge">
+          <div class="avatar">{{ currentUserInitial }}</div>
+          <div class="user-info">
+            <span class="user-name">{{ currentUserName }}</span>
+            <span class="user-role">{{ currentUserRole }}</span>
+          </div>
+        </div>
+        <button class="logout-btn" (click)="logout()" matTooltip="Logout">
+          <mat-icon>logout</mat-icon>
+        </button>
+        <button class="mobile-toggle" (click)="mobileNavOpen = !mobileNavOpen" [attr.aria-expanded]="mobileNavOpen">
+          <mat-icon>{{ mobileNavOpen ? 'close' : 'menu' }}</mat-icon>
+        </button>
       </div>
-      <span class="logo-icon-mini" *ngIf="sidebarCollapsed"></span>
-      <button class="collapse-btn" (click)="sidebarCollapsed = !sidebarCollapsed">
-        <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
-      </button>
     </div>
+  </header>
 
-    <div class="user-badge" *ngIf="!sidebarCollapsed">
-      <div class="avatar">{{ currentUserInitial }}</div>
-      <div class="user-info">
-        <span class="user-name">{{ currentUserName }}</span>
-        <span class="user-role">{{ currentUserRole }}</span>
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <button mat-button routerLink="/management/add-user">
-        <mat-icon>person_add</mat-icon> Add User
-      </button>
-      <button class="nav-item" [class.active]="activeTab === 0" (click)="activeTab = 0">
-        <mat-icon>dashboard</mat-icon>
-        <span *ngIf="!sidebarCollapsed">Dashboard</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab === 1" (click)="setTab(1)">
-        <mat-icon>people</mat-icon>
-        <span *ngIf="!sidebarCollapsed">Users</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab === 2" (click)="setTab(2)">
-        <mat-icon>apartment</mat-icon>
-        <span *ngIf="!sidebarCollapsed">PG Listings</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab === 3" (click)="setTab(3)">
-        <mat-icon>forum</mat-icon>
-        <span *ngIf="!sidebarCollapsed">Inquiries</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab === 4" (click)="setTab(4)">
-        <mat-icon>payments</mat-icon>
-        <span *ngIf="!sidebarCollapsed">Revenue</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab === 5" (click)="setTab(5)">
-        <mat-icon>settings</mat-icon>
-        <span *ngIf="!sidebarCollapsed">Settings</span>
-      </button>
-    </nav>
-
-    <div class="sidebar-footer" *ngIf="!sidebarCollapsed">
-      <button class="logout-btn" (click)="logout()">
-        <mat-icon>logout</mat-icon> Logout
-      </button>
-    </div>
-  </aside>
-
-  <!-- ── Main Content ─────────────────────────────────────────────────────── -->
   <main class="main-content">
 
-    <!-- Top bar -->
     <header class="topbar">
       <h1 class="page-title">{{ tabTitles[activeTab] }}</h1>
       <div class="topbar-right">
@@ -73,13 +61,10 @@
       </div>
     </header>
 
-    <!-- ── DASHBOARD TAB ──────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 0" class="tab-panel">
 
-      <!-- loading shown when dashboardStats not yet loaded -->
       <div class="loading" *ngIf="!dashboardStats">Loading dashboard…</div>
 
-      <!-- Stat cards -->
       <div class="stats-grid" *ngIf="dashboardStats">
         <div class="stat-card indigo">
           <div class="stat-icon"><mat-icon>apartment</mat-icon></div>
@@ -139,7 +124,6 @@
         </div>
       </div>
 
-      <!-- Service health -->
       <div class="section-card" *ngIf="dashboardStats">
         <h2 class="section-title"><mat-icon>monitor_heart</mat-icon> Service Health</h2>
         <div class="health-grid">
@@ -151,7 +135,6 @@
         </div>
       </div>
 
-      <!-- Recent inquiries preview -->
       <div class="section-card" *ngIf="recentInquiries.length > 0">
         <h2 class="section-title"><mat-icon>inbox</mat-icon> Recent Inquiries</h2>
         <div class="mini-table">
@@ -168,7 +151,6 @@
       </div>
     </div>
 
-    <!-- ── USER MANAGEMENT TAB ────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 1" class="tab-panel">
       <div class="filter-row">
         <mat-form-field appearance="outline" class="search-field">
@@ -249,7 +231,6 @@
       </div>
     </div>
 
-    <!-- ── PG LISTINGS TAB ────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 2" class="tab-panel">
       <div class="filter-row">
         <mat-form-field appearance="outline" class="small-field">
@@ -337,7 +318,6 @@
       </div>
     </div>
 
-    <!-- ── INQUIRIES TAB ──────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 3" class="tab-panel">
       <div class="filter-row">
         <mat-form-field appearance="outline" class="search-field">
@@ -406,7 +386,6 @@
       </div>
     </div>
 
-    <!-- ── REVENUE TAB ────────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 4" class="tab-panel">
       <div class="stats-grid" *ngIf="revenueSummary">
         <div class="stat-card emerald">
@@ -445,10 +424,8 @@
       </div>
     </div>
 
-    <!-- ── SETTINGS TAB ───────────────────────────────────────────────────── -->
     <div *ngIf="activeTab === 5" class="tab-panel">
       <div class="settings-grid">
-        <!-- Featured Listings -->
         <div class="section-card">
           <h2 class="section-title"><mat-icon>star</mat-icon> Featured Listings</h2>
           <mat-form-field appearance="outline" class="full-width">
@@ -468,7 +445,6 @@
           </button>
         </div>
 
-        <!-- Broadcast -->
         <div class="section-card">
           <h2 class="section-title"><mat-icon>campaign</mat-icon> Broadcast Announcement</h2>
           <mat-form-field appearance="outline" class="full-width">
