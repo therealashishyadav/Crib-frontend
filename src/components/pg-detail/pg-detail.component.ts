@@ -25,7 +25,7 @@ import { PgListingResponse } from '../../entity/PgModel';
     MatChipsModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,          // ✅ add this
+    MatSnackBarModule,         
     NavbarComponent,
     FooterComponent,
   ],
@@ -38,14 +38,13 @@ export class PgDetailComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
 
-  // Gallery state
-  activeImageIndex = 0;
+   activeImageIndex = 0;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private pgListingService: PgListingService,
-    private snackBar: MatSnackBar,          // ✅ inject MatSnackBar
+    private snackBar: MatSnackBar,
     private metaService: MetaService
   ) { }
 

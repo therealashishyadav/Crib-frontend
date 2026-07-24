@@ -120,10 +120,10 @@
                             <span class="sharing-price">₹{{ opt.pricePerMonth | number }}<small>/mo</small></span>
                         </div>
                         <div class="sharing-meta">
-                            <span><mat-icon>bed</mat-icon> {{ opt.totalBeds }} beds total</span>
-                            <span class="available-beds" [class.full]="opt.availableBeds === 0">
+                            <span><mat-icon>bed</mat-icon> {{ opt.totalBeds }} beds </span>
+                            <!-- <span class="available-beds" [class.full]="opt.availableBeds === 0">
                                 {{ opt.availableBeds > 0 ? opt.availableBeds + ' available' : 'Full' }}
-                            </span>
+                            </span> -->
                         </div>
                         <!-- Amenities for this sharing type -->
                         <div class="sharing-amenities" *ngIf="opt.amenities.length">
@@ -486,8 +486,8 @@
                 </div>
 
             </div>
+            <br>
 
-            <!-- ── QUICK FACTS CARD ─────────────────────────────────────────────── -->
             <div class="quick-facts-card">
                 <h3 class="qf-title">Quick Facts</h3>
                 <div class="qf-item">
