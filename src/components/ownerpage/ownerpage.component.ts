@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PgService } from '../../service/pg.service';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
 import { MetaService } from '../../service/meta.service';
@@ -30,7 +30,8 @@ export class OwnerpageComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private pgService: PgService,
     private snackBar: MatSnackBar,
-    private metaService: MetaService
+    private metaService: MetaService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -87,7 +88,7 @@ export class OwnerpageComponent implements OnInit {
   }
 
   editPG(pg: any): void {
-    this.editingPG = { ...pg };
+  this.router.navigate(['/owner/edit-pg', pg.id]);
   }
 
   saveEdit(): void {

@@ -28,6 +28,7 @@ import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of
 import { AddUserComponent } from '../components/add-user/add-user.component';
 import { ProfileComponent } from '../components/profile/profile.component';
 import { RoleGuard } from '../RoleGuard';
+import { EditPgComponent } from '../components/edit-pg/edit-pg.component';
 // import { Navbar2Component } from '../components/navbar2/navbar2.component';
 
 export const routes: Routes = [
@@ -52,7 +53,8 @@ export const routes: Routes = [
     { path: 'owner-navbar', component: OwnerNavbarComponent },
     // { path: 'ownerpage', component: OwnerpageComponent},
     // { path: 'management', component: ManagementComponent},
-    { path: 'management', component: ManagementComponent , canActivate: [RoleGuard], data: { roles: ['MANAGEMENT'] }, runGuardsAndResolvers: 'always' },
+    { path: 'edit-pg/:id', component: EditPgComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] }, runGuardsAndResolvers: 'always' },
+    { path: 'management', component: ManagementComponent, canActivate: [RoleGuard], data: { roles: ['MANAGEMENT'] }, runGuardsAndResolvers: 'always' },
     { path: 'ownerpage', component: OwnerpageComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] }, runGuardsAndResolvers: 'always' },
     { path: 'addpglist', component: ListPropertyComponent },
     { path: 'owner/add-tenant', component: AddTenantComponent },

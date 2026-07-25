@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { MetaService } from '../../service/meta.service';
+import { FooterComponent } from '../footer/footer.component';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-terms-of-service',
+  standalone: true,
   templateUrl: './terms-of-service.component.html',
   styleUrls: ['./terms-of-service.component.scss'],
+  imports: [NavbarComponent, FooterComponent],
   animations: [
     trigger('fadeInStagger', [
       transition('* => *', [

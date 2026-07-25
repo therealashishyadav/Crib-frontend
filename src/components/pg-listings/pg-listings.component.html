@@ -221,7 +221,7 @@
           <span class="gender-badge" [ngClass]="getGenderClass(pg.occupancyType)">
             {{ getGenderLabel(pg.occupancyType) }}
           </span>
-          <img [src]="pg.coverImageUrl || 'assets/images/pg-placeholder.jpg'" [alt]="pg.pgName" class="card-img"
+          <img [src]="pg.coverImageUrl || 'assets/images/pg-placeholder.jpg'" [alt]="pg.pgName" class="card-img" routerLink="['/pg', pg.id]"
             loading="lazy" (error)="$any($event.target).src='assets/images/pg-placeholder.jpg'" />
           <span class="img-tag new" *ngIf="pg.isBrandNew">New</span>
           <span class="img-tag verified" *ngIf="pg.isPartnerVerified">
