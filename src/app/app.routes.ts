@@ -54,6 +54,7 @@ export const routes: Routes = [
     // { path: 'ownerpage', component: OwnerpageComponent},
     // { path: 'management', component: ManagementComponent},
     { path: 'edit-pg/:id', component: EditPgComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] }, runGuardsAndResolvers: 'always' },
+    { path: 'owner/edit-pg/:id', component: EditPgComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] }, runGuardsAndResolvers: 'always' },
     { path: 'management', component: ManagementComponent, canActivate: [RoleGuard], data: { roles: ['MANAGEMENT'] }, runGuardsAndResolvers: 'always' },
     { path: 'ownerpage', component: OwnerpageComponent, canActivate: [RoleGuard], data: { roles: ['OWNER'] }, runGuardsAndResolvers: 'always' },
     { path: 'addpglist', component: ListPropertyComponent },
