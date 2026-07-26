@@ -1,5 +1,3 @@
-// PATH: src/components/edit-pg/edit-pg.component.ts
-
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -11,27 +9,33 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { PgListingService } from '../../service/pg-listing.service';
+import { PgModel, SharingOptionModel } from '../../entity/PgModel';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
-import { PgListingService } from '../../service/pg-listing.service';
-import { PgModel, SharingOptionModel } from '../../entity/PgModel';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; 
 
-const CLOUDINARY_CLOUD_NAME    = 'dmb3nvt45';
+const CLOUDINARY_CLOUD_NAME = 'dmb3nvt45';
 const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned';
 
 @Component({
   selector: 'app-edit-pg',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
-    MatFormFieldModule, MatInputModule, MatButtonModule,
-    MatSelectModule, MatCheckboxModule, MatIconModule,
-    MatSnackBarModule, MatToolbarModule, MatCardModule,
-    MatDividerModule, MatProgressSpinnerModule,
-    OwnerNavbarComponent
+ CommonModule,
+    FormsModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatCardModule,
+    MatDividerModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule
   ],
   templateUrl: './edit-pg.component.html',
   styleUrls: ['./edit-pg.component.css'],
@@ -39,7 +43,9 @@ const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned';
 })
 export class EditPgComponent implements OnInit {
 
-  @ViewChild('pgForm') pgForm!: NgForm;
+  @ViewChild('editPgForm') pgForm!: NgForm;
+
+  readonly URL = typeof window !== 'undefined' ? window.URL : ({} as typeof URL);
 
   pgId!: number;
   pgModel: PgModel = new PgModel();
@@ -102,13 +108,13 @@ export class EditPgComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
+  goBack(): void {
+    this.router.navigate(['/owner/dashboard']);
+  }
+
   ngOnInit(): void {
     this.pgId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadPg();
-  }
-
-  goBack(): void {
-    this.router.navigate(['/owner/dashboard']);
   }
 
   loadPg(): void {
@@ -214,57 +220,19 @@ export class EditPgComponent implements OnInit {
     return data.secure_url as string;
   }
 
-  // ── Clean model ──────────────────────────────────────────────────────────
   private cleanModel(model: any): any {
-    // Start with a shallow copy
     const cleaned = { ...model };
-
-    // ⚠️ Remove fields that are NOT in the backend DTO (read-only or extra)
-    const excludedKeys = [
-      // Read-only / computed fields from the response
-      'id', 'ownerId', 'ownerUserId', 'isActive', 'isVerified',
-      'isBrandNew', 'isPartnerVerified', 'rating', 'totalReviews',
-      'createdAt', 'updatedAt', 'lowestPrice', 'occupancyLabel',
-      'bedTypeLabel', 'housekeepingLabel', 'availabilityLabel',
-      'agreementLabel',
-      // Extra fields present in PgModel but NOT in the backend DTO
-      'gymAvailable', 'rooftopAccess', 'dispenserAvailable',
-      'guestsOvernightAllowed', 'maintenanceChargesInfo'
-    ];
-    excludedKeys.forEach(key => delete cleaned[key]);
-
-    // Remove empty strings and null/undefined values
-    Object.keys(cleaned).forEach(k => {
-      if (cleaned[k] === '' || cleaned[k] === null || cleaned[k] === undefined) {
-        delete cleaned[k];
-      }
+    Object.keys(cleaned).forEach(k => { if (cleaned[k] === '') cleaned[k] = null; });
+    cleaned.sharingOptions = model.sharingOptions.map((opt: any) => {
+      const c = { ...opt };
+      Object.keys(c).forEach(k => { if (c[k] === '') c[k] = null; });
+      return c;
     });
-
-    // Clean sharingOptions: remove 'id' and empty values
-    if (cleaned.sharingOptions && Array.isArray(cleaned.sharingOptions)) {
-      cleaned.sharingOptions = cleaned.sharingOptions.map((opt: any) => {
-        const c = { ...opt };
-        delete c.id;                // remove id if present
-        // Remove empty strings, null, undefined inside each option
-        Object.keys(c).forEach(k => {
-          if (c[k] === '' || c[k] === null || c[k] === undefined) {
-            delete c[k];
-          }
-        });
-        return c;
-      });
-    }
-
     return cleaned;
   }
 
   // ── Submit ────────────────────────────────────────────────────────────────
   async SaveChanges(): Promise<void> {
-    if (this.pgForm.invalid) {
-      this.snackBar.open('Please fill all required fields.', 'Close', { duration: 3000 });
-      return;
-    }
-
     this.isSubmitting = true;
     try {
       // Upload new cover image if selected
@@ -291,7 +259,6 @@ export class EditPgComponent implements OnInit {
         this.pgModel.videoLink = await this.uploadToCloudinary(this.videoFile, 'video');
       }
 
-      // Clean the model – this will strip read-only and extra fields
       const payload = this.cleanModel(this.pgModel);
 
       this.pgListingService.updateListing(this.pgId, payload).subscribe({
