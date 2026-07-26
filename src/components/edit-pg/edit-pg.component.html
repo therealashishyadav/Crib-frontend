@@ -1,3 +1,5 @@
+<!-- PATH: src/components/edit-pg/edit-pg.component.html -->
+
 <div class="edit-pg-container">
 
   <!-- Header -->
@@ -361,7 +363,8 @@
         <div class="media-group">
           <h4>Cover Image</h4>
           <div class="image-preview" *ngIf="coverImagePreview">
-            <img [src]="coverImagePreview" alt="Cover">
+            <img [src]="coverImagePreview" alt="Cover"
+                 (error)="coverImagePreview = 'assets/default-cover.jpg'">
             <button mat-icon-button color="warn" type="button" (click)="removeCoverImage()">
               <mat-icon>close</mat-icon>
             </button>
@@ -376,14 +379,15 @@
           <div class="gallery-preview">
             <!-- Existing images -->
             <div *ngFor="let img of existingGalleryImages; let i = index" class="gallery-item">
-              <img [src]="img" alt="Gallery">
+              <img [src]="img" alt="Gallery"
+                   (error)="existingGalleryImages[i] = 'assets/default-gallery.jpg'">
               <button mat-icon-button color="warn" type="button" (click)="removeExistingGalleryImage(i)">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
             <!-- New images waiting to be uploaded -->
             <div *ngFor="let file of galleryImageFiles; let j = index" class="gallery-item new-item">
-              <img [src]="URL.createObjectURL(file)" alt="New gallery">
+              <img [src]="getObjectURL(file)" alt="New gallery">
               <button mat-icon-button color="warn" type="button" (click)="removeNewGalleryImage(j)">
                 <mat-icon>close</mat-icon>
               </button>
@@ -397,7 +401,7 @@
         <div class="media-group">
           <h4>Video (Optional)</h4>
           <div class="video-preview" *ngIf="pgModel.videoLink || videoFile">
-            <video controls [src]="videoFile ? URL.createObjectURL(videoFile) : pgModel.videoLink" width="300"></video>
+            <video controls [src]="videoFile ? getObjectURL(videoFile) : pgModel.videoLink" width="300"></video>
             <button mat-icon-button color="warn" type="button" (click)="removeVideo()">
               <mat-icon>close</mat-icon>
             </button>
@@ -438,7 +442,7 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- Form Actions (buttons inside form) -->
+    <!-- Form Actions -->
     <div class="form-actions">
       <button mat-button type="button" (click)="goBack()">Cancel</button>
       <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting || editPgForm.invalid">
