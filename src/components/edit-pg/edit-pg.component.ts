@@ -48,7 +48,8 @@ const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned';
 })
 export class EditPgComponent implements OnInit {
 
-  @ViewChild('pgForm') pgForm!: NgForm;
+  // ✅ Now matches the template variable #editPgForm
+  @ViewChild('editPgForm') pgForm!: NgForm;
 
   pgId!: number;
   pgModel: PgModel = new PgModel();
@@ -124,14 +125,16 @@ export class EditPgComponent implements OnInit {
     this.isLoading = true;
     this.pgListingService.getListingById(this.pgId).subscribe({
       next: (pg) => {
-        // Map response back to PgModel
-        this.pgModel = {
-          ...pg,
-          sharingOptions: pg.sharingOptions ?? [new SharingOptionModel()]
-        };
-        this.coverImagePreview      = pg.coverImageUrl ?? null;
-        this.existingGalleryImages  = pg.galleryImages ?? [];
+        this.pgModel = { ...pg, sharingOptions: pg.sharingOptions ?? [new SharingOptionModel()] };
+        this.coverImagePreview = pg.coverImageUrl ?? null;
+        this.existingGalleryImages = pg.galleryImages ?? [];
         this.isLoading = false;
+        // After view updates, check validity
+        setTimeout(() => {
+          if (this.pgForm) {
+            console.log('Form valid:', this.pgForm.valid);
+          }
+        });
       },
       error: (err) => {
         this.isLoading = false;
@@ -230,13 +233,10 @@ export class EditPgComponent implements OnInit {
 
   // ── Clean model for backend DTO ──────────────────────────────────────────
   private cleanModel(model: any): any {
-    // Start with a shallow copy
     const cleaned = { ...model };
 
     // Explicitly remove fields that the backend DTO does NOT accept
-    // (read-only, computed, extra fields from PgModel)
     const excludedKeys = [
-      // Read-only / computed fields from the response
       'id', 'ownerId', 'ownerUserId', 'isActive', 'isVerified',
       'isBrandNew', 'isPartnerVerified', 'rating', 'totalReviews',
       'createdAt', 'updatedAt', 'lowestPrice', 'occupancyLabel',
@@ -259,8 +259,7 @@ export class EditPgComponent implements OnInit {
     if (cleaned.sharingOptions && Array.isArray(cleaned.sharingOptions)) {
       cleaned.sharingOptions = cleaned.sharingOptions.map((opt: any) => {
         const c = { ...opt };
-        delete c.id;                // remove id if present
-        // Remove empty strings, null, undefined inside each option
+        delete c.id;
         Object.keys(c).forEach(k => {
           if (c[k] === '' || c[k] === null || c[k] === undefined) {
             delete c[k];
@@ -275,7 +274,7 @@ export class EditPgComponent implements OnInit {
 
   // ── Submit ────────────────────────────────────────────────────────────────
   async SaveChanges(): Promise<void> {
-    if (this.pgForm.invalid) {
+    if (this.pgForm?.invalid) {
       this.snackBar.open('Please fill all required fields.', 'Close', { duration: 3000 });
       return;
     }
@@ -309,7 +308,6 @@ export class EditPgComponent implements OnInit {
       // Clean the model – this will strip read-only and extra fields
       const payload = this.cleanModel(this.pgModel);
 
-      // Debug: log the payload to see what's being sent
       console.log('Update payload:', payload);
 
       this.pgListingService.updateListing(this.pgId, payload).subscribe({
