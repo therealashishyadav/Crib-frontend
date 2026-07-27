@@ -133,7 +133,7 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- ===== SECTION 2: Room Amenities ===== -->
+    <!-- ===== SECTION 2: Room Amenities (no required fields) ===== -->
     <mat-card class="form-section">
       <mat-card-title>Room Amenities</mat-card-title>
       <mat-card-content>
@@ -355,7 +355,7 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- ===== SECTION 8: Media ===== -->
+    <!-- ===== SECTION 8: Media (ALL OPTIONAL – no required) ===== -->
     <mat-card class="form-section">
       <mat-card-title>Media</mat-card-title>
       <mat-card-content>
@@ -377,7 +377,6 @@
         <div class="media-group">
           <h4>Gallery Images</h4>
           <div class="gallery-preview">
-            <!-- Existing images -->
             <div *ngFor="let img of existingGalleryImages; let i = index" class="gallery-item">
               <img [src]="img" alt="Gallery"
                    (error)="existingGalleryImages[i] = 'assets/default-gallery.jpg'">
@@ -385,7 +384,6 @@
                 <mat-icon>close</mat-icon>
               </button>
             </div>
-            <!-- New images waiting to be uploaded -->
             <div *ngFor="let file of galleryImageFiles; let j = index" class="gallery-item new-item">
               <img [src]="getObjectURL(file)" alt="New gallery">
               <button mat-icon-button color="warn" type="button" (click)="removeNewGalleryImage(j)">

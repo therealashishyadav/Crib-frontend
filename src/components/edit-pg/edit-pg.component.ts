@@ -1,6 +1,6 @@
 // PATH: src/components/edit-pg/edit-pg.component.ts
 
-import { Component, OnInit, ViewChild, ViewEncapsulation, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -46,9 +46,8 @@ const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned';
   styleUrls: ['./edit-pg.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class EditPgComponent implements OnInit, AfterViewInit {
+export class EditPgComponent implements OnInit {
 
-  // ✅ Match the template variable #editPgForm
   @ViewChild('editPgForm') pgForm!: NgForm;
 
   pgId!: number;
@@ -56,7 +55,7 @@ export class EditPgComponent implements OnInit, AfterViewInit {
   isLoading     = false;
   isSubmitting  = false;
 
-  // Image state
+  // Image state – optional in edit mode
   coverImageFile: File | null = null;
   coverImagePreview: string | null = null;
   galleryImageFiles: File[] = [];
@@ -117,11 +116,6 @@ export class EditPgComponent implements OnInit, AfterViewInit {
     this.loadPg();
   }
 
-  ngAfterViewInit(): void {
-    // After view init, you can safely access the form
-    // If needed, you can trigger a validity check
-  }
-
   goBack(): void {
     this.router.navigate(['/owner/dashboard']);
   }
@@ -130,18 +124,31 @@ export class EditPgComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     this.pgListingService.getListingById(this.pgId).subscribe({
       next: (pg) => {
-        // Populate the model with existing data
-        this.pgModel = { ...pg, sharingOptions: pg.sharingOptions ?? [new SharingOptionModel()] };
+        // Populate the model, ensuring all required fields have values
+        this.pgModel = {
+          ...pg,
+          // If any required field is null, provide a default (shouldn't happen)
+          pgName: pg.pgName || '',
+          fullAddress: pg.fullAddress || '',
+          city: pg.city || '',
+          occupancyType: pg.occupancyType || '',
+          monthlyRent: pg.monthlyRent || 0,
+          ownerName: pg.ownerName || '',
+          contactNumber: pg.contactNumber || '',
+          sharingOptions: pg.sharingOptions?.length ? pg.sharingOptions : [new SharingOptionModel()]
+        };
         this.coverImagePreview = pg.coverImageUrl ?? null;
         this.existingGalleryImages = pg.galleryImages ?? [];
         this.isLoading = false;
 
-        // After a short delay, check validity (the form is now rendered)
+        // After view updates, check validity
         setTimeout(() => {
           if (this.pgForm) {
             console.log('Form validity after load:', this.pgForm.valid);
-            // If some required fields are empty, we can set default values
-            // For example, if city is empty, we might set a placeholder
+            // If still invalid, log the errors
+            if (!this.pgForm.valid) {
+              console.log('Form controls:', this.pgForm.controls);
+            }
           }
         }, 100);
       },
@@ -243,27 +250,23 @@ export class EditPgComponent implements OnInit, AfterViewInit {
   // ── Clean model for backend DTO ──
   private cleanModel(model: any): any {
     const cleaned = { ...model };
-    // Remove read-only and extra fields
     const excludedKeys = [
       'id', 'ownerId', 'ownerUserId', 'isActive', 'isVerified',
       'isBrandNew', 'isPartnerVerified', 'rating', 'totalReviews',
       'createdAt', 'updatedAt', 'lowestPrice', 'occupancyLabel',
       'bedTypeLabel', 'housekeepingLabel', 'availabilityLabel',
       'agreementLabel',
-      // Extra fields not in DTO
       'gymAvailable', 'rooftopAccess', 'dispenserAvailable',
       'guestsOvernightAllowed', 'maintenanceChargesInfo'
     ];
     excludedKeys.forEach(key => delete cleaned[key]);
 
-    // Remove empty strings, null, undefined
     Object.keys(cleaned).forEach(k => {
       if (cleaned[k] === '' || cleaned[k] === null || cleaned[k] === undefined) {
         delete cleaned[k];
       }
     });
 
-    // Clean sharingOptions
     if (cleaned.sharingOptions && Array.isArray(cleaned.sharingOptions)) {
       cleaned.sharingOptions = cleaned.sharingOptions.map((opt: any) => {
         const c = { ...opt };
@@ -281,7 +284,7 @@ export class EditPgComponent implements OnInit, AfterViewInit {
 
   // ── Submit ──
   async SaveChanges(): Promise<void> {
-    // Check if the form is valid
+    // Check if form is valid
     if (this.pgForm?.invalid) {
       this.snackBar.open('Please fill all required fields.', 'Close', { duration: 3000 });
       return;
@@ -289,7 +292,7 @@ export class EditPgComponent implements OnInit, AfterViewInit {
 
     this.isSubmitting = true;
     try {
-      // Upload new cover image if selected
+      // Upload new cover if selected
       if (this.coverImageFile) {
         this.snackBar.open('Uploading cover image...', '', { duration: 2500 });
         this.pgModel.coverImageUrl = await this.uploadToCloudinary(this.coverImageFile, 'image');
