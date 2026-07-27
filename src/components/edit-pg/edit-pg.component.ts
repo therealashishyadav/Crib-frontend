@@ -1,6 +1,6 @@
 // PATH: src/components/edit-pg/edit-pg.component.ts
 
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -46,9 +46,9 @@ const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned';
   styleUrls: ['./edit-pg.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class EditPgComponent implements OnInit {
+export class EditPgComponent implements OnInit, AfterViewInit {
 
-  // ✅ Now matches the template variable #editPgForm
+  // ✅ Match the template variable #editPgForm
   @ViewChild('editPgForm') pgForm!: NgForm;
 
   pgId!: number;
@@ -63,7 +63,7 @@ export class EditPgComponent implements OnInit {
   videoFile: File | null = null;
   existingGalleryImages: string[] = [];
 
-  // Dropdown options
+  // Dropdown options (same as list-property)
   occupancyTypes = [
     { value: 'GIRLS', label: 'Girls' },
     { value: 'BOYS',  label: 'Boys'  },
@@ -117,6 +117,11 @@ export class EditPgComponent implements OnInit {
     this.loadPg();
   }
 
+  ngAfterViewInit(): void {
+    // After view init, you can safely access the form
+    // If needed, you can trigger a validity check
+  }
+
   goBack(): void {
     this.router.navigate(['/owner/dashboard']);
   }
@@ -125,16 +130,20 @@ export class EditPgComponent implements OnInit {
     this.isLoading = true;
     this.pgListingService.getListingById(this.pgId).subscribe({
       next: (pg) => {
+        // Populate the model with existing data
         this.pgModel = { ...pg, sharingOptions: pg.sharingOptions ?? [new SharingOptionModel()] };
         this.coverImagePreview = pg.coverImageUrl ?? null;
         this.existingGalleryImages = pg.galleryImages ?? [];
         this.isLoading = false;
-        // After view updates, check validity
+
+        // After a short delay, check validity (the form is now rendered)
         setTimeout(() => {
           if (this.pgForm) {
-            console.log('Form valid:', this.pgForm.valid);
+            console.log('Form validity after load:', this.pgForm.valid);
+            // If some required fields are empty, we can set default values
+            // For example, if city is empty, we might set a placeholder
           }
-        });
+        }, 100);
       },
       error: (err) => {
         this.isLoading = false;
@@ -147,12 +156,12 @@ export class EditPgComponent implements OnInit {
     });
   }
 
-  // ── Helper to create object URLs (fixes the "URL" error) ──
+  // ── Helper for object URLs ──
   getObjectURL(file: File): string {
     return URL.createObjectURL(file);
   }
 
-  // ── Image handlers ────────────────────────────────────────────────────────
+  // ── Image handlers ──
   onCoverImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files?.[0]) {
@@ -164,8 +173,8 @@ export class EditPgComponent implements OnInit {
   }
 
   removeCoverImage(): void {
-    this.coverImageFile        = null;
-    this.coverImagePreview     = null;
+    this.coverImageFile = null;
+    this.coverImagePreview = null;
     this.pgModel.coverImageUrl = '';
   }
 
@@ -195,7 +204,7 @@ export class EditPgComponent implements OnInit {
     this.pgModel.videoLink = '';
   }
 
-  // ── Sharing options ───────────────────────────────────────────────────────
+  // ── Sharing options ──
   addSharingOption(): void {
     this.pgModel.sharingOptions.push(new SharingOptionModel());
   }
@@ -216,7 +225,7 @@ export class EditPgComponent implements OnInit {
     return this.pgModel.sharingOptions[optionIndex].amenities.includes(amenity);
   }
 
-  // ── Cloudinary upload ─────────────────────────────────────────────────────
+  // ── Cloudinary upload ──
   private async uploadToCloudinary(file: File, resourceType: 'image' | 'video' = 'image'): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);
@@ -231,18 +240,17 @@ export class EditPgComponent implements OnInit {
     return data.secure_url as string;
   }
 
-  // ── Clean model for backend DTO ──────────────────────────────────────────
+  // ── Clean model for backend DTO ──
   private cleanModel(model: any): any {
     const cleaned = { ...model };
-
-    // Explicitly remove fields that the backend DTO does NOT accept
+    // Remove read-only and extra fields
     const excludedKeys = [
       'id', 'ownerId', 'ownerUserId', 'isActive', 'isVerified',
       'isBrandNew', 'isPartnerVerified', 'rating', 'totalReviews',
       'createdAt', 'updatedAt', 'lowestPrice', 'occupancyLabel',
       'bedTypeLabel', 'housekeepingLabel', 'availabilityLabel',
       'agreementLabel',
-      // Extra fields present in PgModel but NOT in the backend DTO
+      // Extra fields not in DTO
       'gymAvailable', 'rooftopAccess', 'dispenserAvailable',
       'guestsOvernightAllowed', 'maintenanceChargesInfo'
     ];
@@ -255,7 +263,7 @@ export class EditPgComponent implements OnInit {
       }
     });
 
-    // Clean sharingOptions: remove 'id' and empty values
+    // Clean sharingOptions
     if (cleaned.sharingOptions && Array.isArray(cleaned.sharingOptions)) {
       cleaned.sharingOptions = cleaned.sharingOptions.map((opt: any) => {
         const c = { ...opt };
@@ -268,12 +276,12 @@ export class EditPgComponent implements OnInit {
         return c;
       });
     }
-
     return cleaned;
   }
 
-  // ── Submit ────────────────────────────────────────────────────────────────
+  // ── Submit ──
   async SaveChanges(): Promise<void> {
+    // Check if the form is valid
     if (this.pgForm?.invalid) {
       this.snackBar.open('Please fill all required fields.', 'Close', { duration: 3000 });
       return;
@@ -287,7 +295,7 @@ export class EditPgComponent implements OnInit {
         this.pgModel.coverImageUrl = await this.uploadToCloudinary(this.coverImageFile, 'image');
       }
 
-      // Upload new gallery images and merge with existing
+      // Upload new gallery images
       if (this.galleryImageFiles.length > 0) {
         this.snackBar.open('Uploading gallery images...', '', { duration: 3000 });
         const newUrls: string[] = [];
@@ -305,9 +313,7 @@ export class EditPgComponent implements OnInit {
         this.pgModel.videoLink = await this.uploadToCloudinary(this.videoFile, 'video');
       }
 
-      // Clean the model – this will strip read-only and extra fields
       const payload = this.cleanModel(this.pgModel);
-
       console.log('Update payload:', payload);
 
       this.pgListingService.updateListing(this.pgId, payload).subscribe({
