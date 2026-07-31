@@ -1,37 +1,42 @@
-/* FILE: src/app/components/rent-sheet/rent-sheet.component.css */
-
 :host {
-  --azure:      #4A90E2;
+  --azure: #4A90E2;
   --azure-deep: #2d6abf;
-  --azure-glow: rgba(74,144,226,0.10);
-  --midnight:   #2C3E50;
-  --slate:      #A7B3C6;
-  --mist:       #D9E6F1;
-  --white:      #FFFFFF;
-  --gold:       #C9A96E;
-  --green:      #1DB977;
-  --green-dim:  rgba(29,185,119,0.12);
-  --green-border: rgba(29,185,119,0.28);
-  --red:        #E74C3C;
-  --red-dim:    rgba(231,76,60,0.10);
-  --surface:    #F4F7FB;
-
+  --azure-light: #E8F0FE;
+  --azure-glow: rgba(74, 144, 226, 0.10);
+  --midnight: #2C3E50;
+  --slate: #A7B3C6;
+  --slate-light: #D0D7E3;
+  --mist: #D9E6F1;
+  --white: #FFFFFF;
+  --gold: #C9A96E;
+  --gold-dim: rgba(201, 169, 110, 0.12);
+  --green: #1DB977;
+  --green-dim: rgba(29, 185, 119, 0.12);
+  --green-border: rgba(29, 185, 119, 0.28);
+  --red: #E74C3C;
+  --red-dim: rgba(231, 76, 60, 0.10);
+  --surface: #F4F7FB;
+  --shadow-sm: 0 2px 12px rgba(44, 62, 80, 0.08);
+  --shadow-md: 0 8px 32px rgba(44, 62, 80, 0.10);
+  --shadow-lg: 0 12px 48px rgba(44, 62, 80, 0.12);
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
   --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body:    'Jost', 'Segoe UI', sans-serif;
-  --r-md: 14px; --r-lg: 22px; --r-pill: 9999px;
-  --sh-sm: 0 2px 12px rgba(44,62,80,0.08);
-  --sh-md: 0 8px 32px rgba(44,62,80,0.10);
+  --font-body: 'Jost', 'Segoe UI', sans-serif;
 
   display: block;
   background: var(--surface);
   min-height: 100vh;
   font-family: var(--font-body);
+  color: var(--midnight);
 }
 
+/* ── Page container ── */
 .page-container {
-  max-width: 1100px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 2rem clamp(1rem, 4vw, 2.5rem);
+  padding: 1.75rem clamp(1rem, 4vw, 2.5rem);
 }
 
 /* ── Header ── */
@@ -41,7 +46,12 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
 }
 
 .page-title {
@@ -49,13 +59,15 @@
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   font-weight: 600;
   color: var(--midnight);
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.1rem;
+  letter-spacing: -0.01em;
 }
 
 .page-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   color: var(--slate);
   margin: 0;
+  font-weight: 450;
 }
 
 .header-actions {
@@ -65,16 +77,65 @@
   align-items: center;
 }
 
-/* ── Selectors ── */
+/* ── Send All Reminders button ── */
+.btn-reminders {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  background: var(--white);
+  border: 1px solid var(--slate-light);
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--midnight);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-body);
+}
+
+.btn-reminders:hover {
+  background: var(--azure-light);
+  border-color: var(--azure);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-reminders .badge {
+  background: var(--azure);
+  color: var(--white);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.55rem;
+  border-radius: var(--radius-pill);
+  line-height: 1.4;
+  min-width: 18px;
+  text-align: center;
+}
+
+.btn-reminders mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--slate);
+}
+
+/* ── Selectors row ── */
 .selectors {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-.month-select { min-width: 160px; }
-.year-select  { min-width: 110px; }
+.selectors .month-select {
+  min-width: 160px;
+}
+
+.selectors .year-select {
+  min-width: 110px;
+}
 
 /* ── Summary cards ── */
 .summary-grid {
@@ -86,90 +147,168 @@
 
 .summary-card {
   background: var(--white);
-  border-radius: var(--r-md);
-  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  box-shadow: var(--sh-sm);
-  border-left: 3px solid transparent;
+  gap: 0.9rem;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid transparent;
+  transition: transform 0.15s, box-shadow 0.2s;
+  cursor: default;
+  min-height: 72px;
 }
 
-.summary-card.total         { border-color: var(--azure); }
-.summary-card.paid          { border-color: var(--green); }
-.summary-card.pending       { border-color: var(--gold); }
-.summary-card.amount-collected { border-color: var(--green); }
-.summary-card.amount-pending   { border-color: var(--red); }
-
-.summary-card mat-icon {
-  font-size: 2rem;
-  width: 2rem;
-  height: 2rem;
-  opacity: 0.7;
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-.summary-card.total mat-icon          { color: var(--azure); }
-.summary-card.paid mat-icon           { color: var(--green); }
-.summary-card.pending mat-icon        { color: var(--gold); }
-.summary-card.amount-collected mat-icon { color: var(--green); }
-.summary-card.amount-pending mat-icon   { color: var(--red); }
+/* ── Card variants ── */
+.summary-card.total {
+  border-left-color: var(--azure);
+}
 
+.summary-card.total .summary-icon {
+  color: var(--azure);
+  background: var(--azure-light);
+}
+
+.summary-card.tenants {
+  border-left-color: var(--slate);
+}
+
+.summary-card.tenants .summary-icon {
+  color: var(--slate);
+  background: rgba(167, 179, 198, 0.12);
+}
+
+.summary-card.paid {
+  border-left-color: var(--green);
+}
+
+.summary-card.paid .summary-icon {
+  color: var(--green);
+  background: var(--green-dim);
+}
+
+.summary-card.pending {
+  border-left-color: var(--gold);
+}
+
+.summary-card.pending .summary-icon {
+  color: var(--gold);
+  background: var(--gold-dim);
+}
+
+.summary-card.collected {
+  border-left-color: var(--green);
+}
+
+.summary-card.collected .summary-icon {
+  color: var(--green);
+  background: var(--green-dim);
+}
+
+/* ── Card icon ── */
+.summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  transition: background 0.2s;
+}
+
+.summary-icon mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+}
+
+/* ── Card info ── */
 .summary-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .summary-value {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 600;
   color: var(--midnight);
-  line-height: 1;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 
 .summary-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--slate);
   font-weight: 500;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
 }
 
 /* ── Table ── */
 .sheet-table {
   background: var(--white);
-  border-radius: var(--r-lg);
-  box-shadow: var(--sh-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
+/* ── Table header ── */
 .table-header {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.2fr 1fr 0.8fr;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
+  grid-template-columns: 2fr 0.9fr 1fr 1.2fr 1fr 0.8fr;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
   background: var(--midnight);
   color: var(--white);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
+}
+
+.table-header span {
+  display: flex;
+  align-items: center;
+  opacity: 0.92;
+}
+
+/* ── Table body ── */
+.table-body {
+  background: var(--white);
 }
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.2fr 1fr 0.8fr;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
+  grid-template-columns: 2fr 0.9fr 1fr 1.2fr 1fr 0.8fr;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
   align-items: center;
-  border-bottom: 1px solid rgba(167,179,198,0.15);
+  border-bottom: 1px solid rgba(167, 179, 198, 0.12);
   transition: background 0.2s;
 }
 
-.table-row:last-child { border-bottom: none; }
-.table-row:hover { background: rgba(74,144,226,0.03); }
-.table-row.paid-row { background: rgba(29,185,119,0.04); }
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:hover {
+  background: rgba(74, 144, 226, 0.025);
+}
+
+.table-row.paid-row {
+  background: rgba(29, 185, 119, 0.035);
+}
 
 /* ── Cells ── */
 .tenant-cell {
@@ -179,38 +318,72 @@
 }
 
 .tenant-avatar-sm {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--azure-deep), var(--azure));
   color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
 }
 
-.tenant-name  { font-size: 0.9rem; font-weight: 500; color: var(--midnight); margin: 0 0 2px; }
-.tenant-phone { font-size: 0.78rem; color: var(--slate); margin: 0; }
-.room-cell    { font-size: 0.875rem; color: var(--midnight); font-weight: 500; }
-.amount-cell  { font-size: 0.9rem; font-weight: 600; color: var(--midnight); }
-.date-cell    { font-size: 0.82rem; color: var(--slate); }
+.tenant-name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--midnight);
+  margin: 0 0 1px;
+  line-height: 1.2;
+}
 
-/* ── Status toggle button ── */
+.tenant-phone {
+  font-size: 0.75rem;
+  color: var(--slate);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.room-cell {
+  font-size: 0.85rem;
+  color: var(--midnight);
+  font-weight: 500;
+  padding: 0.2rem 0;
+}
+
+.amount-cell {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--midnight);
+  font-family: var(--font-display);
+}
+
+.date-cell {
+  font-size: 0.8rem;
+  color: var(--slate);
+}
+
+/* ── Status toggle ── */
 .status-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.875rem;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.9rem;
   border: none;
-  border-radius: var(--r-pill);
-  font-size: 0.75rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  min-width: 62px;
+  user-select: none;
 }
 
 .status-toggle.paid {
@@ -220,15 +393,15 @@
 }
 
 .status-toggle.paid:hover {
-  background: rgba(231,76,60,0.08);
+  background: rgba(231, 76, 60, 0.10);
   color: var(--red);
-  border-color: rgba(231,76,60,0.3);
+  border-color: rgba(231, 76, 60, 0.25);
 }
 
 .status-toggle.unpaid {
   background: var(--red-dim);
   color: var(--red);
-  border: 1px solid rgba(231,76,60,0.25);
+  border: 1px solid rgba(231, 76, 60, 0.20);
 }
 
 .status-toggle.unpaid:hover {
@@ -238,56 +411,381 @@
 }
 
 .status-toggle mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: 13px;
+  width: 13px;
+  height: 13px;
+  line-height: 13px;
 }
 
-/* ── WhatsApp button ── */
-.whatsapp-btn { color: #25D366; }
-.whatsapp-btn:hover:not([disabled]) { background: rgba(37,211,102,0.10); }
-.whatsapp-btn[disabled] { opacity: 0.35; }
+/* ── Action: WhatsApp ── */
+.action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-/* ── Loading & empty ── */
-.loading-state, .empty-state {
+.whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #25D366;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.whatsapp-btn:hover:not([disabled]) {
+  background: rgba(37, 211, 102, 0.10);
+  transform: scale(1.05);
+}
+
+.whatsapp-btn[disabled] {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.whatsapp-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 3.5rem 2rem 3rem;
+  color: var(--slate);
+}
+
+.empty-state .empty-icon {
+  font-size: 3.2rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  opacity: 0.3;
+  display: block;
+  margin: 0 auto 0.75rem;
+  color: var(--slate);
+}
+
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--midnight);
+  margin: 0 0 0.3rem;
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+  color: var(--slate);
+  margin: 0 0 1.25rem;
+}
+
+/* ── Add Tenant button (empty state) ── */
+.btn-add-tenant {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.5rem;
+  background: var(--azure);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-body);
+  box-shadow: 0 4px 14px rgba(74, 144, 226, 0.30);
+}
+
+.btn-add-tenant:hover {
+  background: var(--azure-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.35);
+}
+
+.btn-add-tenant mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Loading state ── */
+.loading-state {
   text-align: center;
   padding: 4rem 2rem;
   color: var(--slate);
 }
 
-.loading-state mat-icon, .empty-state mat-icon {
-  font-size: 3rem;
-  width: 3rem;
-  height: 3rem;
-  opacity: 0.4;
+.loading-state mat-icon {
+  font-size: 2.8rem;
+  width: 2.8rem;
+  height: 2.8rem;
+  opacity: 0.35;
   display: block;
   margin: 0 auto 1rem;
+  color: var(--azure);
 }
 
-.empty-state h3 {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  color: var(--midnight);
-  margin: 0 0 0.5rem;
+.loading-state p {
+  font-size: 0.95rem;
+  margin: 0;
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
-.spin { animation: spin 1s linear infinite; }
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ── Footer ── */
+.page-footer {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--slate);
+  letter-spacing: 0.03em;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(167, 179, 198, 0.15);
+}
 
 /* ── Responsive ── */
-@media (max-width: 768px) {
+@media (max-width: 820px) {
   .table-header,
   .table-row {
-    grid-template-columns: 1.5fr 0.8fr 1fr 1fr;
+    grid-template-columns: 1.8fr 0.7fr 1fr 1.1fr 1fr 0.7fr;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
   }
-  /* Hide paid-on date and room on small screens */
+
+  .table-header {
+    font-size: 0.65rem;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .summary-card {
+    padding: 0.8rem 1rem;
+    min-height: 62px;
+  }
+
+  .summary-value {
+    font-size: 1.3rem;
+  }
+
+  .summary-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .summary-icon mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1.6fr 0.9fr 0.9fr 1fr;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  /* Hide Room, Paid On columns on small screens */
   .table-header span:nth-child(2),
+  .table-header span:nth-child(4),
   .room-cell,
-  .table-header span:nth-child(5),
   .date-cell {
     display: none;
+  }
+
+  .table-header {
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .summary-card {
+    padding: 0.6rem 0.7rem;
+    min-height: 56px;
+    gap: 0.5rem;
+    border-left-width: 3px;
+  }
+
+  .summary-value {
+    font-size: 1.1rem;
+  }
+
+  .summary-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+
+  .summary-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .summary-icon mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  .tenant-avatar-sm {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+
+  .tenant-name {
+    font-size: 0.78rem;
+  }
+
+  .tenant-phone {
+    font-size: 0.65rem;
+  }
+
+  .amount-cell {
+    font-size: 0.8rem;
+  }
+
+  .status-toggle {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    min-width: 50px;
+  }
+
+  .status-toggle mat-icon {
+    font-size: 11px;
+    width: 11px;
+    height: 11px;
+  }
+
+  .whatsapp-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .whatsapp-btn mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .btn-reminders {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.7rem;
+  }
+
+  .btn-reminders .badge {
+    font-size: 0.55rem;
+    padding: 0 0.4rem;
+    min-width: 14px;
+  }
+
+  .empty-state {
+    padding: 2.5rem 1rem 2rem;
+  }
+
+  .empty-state .empty-icon {
+    font-size: 2.4rem;
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .empty-state h3 {
+    font-size: 1.1rem;
+  }
+
+  .btn-add-tenant {
+    padding: 0.4rem 1.2rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+  }
+
+  .summary-card {
+    padding: 0.5rem 0.6rem;
+    min-height: 48px;
+    gap: 0.4rem;
+  }
+
+  .summary-value {
+    font-size: 0.95rem;
+  }
+
+  .summary-label {
+    font-size: 0.55rem;
+  }
+
+  .summary-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .summary-icon mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 1.4fr 0.8fr 0.8fr 1fr;
+    gap: 0.3rem;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .page-container {
+    padding: 1rem 0.6rem;
+  }
+
+  .selectors {
+    gap: 0.5rem;
+  }
+
+  .selectors .month-select {
+    min-width: 120px;
+  }
+
+  .selectors .year-select {
+    min-width: 80px;
   }
 }
