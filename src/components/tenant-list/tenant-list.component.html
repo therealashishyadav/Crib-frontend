@@ -24,6 +24,22 @@
         </div>
     </div>
 
+    <!-- ── PG Filter ── -->
+    <div class="filter-row">
+        <mat-form-field appearance="outline" class="pg-filter">
+            <mat-label>Filter by PG</mat-label>
+            <mat-select [(ngModel)]="selectedPgId" (ngModelChange)="onPgFilter()">
+                <mat-option [value]="null">All PGs</mat-option>
+                <mat-option *ngFor="let pg of ownerPgs" [value]="pg.id">
+                    {{ pg.pgName }}
+                </mat-option>
+                <mat-option *ngIf="ownerPgs.length === 0" disabled>
+                    No PGs available
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
     <!-- ── Loading ── -->
     <div *ngIf="isLoading" class="loading-state">
         <mat-icon class="spin">refresh</mat-icon>
@@ -39,16 +55,6 @@
             <mat-icon>person_add</mat-icon> Add First Tenant
         </button>
     </div>
-
-    <mat-form-field appearance="outline" class="pg-filter">
-        <mat-label>Filter by PG</mat-label>
-        <mat-select [(ngModel)]="selectedPgId" (ngModelChange)="onPgFilter()">
-            <mat-option [value]="null">All PGs</mat-option>
-            <mat-option *ngFor="let pg of ownerPgs" [value]="pg.id">
-                {{ pg.pgName }}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
 
     <!-- ── Tenant cards ── -->
     <div class="tenant-grid" *ngIf="!isLoading && tenants.length > 0">
@@ -100,7 +106,7 @@
                     <mat-icon>logout</mat-icon>
                 </button>
 
-                <!-- NEW: Permanently delete tenant -->
+                <!-- Permanently delete tenant -->
                 <button mat-icon-button class="delete-btn" title="Delete tenant permanently"
                     (click)="deleteTenant(tenant)">
                     <mat-icon>delete</mat-icon>
