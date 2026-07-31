@@ -1,6 +1,6 @@
 /* ================================================================
-   Nookly Tenants List Page – COMPACT SPREADSHEET STYLE
-   Original design tokens + host styling preserved.
+   Nookly Rent Sheet – COMPACT SPREADSHEET STYLE
+   Inspired by the CribUp Rent Sheet design.
    Tenant cards become rows, no HTML changes.
    ================================================================ */
 
@@ -45,7 +45,7 @@
   padding: var(--space-xl) var(--space-sm);
 
   background-image:
-    linear-gradient(135deg, rgba(44, 62, 80, 0.75) 0%, rgba(74, 144, 226, 0.65) 100%),
+    linear-gradient(135deg, rgba(44, 62, 80, 0.80) 0%, rgba(74, 144, 226, 0.70) 100%),
     url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center center;
@@ -56,7 +56,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* ---- Floating ambient orbs (same as form page) ---- */
+/* ---- Floating ambient orbs ---- */
 :host::before,
 :host::after {
   content: '';
@@ -82,7 +82,7 @@
   height: 320px;
   bottom: 40px;
   left: -100px;
-  background: radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(74, 144, 226, 0.30) 0%, transparent 70%);
   animation-duration: 24s;
   animation-direction: alternate-reverse;
 }
@@ -94,11 +94,11 @@
 
 /* ---- Page container – white backdrop card ---- */
 .page-container {
-  max-width: 1400px;  /* wider to fit spreadsheet columns */
+  max-width: 1400px;
   margin: 0 auto;
   margin-top: var(--space-xl);
   padding: var(--space-lg);
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(2px);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
@@ -112,7 +112,9 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- Page header ---- */
+/* ================================================================
+   HEADER – "Rent Sheet" title + actions
+   ================================================================ */
 .page-header {
   display: flex;
   flex-wrap: wrap;
@@ -120,11 +122,19 @@
   justify-content: space-between;
   gap: var(--space-md);
   margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--nookly-mist);
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .page-title {
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-size: clamp(1.8rem, 4.5vw, 2.6rem);
   font-weight: 600;
   color: var(--nookly-midnight);
   line-height: 1.2;
@@ -150,7 +160,7 @@
 
 .page-subtitle {
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--nookly-slate);
   margin-top: var(--space-xs);
@@ -163,26 +173,52 @@
   align-items: center;
 }
 
-/* ---- Buttons (shared styles) ---- */
+/* ---- Buttons ---- */
 .toggle-btn,
 .rent-btn,
-.add-btn {
+.add-btn,
+.reminder-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
   border-radius: var(--radius-pill);
   padding: 0.6rem 1.4rem;
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.3px;
   transition: all 0.3s var(--ease-bounce);
   cursor: pointer;
   white-space: nowrap;
+  border: none;
+  background: transparent;
+}
+
+.reminder-btn {
+  background: linear-gradient(105deg, var(--nookly-azure) 0%, var(--nookly-azure-deep) 100%);
+  color: var(--nookly-white);
+  box-shadow: var(--shadow-azure);
+  padding: 0.6rem 1.6rem;
+}
+
+.reminder-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.45);
+}
+
+.reminder-btn .badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-pill);
+  padding: 0 0.6rem;
+  font-size: 0.75rem;
+  min-width: 1.4rem;
+  height: 1.4rem;
 }
 
 .toggle-btn {
-  background: transparent;
   border: 1px solid var(--nookly-slate);
   color: var(--nookly-midnight);
 }
@@ -194,7 +230,6 @@
 }
 
 .rent-btn {
-  background: transparent;
   border: 1px solid var(--nookly-azure);
   color: var(--nookly-azure);
 }
@@ -205,8 +240,7 @@
 }
 
 .add-btn {
-  background: linear-gradient(105deg, var(--nookly-midnight) 100%, var(--nookly-azure-glow) 100%);
-  border: none;
+  background: linear-gradient(105deg, var(--nookly-midnight) 0%, var(--nookly-azure-deep) 100%);
   color: var(--nookly-white);
   box-shadow: var(--shadow-azure);
 }
@@ -217,7 +251,404 @@
   box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
 }
 
-/* ---- Loading state ---- */
+/* ================================================================
+   FILTER BAR – Tenants label + month/year picker
+   ================================================================ */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.filter-bar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.filter-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--nookly-midnight);
+  letter-spacing: 0.3px;
+}
+
+.filter-label .mat-icon {
+  font-size: 1.2rem;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* ---- Month / Year Picker ---- */
+.month-picker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: var(--nookly-midnight-05);
+  border-radius: var(--radius-pill);
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--nookly-mist);
+}
+
+.month-picker .month-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--nookly-midnight);
+  padding: 0 0.3rem;
+  min-width: 3.2rem;
+  text-align: center;
+}
+
+.month-picker .year-text {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--nookly-slate);
+  padding: 0 0.3rem;
+  min-width: 2.8rem;
+  text-align: center;
+}
+
+.month-picker .nav-btn {
+  background: transparent;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--nookly-slate);
+  transition: all 0.2s ease;
+}
+
+.month-picker .nav-btn:hover {
+  background: var(--nookly-azure-glow);
+  color: var(--nookly-azure);
+}
+
+.month-picker .nav-btn .mat-icon {
+  font-size: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* ================================================================
+   STATS ROW – TOTAL, TENANTS, PAID, PENDING, COLLECTED AMOUNT
+   ================================================================ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-sm) 0;
+}
+
+.stat-card {
+  background: var(--nookly-midnight-05);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.8rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.stat-card:hover {
+  background: var(--nookly-white);
+  border-color: var(--nookly-azure-line);
+  box-shadow: var(--shadow-card);
+}
+
+.stat-card .stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--nookly-midnight);
+  line-height: 1.2;
+  display: block;
+}
+
+.stat-card .stat-value.zero {
+  color: var(--nookly-slate);
+}
+
+.stat-card .stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--nookly-slate);
+  display: block;
+  margin-top: 0.1rem;
+}
+
+.stat-card .stat-value .currency-symbol {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--nookly-slate);
+  margin-right: 1px;
+}
+
+/* ---- Specific stat card variants ---- */
+.stat-card.stat-total {
+  background: linear-gradient(135deg, var(--nookly-midnight) 0%, #1F3348 100%);
+}
+.stat-card.stat-total .stat-value,
+.stat-card.stat-total .stat-label {
+  color: var(--nookly-white);
+}
+.stat-card.stat-total .stat-value.zero {
+  color: rgba(255, 255, 255, 0.6);
+}
+.stat-card.stat-total .stat-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stat-card.stat-tenants {
+  border-left: 3px solid var(--nookly-azure);
+}
+.stat-card.stat-paid {
+  border-left: 3px solid #27ae60;
+}
+.stat-card.stat-pending {
+  border-left: 3px solid #f39c12;
+}
+.stat-card.stat-collected {
+  border-left: 3px solid var(--nookly-gold);
+}
+
+/* ================================================================
+   COMPACT SPREADSHEET – table structure
+   ================================================================ */
+.pg-filter {
+  width: 260px;
+  margin-bottom: var(--space-md);
+}
+
+.tenant-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: var(--space-sm);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  background: var(--nookly-white);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--nookly-mist);
+}
+
+/* ---- Table header (pseudo-element) ---- */
+.tenant-grid::before {
+  content: "TENANT   PHONE   ROOM   RENT   MOVE-IN   STATUS   ACTIONS";
+  display: grid;
+  grid-template-columns: minmax(180px, 2fr) minmax(120px, 1.2fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(110px, 1fr) minmax(90px, 0.8fr) minmax(120px, 1.2fr);
+  gap: var(--space-sm);
+  padding: 0.7rem 1rem;
+  background: linear-gradient(135deg, var(--nookly-midnight) 0%, #1F3348 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  border-bottom: 2px solid var(--nookly-azure);
+}
+
+/* ---- Each tenant row ---- */
+.tenant-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 2fr) minmax(120px, 1.2fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(110px, 1fr) minmax(90px, 0.8fr) minmax(120px, 1.2fr);
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.5rem 1rem;
+  margin: 0;
+  background: var(--nookly-white);
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--nookly-mist);
+  transition: background 0.2s ease;
+  position: relative;
+  min-height: 3.4rem;
+}
+
+.tenant-card:last-child {
+  border-bottom: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.tenant-card:hover {
+  transform: none;
+  box-shadow: none;
+  background: var(--nookly-azure-glow);
+}
+
+/* ---- Inactive row ---- */
+.tenant-card.inactive {
+  opacity: 0.8;
+  background: #fafbfc;
+}
+.tenant-card.inactive:hover {
+  background: #f0f2f5;
+}
+
+/* ---- Status badge ---- */
+.status-badge {
+  position: static;
+  display: inline-block;
+  width: fit-content;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  text-align: center;
+  white-space: nowrap;
+  justify-self: start;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.inactive {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.status-badge.pending {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+/* ---- Tenant info block ---- */
+.tenant-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0;
+  min-width: 0;
+}
+
+.tenant-avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--nookly-azure-glow), var(--nookly-mist));
+  color: var(--nookly-azure);
+  font-weight: 600;
+}
+
+.tenant-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.tenant-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+  color: var(--nookly-midnight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Column cells ---- */
+.tenant-phone,
+.tenant-room,
+.tenant-rent,
+.tenant-movein {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.82rem;
+  color: var(--nookly-slate);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.tenant-phone .mat-icon,
+.tenant-room .mat-icon,
+.tenant-rent .mat-icon,
+.tenant-movein .mat-icon {
+  display: none;
+}
+
+/* ---- Grid column mapping ---- */
+.tenant-card .tenant-info {
+  grid-column: 1 / 2;
+}
+.tenant-card .tenant-phone {
+  grid-column: 2 / 3;
+}
+.tenant-card .tenant-room {
+  grid-column: 3 / 4;
+}
+.tenant-card .tenant-rent {
+  grid-column: 4 / 5;
+}
+.tenant-card .tenant-movein {
+  grid-column: 5 / 6;
+}
+.tenant-card .status-badge {
+  grid-column: 6 / 7;
+}
+.tenant-card .tenant-actions {
+  grid-column: 7 / 8;
+  justify-self: end;
+}
+
+/* ---- Actions ---- */
+.tenant-actions {
+  display: flex;
+  gap: 0.15rem;
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+.tenant-actions button {
+  width: 1.8rem;
+  height: 1.8rem;
+  min-width: 1.8rem;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--nookly-slate);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tenant-actions button:hover {
+  background: var(--nookly-azure-glow);
+  color: var(--nookly-azure);
+}
+
+.tenant-actions button.danger:hover {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+/* ================================================================
+   LOADING STATE
+   ================================================================ */
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -242,7 +673,9 @@
   font-size: 1rem;
 }
 
-/* ---- Empty state ---- */
+/* ================================================================
+   EMPTY STATE
+   ================================================================ */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -251,35 +684,39 @@
   padding: var(--space-xl) var(--space-md);
   text-align: center;
   gap: var(--space-sm);
+  min-height: 280px;
 }
 
 .empty-state .mat-icon {
-  font-size: 3rem;
+  font-size: 3.2rem;
   color: var(--nookly-slate);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .empty-state h3 {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: var(--nookly-midnight);
+  margin: 0;
 }
 
 .empty-state p {
   color: var(--nookly-slate);
   max-width: 400px;
   margin: 0 auto;
+  font-size: 0.95rem;
 }
 
 .empty-state button {
   margin-top: var(--space-sm);
-  background: var(--nookly-azure);
-  color: var(--nookly-midnight);
+  background: linear-gradient(105deg, var(--nookly-azure) 0%, var(--nookly-azure-deep) 100%);
+  color: var(--nookly-white);
   border: none;
   border-radius: var(--radius-pill);
-  padding: 0.7rem 1.8rem;
+  padding: 0.7rem 2rem;
   font-weight: 600;
   font-family: var(--font-body);
+  font-size: 0.9rem;
   box-shadow: var(--shadow-azure);
   transition: all 0.3s var(--ease-bounce);
   cursor: pointer;
@@ -289,199 +726,81 @@
 }
 
 .empty-state button:hover {
-  background: var(--nookly-azure-deep);
   transform: translateY(-2px);
   box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
 }
 
 /* ================================================================
-   COMPACT SPREADSHEET STYLES – replaces card grid with rows
-   ================================================================ */
-
-/* PG filter – keep it, but make it fit the compact style */
-.pg-filter {
-  width: 260px;
-  margin-bottom: var(--space-md);
-}
-
-/* The grid becomes a flex column (table structure) */
-.tenant-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin-top: var(--space-md);
-  border-radius: var(--radius-md);
-  overflow-x: auto;
-  background: var(--nookly-white);
-  box-shadow: var(--shadow-card);
-}
-
-/* Fake table header – added via pseudo-element */
-.tenant-grid::before {
-  content: "TENANT   PHONE   ROOM   RENT   MOVE-IN   STATUS   ACTIONS";
-  display: grid;
-  grid-template-columns: minmax(180px, 2fr) minmax(120px, 1.2fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(110px, 1fr) minmax(90px, 0.8fr) minmax(120px, 1.2fr);
-  gap: var(--space-sm);
-  padding: 0.7rem 1rem;
-  background: linear-gradient(135deg, var(--nookly-midnight) 0%, #1F3348 100%);
-  color: white;
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  white-space: nowrap;
-  font-family: var(--font-body);
-}
-
-/* Each tenant becomes a grid row */
-.tenant-card {
-  display: grid;
-  grid-template-columns: minmax(180px, 2fr) minmax(120px, 1.2fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(110px, 1fr) minmax(90px, 0.8fr) minmax(120px, 1.2fr);
-  align-items: center;
-  gap: var(--space-sm);
-  padding: 0.6rem 1rem;
-  margin: 0;
-  background: var(--nookly-white);
-  border-radius: 0;
-  box-shadow: none;
-  border-bottom: 1px solid var(--nookly-mist);
-  transition: background 0.2s ease;
-  position: relative;
-}
-
-.tenant-card:hover {
-  transform: none;
-  box-shadow: none;
-  background: var(--nookly-azure-glow);
-}
-
-/* Inactive row styling */
-.tenant-card.inactive {
-  opacity: 0.85;
-  background: #fafbfc;
-}
-
-/* Status badge – no absolute positioning, becomes part of row */
-.status-badge {
-  position: static;
-  display: inline-block;
-  width: fit-content;
-  padding: 0.2rem 0.7rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  border-radius: var(--radius-pill);
-  text-align: center;
-  white-space: nowrap;
-  justify-self: start;
-}
-
-/* Tenant info block – horizontal avatar + name */
-.tenant-info {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin: 0;
-}
-
-.tenant-avatar {
-  width: 2.2rem;
-  height: 2.2rem;
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.tenant-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.tenant-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.3;
-}
-
-/* Hide the original detail paragraphs (they will be shown as separate columns) */
-.tenant-phone,
-.tenant-room,
-.tenant-rent,
-.tenant-movein {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: 0.85rem;
-  color: var(--nookly-slate);
-  margin: 0;
-  white-space: nowrap;
-}
-
-/* Hide the icons inside those columns for cleaner look */
-.tenant-phone .mat-icon,
-.tenant-room .mat-icon,
-.tenant-rent .mat-icon,
-.tenant-movein .mat-icon {
-  display: none;
-}
-
-/* Map each piece to the grid columns */
-.tenant-card .tenant-info {
-  grid-column: 1 / 2;
-}
-.tenant-card .tenant-phone {
-  grid-column: 2 / 3;
-}
-.tenant-card .tenant-room {
-  grid-column: 3 / 4;
-}
-.tenant-card .tenant-rent {
-  grid-column: 4 / 5;
-}
-.tenant-card .tenant-movein {
-  grid-column: 5 / 6;
-}
-.tenant-card .status-badge {
-  grid-column: 6 / 7;
-}
-.tenant-card .tenant-actions {
-  grid-column: 7 / 8;
-  justify-self: end;
-}
-
-/* Adjust actions – smaller buttons, no border top */
-.tenant-actions {
-  display: flex;
-  gap: 0.2rem;
-  padding: 0;
-  margin: 0;
-  border: none;
-}
-
-.tenant-actions button {
-  width: 1.8rem;
-  height: 1.8rem;
-}
-
-/* ================================================================
-   RESPONSIVE: On medium screens, adjust column widths
+   RESPONSIVE – medium screens
    ================================================================ */
 @media (max-width: 1000px) {
   .tenant-grid::before,
   .tenant-card {
     grid-template-columns: minmax(150px, 1.8fr) minmax(100px, 1fr) minmax(80px, 0.7fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(80px, 0.7fr) minmax(100px, 1fr);
   }
+
+  .stats-row {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--space-xs);
+  }
+
+  .stat-card .stat-value {
+    font-size: 1.2rem;
+  }
 }
 
 /* ================================================================
-   MOBILE: revert to stacked cards for readability
+   MOBILE – stacked cards
    ================================================================ */
 @media (max-width: 800px) {
+  .page-container {
+    padding: var(--space-md);
+    margin-top: var(--space-md);
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-bar-left {
+    flex-wrap: wrap;
+  }
+
+  .month-picker {
+    align-self: flex-start;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xs);
+  }
+
+  .stat-card {
+    padding: 0.4rem 0.5rem;
+  }
+  .stat-card .stat-value {
+    font-size: 1.1rem;
+  }
+  .stat-card .stat-label {
+    font-size: 0.6rem;
+  }
+
+  /* ---- Hide table header ---- */
   .tenant-grid::before {
     display: none;
   }
 
+  /* ---- Stack cards ---- */
   .tenant-card {
     display: flex;
     flex-direction: column;
@@ -492,6 +811,13 @@
     border-bottom: none;
     box-shadow: var(--shadow-card);
     gap: var(--space-sm);
+    background: var(--nookly-white);
+    border: 1px solid var(--nookly-mist);
+    position: relative;
+  }
+
+  .tenant-card:last-child {
+    border-radius: var(--radius-md);
   }
 
   .tenant-card:hover {
@@ -499,12 +825,18 @@
     box-shadow: var(--shadow-hover);
   }
 
+  .tenant-card.inactive {
+    background: #fafbfc;
+  }
+
+  /* ---- Status badge absolute in mobile ---- */
   .status-badge {
     position: absolute;
     top: var(--space-sm);
     right: var(--space-sm);
   }
 
+  /* ---- Show all fields as rows ---- */
   .tenant-info {
     width: 100%;
   }
@@ -516,7 +848,9 @@
     display: flex !important;
     align-items: center;
     gap: var(--space-xs);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    color: var(--nookly-midnight);
+    padding: 0.1rem 0;
   }
 
   .tenant-phone .mat-icon,
@@ -524,18 +858,71 @@
   .tenant-rent .mat-icon,
   .tenant-movein .mat-icon {
     display: inline-flex !important;
+    font-size: 1rem;
+    color: var(--nookly-slate);
   }
 
+  .tenant-phone .mat-icon::before,
+  .tenant-room .mat-icon::before,
+  .tenant-rent .mat-icon::before,
+  .tenant-movein .mat-icon::before {
+    content: '';
+  }
+
+  /* ---- Actions at bottom ---- */
   .tenant-actions {
     width: 100%;
     justify-content: flex-end;
     margin-top: var(--space-sm);
     border-top: 1px solid var(--nookly-mist);
     padding-top: var(--space-sm);
+    gap: var(--space-xs);
+  }
+
+  .tenant-actions button {
+    width: 2.2rem;
+    height: 2.2rem;
+    min-width: 2.2rem;
+  }
+
+  /* ---- Mobile empty state ---- */
+  .empty-state {
+    padding: var(--space-lg) var(--space-sm);
+    min-height: 200px;
+  }
+  .empty-state .mat-icon {
+    font-size: 2.6rem;
+  }
+  .empty-state h3 {
+    font-size: 1.2rem;
   }
 }
 
-/* ---- Accessibility ---- */
+/* ---- Extra small screens ---- */
+@media (max-width: 500px) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filter-bar-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .month-picker {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  .header-actions .reminder-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ================================================================
+   ACCESSIBILITY
+   ================================================================ */
 :host ::selection {
   background: var(--nookly-mist);
   color: var(--nookly-midnight);
@@ -547,7 +934,7 @@
   border-radius: var(--radius-md);
 }
 
-/* Respects reduced motion */
+/* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
   :host::before,
   :host::after {
@@ -559,7 +946,9 @@
   .add-btn,
   .rent-btn,
   .toggle-btn,
-  .empty-state button {
+  .reminder-btn,
+  .empty-state button,
+  .stat-card {
     animation: none;
     transition: none;
   }
@@ -569,22 +958,46 @@
   }
 }
 
-/* ---- Print styles ---- */
+/* ================================================================
+   PRINT
+   ================================================================ */
 @media print {
   :host {
-    background: white;
-    padding: 0;
+    background: white !important;
+    padding: 0 !important;
   }
 
   .page-container {
-    box-shadow: none;
-    margin: 0;
-    padding: 0;
-    background: white;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: var(--space-md) !important;
+    background: white !important;
+    border-radius: 0 !important;
   }
 
   :host::before,
   :host::after {
-    display: none;
+    display: none !important;
+  }
+
+  .tenant-actions {
+    display: none !important;
+  }
+
+  .tenant-grid::before {
+    background: #2C3E50 !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .status-badge {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .stat-card.stat-total {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
