@@ -131,7 +131,14 @@
                     <div class="step-num">3</div>
                     <div class="step-body">
                         <p class="step-title">Upload your CSV file</p>
-                        <p class="step-desc">Maximum file size: 5MB. Only .csv files accepted.</p>
+                        <p class="step-desc">
+                            Maximum file size: 5MB. Only .csv files accepted.<br>
+                            <span class="date-hint">
+                                <mat-icon>info</mat-icon>
+                                Date format: <strong>MM/dd/yyyy</strong> recommended (e.g. 05/01/2025).
+                                Also accepted: M/d/yyyy (e.g. 5/1/2025) and yyyy-MM-dd.
+                            </span>
+                        </p>
                         <div class="file-select-row">
                             <input type="file" accept=".csv" (change)="onCsvFileSelected($event)" hidden #csvInput>
                             <button mat-stroked-button type="button" (click)="csvInput.click()">
