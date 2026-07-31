@@ -1,590 +1,447 @@
-/* ================================================================
-   Nookly Tenants List Page – COMPACT SPREADSHEET STYLE
-   Original design tokens + host styling preserved.
-   Tenant cards become rows, no HTML changes.
-   ================================================================ */
-
 :host {
-  /* ---- Design tokens (provided) ---- */
-  --nookly-azure: #4A90E2;
-  --nookly-mist: #D9E6F1;
-  --nookly-slate: #A7B3C6;
-  --nookly-midnight: #2C3E50;
-  --nookly-white: #FFFFFF;
-  --nookly-azure-deep: #2d6abf;
-  --nookly-azure-glow: rgba(74, 144, 226, 0.12);
-  --nookly-azure-line: rgba(74, 144, 226, 0.25);
-  --nookly-midnight-05: rgba(44, 62, 80, 0.05);
-  --nookly-gold: #C9A96E;
+  /* ── Design Tokens (from homepage) ── */
+  --azure: #4A90E2;
+  --azure-deep: #2d6abf;
+  --azure-vivid: #5a9cf5;
+  --azure-whisper: rgba(74, 144, 226, 0.06);
+  --azure-line: rgba(74, 144, 226, 0.24);
+  --azure-glow: rgba(74, 144, 226, 0.14);
+  --mist: #D9E6F1;
+  --slate: #A7B3C6;
+  --midnight: #2C3E50;
+  --midnight-70: rgba(44, 62, 80, 0.70);
+  --white: #FFFFFF;
+  --gold: #C9A96E;
+  --gold-light: #e0c48a;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
 
-  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Jost', 'Segoe UI', sans-serif;
 
-  --space-xs: 0.35rem;
-  --space-sm: 0.75rem;
-  --space-md: 1.25rem;
-  --space-lg: 2rem;
-  --space-xl: 3rem;
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 180ms;
+  --dur-base: 300ms;
+  --dur-slow: 520ms;
 
-  --ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --dur-mid: 420ms;
-  --dur-slow: 700ms;
+  --r-sm: 6px;
+  --r-md: 14px;
+  --r-lg: 24px;
+  --r-pill: 9999px;
+  --sh-xs: 0 1px 4px rgba(44, 62, 80, 0.06);
+  --sh-sm: 0 2px 16px rgba(44, 62, 80, 0.08);
+  --sh-md: 0 8px 40px rgba(44, 62, 80, 0.10);
+  --sh-lg: 0 20px 64px rgba(44, 62, 80, 0.14);
+  --sh-azure: 0 8px 32px rgba(74, 144, 226, 0.30);
 
-  --radius-md: 14px;
-  --radius-lg: 24px;
-  --radius-pill: 9999px;
+  --max-w: 1200px;
+  --gutter: clamp(1.5rem, 5vw, 3rem);
 
-  --shadow-card: 0 8px 24px rgba(44, 62, 80, 0.08), 0 1px 3px rgba(44, 62, 80, 0.04);
-  --shadow-hover: 0 20px 40px rgba(44, 62, 80, 0.12), 0 4px 12px rgba(74, 144, 226, 0.1);
-  --shadow-azure: 0 8px 32px rgba(74, 144, 226, 0.18);
-
-  /* ---- Global host setup ---- */
   display: block;
+  background: var(--mist);
   min-height: 100vh;
-  padding: var(--space-xl) var(--space-sm);
-
-  background-image:
-    linear-gradient(135deg, rgba(44, 62, 80, 0.75) 0%, rgba(74, 144, 226, 0.65) 100%),
-    url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
-  background-size: cover;
-  background-position: center center;
-  background-attachment: fixed;
-
-  font-family: var(--font-body);
-  color: var(--nookly-midnight);
-  -webkit-font-smoothing: antialiased;
+  padding: var(--gutter);
 }
 
-/* ---- Floating ambient orbs (same as form page) ---- */
-:host::before,
-:host::after {
-  content: '';
-  position: fixed;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  animation: orbitFloat 16s ease-in-out infinite alternate;
-  opacity: 0.25;
-}
-
-:host::before {
-  width: 480px;
-  height: 480px;
-  top: -150px;
-  right: -120px;
-  background: radial-gradient(circle, var(--nookly-mist) 0%, transparent 70%);
-  animation-duration: 20s;
-}
-
-:host::after {
-  width: 320px;
-  height: 320px;
-  bottom: 40px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, transparent 70%);
-  animation-duration: 24s;
-  animation-direction: alternate-reverse;
-}
-
-@keyframes orbitFloat {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(25px, 20px) scale(1.05); }
-}
-
-/* ---- Page container – white backdrop card ---- */
+/* ── Page Container ── */
 .page-container {
-  max-width: 1400px;  /* wider to fit spreadsheet columns */
+  max-width: var(--max-w);
   margin: 0 auto;
-  margin-top: var(--space-xl);
-  padding: var(--space-lg);
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(2px);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  position: relative;
-  z-index: 2;
-  animation: pageReveal 0.6s var(--ease-luxury) both;
+  animation: fadeUp var(--dur-slow) var(--ease-expo) both;
 }
 
-@keyframes pageReveal {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ---- Page header ---- */
+/* ── Header ── */
 .page-header {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+  gap: 1.5rem 1rem;
+  margin-bottom: 2rem;
 }
 
 .page-title {
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
   font-weight: 600;
-  color: var(--nookly-midnight);
-  line-height: 1.2;
-  position: relative;
-  display: inline-block;
-}
-
-.page-title::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 60px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--nookly-gold), var(--nookly-azure));
-  border-radius: var(--radius-pill);
-  transition: width var(--dur-slow) var(--ease-luxury);
-}
-
-.page-title:hover::after {
-  width: 100%;
+  letter-spacing: -0.03em;
+  color: var(--midnight);
+  margin: 0 0 0.2rem;
 }
 
 .page-subtitle {
-  font-family: var(--font-body);
   font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--nookly-slate);
-  margin-top: var(--space-xs);
+  font-weight: 300;
+  color: var(--midnight-70);
+  margin: 0;
 }
 
 .header-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
   align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-/* ---- Buttons (shared styles) ---- */
+/* ── Buttons (reusable) ── */
 .toggle-btn,
 .rent-btn,
 .add-btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
-  border-radius: var(--radius-pill);
-  padding: 0.6rem 1.4rem;
+  gap: 0.4rem;
+  padding: 0.5rem 1.2rem;
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  transition: all 0.3s var(--ease-bounce);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1.5px solid transparent;
+  border-radius: var(--r-pill);
   cursor: pointer;
-  white-space: nowrap;
+  transition: transform var(--dur-fast) var(--ease-back),
+    box-shadow var(--dur-fast) var(--ease-expo),
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+  background: var(--white);
+  color: var(--midnight);
+  box-shadow: var(--sh-xs);
+  text-decoration: none;
 }
 
 .toggle-btn {
-  background: transparent;
-  border: 1px solid var(--nookly-slate);
-  color: var(--nookly-midnight);
+  border-color: var(--azure-line);
 }
-
 .toggle-btn:hover {
-  background: var(--nookly-azure-glow);
-  border-color: var(--nookly-azure);
-  color: var(--nookly-azure);
+  background: var(--azure-whisper);
+  border-color: var(--azure);
+  transform: translateY(-2px);
 }
 
 .rent-btn {
-  background: transparent;
-  border: 1px solid var(--nookly-azure);
-  color: var(--nookly-azure);
+  background: var(--gold);
+  color: var(--white);
+  border-color: var(--gold);
 }
-
 .rent-btn:hover {
-  background: var(--nookly-azure-glow);
-  transform: translateY(-1px);
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(201, 169, 110, 0.35);
 }
 
 .add-btn {
-  background: linear-gradient(105deg, var(--nookly-midnight) 100%, var(--nookly-azure-glow) 100%);
-  border: none;
-  color: var(--nookly-white);
-  box-shadow: var(--shadow-azure);
+  background: linear-gradient(135deg, var(--azure), var(--azure-deep));
+  color: var(--white);
+  border-color: var(--azure);
 }
-
 .add-btn:hover {
-  background: linear-gradient(105deg, #1F3348 0%, var(--nookly-azure-deep) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
+  box-shadow: var(--sh-azure);
+  background: linear-gradient(135deg, var(--azure-vivid), var(--azure));
 }
 
-/* ---- Loading state ---- */
+/* ── Loading State ── */
 .loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-xl) 0;
-  color: var(--nookly-slate);
-  gap: var(--space-sm);
+  text-align: center;
+  padding: 4rem 0;
+  color: var(--slate);
 }
-
-.loading-state .mat-icon.spin {
+.loading-state .spin {
+  animation: spin 1s linear infinite;
   font-size: 2.5rem;
-  color: var(--nookly-azure);
-  animation: nookly-spin 0.8s linear infinite;
+  color: var(--azure);
 }
-
-@keyframes nookly-spin {
+@keyframes spin {
   to { transform: rotate(360deg); }
 }
-
 .loading-state p {
-  font-size: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 300;
 }
 
-/* ---- Empty state ---- */
+/* ── Empty State ── */
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-xl) var(--space-md);
   text-align: center;
-  gap: var(--space-sm);
+  padding: 4rem 0;
 }
-
-.empty-state .mat-icon {
-  font-size: 3rem;
-  color: var(--nookly-slate);
-  opacity: 0.6;
+.empty-state mat-icon {
+  font-size: 4rem;
+  width: auto;
+  height: auto;
+  color: var(--slate);
 }
-
 .empty-state h3 {
   font-family: var(--font-display);
   font-size: 1.5rem;
-  color: var(--nookly-midnight);
+  margin: 0.5rem 0 0.25rem;
+  color: var(--midnight);
 }
-
 .empty-state p {
-  color: var(--nookly-slate);
-  max-width: 400px;
-  margin: 0 auto;
+  color: var(--midnight-70);
+  margin-bottom: 1.5rem;
 }
-
 .empty-state button {
-  margin-top: var(--space-sm);
-  background: var(--nookly-azure);
-  color: var(--nookly-midnight);
-  border: none;
-  border-radius: var(--radius-pill);
-  padding: 0.7rem 1.8rem;
-  font-weight: 600;
-  font-family: var(--font-body);
-  box-shadow: var(--shadow-azure);
-  transition: all 0.3s var(--ease-bounce);
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 0.5rem;
+  padding: 0.6rem 1.8rem;
+  background: var(--azure);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease-back);
 }
-
 .empty-state button:hover {
-  background: var(--nookly-azure-deep);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px -6px rgba(74, 144, 226, 0.4);
+  background: var(--azure-deep);
+  transform: scale(1.02);
 }
 
-/* ================================================================
-   COMPACT SPREADSHEET STYLES – replaces card grid with rows
-   ================================================================ */
-
-/* PG filter – keep it, but make it fit the compact style */
+/* ── PG Filter ── */
 .pg-filter {
-  width: 260px;
-  margin-bottom: var(--space-md);
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 1.5rem;
+}
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: var(--slate);
+}
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: var(--azure);
+}
+::ng-deep .mat-form-field-label {
+  color: var(--midnight-70);
+}
+::ng-deep .mat-select-value-text {
+  color: var(--midnight);
 }
 
-/* The grid becomes a flex column (table structure) */
+/* ── Tenant Grid ── */
 .tenant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 1.5rem;
+  animation: fadeIn var(--dur-slow) var(--ease-expo) 0.2s both;
+}
+
+/* ── Tenant Card ── */
+.tenant-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+  padding: 1.25rem 1.5rem 1.25rem;
+  border: 1px solid rgba(167, 179, 198, 0.12);
+  transition: transform var(--dur-base) var(--ease-back),
+    box-shadow var(--dur-base) var(--ease-expo),
+    border-color var(--dur-base) var(--ease);
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  margin-top: var(--space-md);
-  border-radius: var(--radius-md);
-  overflow-x: auto;
-  background: var(--nookly-white);
-  box-shadow: var(--shadow-card);
+  gap: 1rem;
 }
-
-/* Fake table header – added via pseudo-element */
-.tenant-grid::before {
-  content: "TENANT   PHONE   ROOM   RENT   MOVE-IN   STATUS   ACTIONS";
-  display: grid;
-  grid-template-columns: minmax(180px, 2fr) minmax(120px, 1.2fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(110px, 1fr) minmax(90px, 0.8fr) minmax(120px, 1.2fr);
-  gap: var(--space-sm);
-  padding: 0.7rem 1rem;
-  background: linear-gradient(135deg, var(--nookly-midnight) 0%, #1F3348 100%);
-  color: white;
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  white-space: nowrap;
-  font-family: var(--font-body);
-}
-
-/* Each tenant becomes a grid row */
-.tenant-card {
-  display: grid;
-  grid-template-columns: minmax(180px, 2fr) minmax(120px, 1.2fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(110px, 1fr) minmax(90px, 0.8fr) minmax(120px, 1.2fr);
-  align-items: center;
-  gap: var(--space-sm);
-  padding: 0.6rem 1rem;
-  margin: 0;
-  background: var(--nookly-white);
-  border-radius: 0;
-  box-shadow: none;
-  border-bottom: 1px solid var(--nookly-mist);
-  transition: background 0.2s ease;
-  position: relative;
-}
-
 .tenant-card:hover {
-  transform: none;
-  box-shadow: none;
-  background: var(--nookly-azure-glow);
+  transform: translateY(-4px);
+  box-shadow: var(--sh-md);
+  border-color: rgba(74, 144, 226, 0.20);
 }
-
-/* Inactive row styling */
 .tenant-card.inactive {
+  opacity: 0.65;
+  filter: grayscale(0.3);
+}
+.tenant-card.inactive:hover {
   opacity: 0.85;
-  background: #fafbfc;
+  filter: grayscale(0.1);
 }
 
-/* Status badge – no absolute positioning, becomes part of row */
+/* ── Status Badge ── */
 .status-badge {
-  position: static;
-  display: inline-block;
-  width: fit-content;
-  padding: 0.2rem 0.7rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  border-radius: var(--radius-pill);
-  text-align: center;
-  white-space: nowrap;
-  justify-self: start;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.8rem;
+  border-radius: var(--r-pill);
+  background: var(--slate);
+  color: var(--white);
+}
+.status-badge.active {
+  background: var(--success);
+}
+.status-badge.moved-out {
+  background: var(--slate);
 }
 
-/* Tenant info block – horizontal avatar + name */
+/* ── Tenant Info ── */
 .tenant-info {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin: 0;
+  gap: 1rem;
+  align-items: flex-start;
 }
-
 .tenant-avatar {
-  width: 2.2rem;
-  height: 2.2rem;
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.tenant-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.tenant-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.3;
-}
-
-/* Hide the original detail paragraphs (they will be shown as separate columns) */
-.tenant-phone,
-.tenant-room,
-.tenant-rent,
-.tenant-movein {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--azure), var(--azure-deep));
+  color: var(--white);
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  font-size: 0.85rem;
-  color: var(--nookly-slate);
-  margin: 0;
-  white-space: nowrap;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  box-shadow: var(--sh-xs);
+}
+.tenant-details {
+  flex: 1;
+  min-width: 0;
+}
+.tenant-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--midnight);
+  margin: 0 0 0.2rem;
+}
+.tenant-details p {
+  margin: 0.15rem 0;
+  font-size: 0.82rem;
+  color: var(--midnight-70);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.tenant-details p mat-icon {
+  font-size: 1rem;
+  width: auto;
+  height: auto;
+  color: var(--slate);
+}
+.tenant-rent {
+  font-weight: 500;
+  color: var(--midnight) !important;
 }
 
-/* Hide the icons inside those columns for cleaner look */
-.tenant-phone .mat-icon,
-.tenant-room .mat-icon,
-.tenant-rent .mat-icon,
-.tenant-movein .mat-icon {
-  display: none;
-}
-
-/* Map each piece to the grid columns */
-.tenant-card .tenant-info {
-  grid-column: 1 / 2;
-}
-.tenant-card .tenant-phone {
-  grid-column: 2 / 3;
-}
-.tenant-card .tenant-room {
-  grid-column: 3 / 4;
-}
-.tenant-card .tenant-rent {
-  grid-column: 4 / 5;
-}
-.tenant-card .tenant-movein {
-  grid-column: 5 / 6;
-}
-.tenant-card .status-badge {
-  grid-column: 6 / 7;
-}
-.tenant-card .tenant-actions {
-  grid-column: 7 / 8;
-  justify-self: end;
-}
-
-/* Adjust actions – smaller buttons, no border top */
+/* ── Actions ── */
 .tenant-actions {
   display: flex;
-  gap: 0.2rem;
-  padding: 0;
-  margin: 0;
-  border: none;
+  align-items: center;
+  gap: 0.25rem;
+  border-top: 1px solid rgba(167, 179, 198, 0.12);
+  padding-top: 0.75rem;
+  margin-top: auto;
 }
-
 .tenant-actions button {
-  width: 1.8rem;
-  height: 1.8rem;
+  color: var(--slate);
+  transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease-back);
+}
+.tenant-actions button:hover {
+  transform: scale(1.1);
+}
+.tenant-actions .whatsapp-btn:hover {
+  color: #25D366;
+}
+.tenant-actions .edit-btn:hover {
+  color: var(--azure);
+}
+.tenant-actions .moveout-btn:hover {
+  color: var(--warning);
+}
+.tenant-actions .delete-btn:hover {
+  color: var(--danger);
 }
 
-/* ================================================================
-   RESPONSIVE: On medium screens, adjust column widths
-   ================================================================ */
-@media (max-width: 1000px) {
-  .tenant-grid::before,
-  .tenant-card {
-    grid-template-columns: minmax(150px, 1.8fr) minmax(100px, 1fr) minmax(80px, 0.7fr) minmax(90px, 0.8fr) minmax(100px, 0.9fr) minmax(80px, 0.7fr) minmax(100px, 1fr);
-  }
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* ================================================================
-   MOBILE: revert to stacked cards for readability
-   ================================================================ */
-@media (max-width: 800px) {
-  .tenant-grid::before {
-    display: none;
-  }
-
-  .tenant-card {
-    display: flex;
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .page-header {
     flex-direction: column;
     align-items: stretch;
-    padding: var(--space-md);
-    margin-bottom: var(--space-sm);
-    border-radius: var(--radius-md);
-    border-bottom: none;
-    box-shadow: var(--shadow-card);
-    gap: var(--space-sm);
+    gap: 1rem;
   }
-
-  .tenant-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
+  .header-actions {
+    flex-wrap: wrap;
   }
-
-  .status-badge {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
+  .header-actions button,
+  .header-actions a {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
   }
-
-  .tenant-info {
-    width: 100%;
+  .pg-filter {
+    max-width: 100%;
   }
-
-  .tenant-phone,
-  .tenant-room,
-  .tenant-rent,
-  .tenant-movein {
-    display: flex !important;
-    align-items: center;
-    gap: var(--space-xs);
-    font-size: 0.9rem;
-  }
-
-  .tenant-phone .mat-icon,
-  .tenant-room .mat-icon,
-  .tenant-rent .mat-icon,
-  .tenant-movein .mat-icon {
-    display: inline-flex !important;
-  }
-
-  .tenant-actions {
-    width: 100%;
-    justify-content: flex-end;
-    margin-top: var(--space-sm);
-    border-top: 1px solid var(--nookly-mist);
-    padding-top: var(--space-sm);
+  .tenant-grid {
+    grid-template-columns: 1fr;
   }
 }
 
-/* ---- Accessibility ---- */
-:host ::selection {
-  background: var(--nookly-mist);
-  color: var(--nookly-midnight);
-}
-
-:host *:focus-visible {
-  outline: 2px solid var(--nookly-azure);
-  outline-offset: 3px;
-  border-radius: var(--radius-md);
-}
-
-/* Respects reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  :host::before,
-  :host::after {
-    animation: none;
+@media (max-width: 480px) {
+  :host {
+    padding: 0.75rem;
   }
-
-  .page-container,
-  .tenant-card,
-  .add-btn,
-  .rent-btn,
-  .toggle-btn,
-  .empty-state button {
-    animation: none;
-    transition: none;
+  .tenant-card {
+    padding: 1rem;
   }
-
-  .loading-state .mat-icon.spin {
-    animation-duration: 2s;
+  .tenant-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  .tenant-details p {
+    font-size: 0.75rem;
+  }
+  .header-actions button,
+  .header-actions a {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
   }
 }
 
-/* ---- Print styles ---- */
+/* ── Print ── */
 @media print {
   :host {
-    background: white;
-    padding: 0;
+    background: #fff !important;
+    padding: 0 !important;
   }
-
-  .page-container {
-    box-shadow: none;
-    margin: 0;
-    padding: 0;
-    background: white;
+  .tenant-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    break-inside: avoid;
   }
+  .header-actions {
+    display: none !important;
+  }
+  .status-badge {
+    border: 1px solid #000;
+    background: #fff !important;
+    color: #000 !important;
+  }
+}
 
-  :host::before,
-  :host::after {
-    display: none;
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
