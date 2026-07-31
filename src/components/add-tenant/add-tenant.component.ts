@@ -1,3 +1,4 @@
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,13 +27,15 @@ import { MetaService } from '../../service/meta.service';
     MatFormFieldModule, MatInputModule, MatButtonModule,
     MatSnackBarModule, MatIconModule, MatSelectModule,   //  add MatSelectModule
     MatCheckboxModule,
-    OwnerNavbarComponent,
+    OwnerNavbarComponent, MatProgressBarModule,
   ],
   templateUrl: './add-tenant.component.html',
   styleUrls: ['./add-tenant.component.css']
 })
 export class AddTenantComponent implements OnInit {
 
+  selectedFile: File | null = null;
+  uploadResult: string = '';
   tenant: Tenant = new Tenant();
   isEditing = false;
   tenantId?: number;
@@ -42,13 +45,13 @@ export class AddTenantComponent implements OnInit {
   loadingPGs = false;
 
   constructor(
-private tenantService: TenantService,
-  private pgService: PgService,          // ← change to PgService
-  private router: Router,
-  private route: ActivatedRoute,
-  private snackBar: MatSnackBar,
-  private metaService: MetaService
-  ) {}
+    private tenantService: TenantService,
+    private pgService: PgService,          // ← change to PgService
+    private router: Router,
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar,
+    private metaService: MetaService
+  ) { }
 
   ngOnInit(): void {
     this.metaService.setPrivatePage('Add Tenant — CribUp');
@@ -67,25 +70,25 @@ private tenantService: TenantService,
       });
     }
   }
-  
-loadOwnerPGs(): void {
-  this.loadingPGs = true;
-  this.pgService.getMyPGs().subscribe({   // ← now using pgService
-    next: (pgs) => {
-      this.pgList = pgs;
-      this.loadingPGs = false;
-    },
-    error: (err) => {
-      this.loadingPGs = false;
-      console.error('Error loading PGs:', err);
-      this.snackBar.open('Could not load your PG list.', 'Close', { duration: 3000 });
-    }
-  });
-}
+
+  loadOwnerPGs(): void {
+    this.loadingPGs = true;
+    this.pgService.getMyPGs().subscribe({   // ← now using pgService
+      next: (pgs) => {
+        this.pgList = pgs;
+        this.loadingPGs = false;
+      },
+      error: (err) => {
+        this.loadingPGs = false;
+        console.error('Error loading PGs:', err);
+        this.snackBar.open('Could not load your PG list.', 'Close', { duration: 3000 });
+      }
+    });
+  }
 
   save(): void {
     if (!this.tenant.fullName || !this.tenant.phone ||
-        !this.tenant.roomNumber || !this.tenant.monthlyRent) {
+      !this.tenant.roomNumber || !this.tenant.monthlyRent) {
       this.snackBar.open('Please fill all required fields.', 'Close', { duration: 3000 });
       return;
     }
@@ -123,5 +126,67 @@ loadOwnerPGs(): void {
         }
       });
     }
+  }
+  csvFile: File | null = null;
+  csvFileName = '';
+  isImporting = false;
+  importResult: any = null;
+  showImportSection = false;
+
+  // ADD these methods inside AddTenantComponent class:
+  toggleImportSection(): void {
+    this.showImportSection = !this.showImportSection;
+    this.importResult = null;
+  }
+
+  downloadTemplate(): void {
+    this.tenantService.downloadCsvTemplate();
+  }
+
+  onCsvFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) {
+      const file = input.files[0];
+      if (!file.name.endsWith('.csv')) {
+        this.snackBar.open('Please select a CSV file only.', 'Close', { duration: 3000 });
+        return;
+      }
+      this.csvFile = file;
+      this.csvFileName = file.name;
+    }
+  }
+
+  importCsv(): void {
+    if (!this.tenant.pgId) {
+      this.snackBar.open('Please select a PG first.', 'Close', { duration: 3000 });
+      return;
+    }
+    if (!this.csvFile) {
+      this.snackBar.open('Please select a CSV file.', 'Close', { duration: 3000 });
+      return;
+    }
+    this.isImporting = true;
+    this.importResult = null;
+    this.tenantService.importFromCsv(this.tenant.pgId!, this.csvFile).subscribe({
+      next: (result) => {
+        this.isImporting = false;
+        this.importResult = result;
+        this.csvFile = null;
+        this.csvFileName = '';
+        if (result.successCount > 0) {
+          this.snackBar.open(
+            `${result.successCount} tenant(s) imported successfully!`,
+            'Close', { duration: 4000 }
+          );
+        }
+      },
+      error: (err) => {
+        this.isImporting = false;
+        this.snackBar.open(
+          err?.error?.error ?? 'Import failed. Please try again.',
+          'Close', { duration: 4000 }
+        );
+      }
+    });
   }
 }

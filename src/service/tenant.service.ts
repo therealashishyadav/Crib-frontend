@@ -66,4 +66,27 @@ export class TenantService {
 getTenantsByPg(pgId: number): Observable<Tenant[]> {
   return this.http.get<Tenant[]>(`${BASE}/by-pg/${pgId}`, { headers: this.headers() });
 }
+
+importFromCsv(pgId: number, file: File): Observable<any> {
+  const token = localStorage.getItem('token') ?? '';
+  const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+  const formData = new FormData();
+  formData.append('pgId', pgId.toString());
+  formData.append('file', file);
+  return this.http.post<any>(`${BASE}/import-csv?pgId=${pgId}`, formData, { headers });
+}
+
+downloadCsvTemplate(): void {
+  const headers = ['fullName', 'phone', 'roomNumber', 'monthlyRent', 'moveInDate', 'tenantIdProof', 'notes'];
+  const sampleRow = ['Rahul Sharma', '9876543210', 'Room 3', '8000', '05/01/2025', 'AADHAAR1234', 'Sample note'];
+  const csvContent = [headers.join(','), sampleRow.join(',')].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'tenant-import-template.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 }

@@ -81,5 +81,118 @@
             </button>
         </div>
 
+        <div class="import-section">
+
+            <div class="import-toggle">
+                <button mat-stroked-button type="button" (click)="toggleImportSection()">
+                    <mat-icon>upload_file</mat-icon>
+                    {{ showImportSection ? 'Hide Bulk Import' : 'Bulk Import via CSV' }}
+                </button>
+            </div>
+
+            <div class="import-card" *ngIf="showImportSection">
+
+                <div class="import-header">
+                    <h3>Bulk Tenant Import</h3>
+                    <p>Upload a CSV file to import multiple tenants at once.</p>
+                </div>
+
+                <!-- Step 1: Download template -->
+                <div class="import-step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <p class="step-title">Download the template</p>
+                        <p class="step-desc">Use this template to fill in your tenant data correctly.</p>
+                        <button mat-stroked-button type="button" (click)="downloadTemplate()">
+                            <mat-icon>download</mat-icon> Download CSV Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Select PG -->
+                <div class="import-step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <p class="step-title">Select the PG</p>
+                        <p class="step-desc">Tenants will be imported under the PG selected above in the form.</p>
+                        <span class="pg-selected" *ngIf="tenant.pgId">
+                            <mat-icon>check_circle</mat-icon>
+                            PG selected (ID: {{ tenant.pgId }})
+                        </span>
+                        <span class="pg-not-selected" *ngIf="!tenant.pgId">
+                            <mat-icon>warning</mat-icon>
+                            Please select a PG from the form above first.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Step 3: Upload CSV -->
+                <div class="import-step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <p class="step-title">Upload your CSV file</p>
+                        <p class="step-desc">Maximum file size: 5MB. Only .csv files accepted.</p>
+                        <div class="file-select-row">
+                            <input type="file" accept=".csv" (change)="onCsvFileSelected($event)" hidden #csvInput>
+                            <button mat-stroked-button type="button" (click)="csvInput.click()">
+                                <mat-icon>attach_file</mat-icon> Choose CSV File
+                            </button>
+                            <span class="file-name" *ngIf="csvFileName">{{ csvFileName }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload button -->
+                <div class="import-actions">
+                    <button mat-raised-button color="primary" type="button" (click)="importCsv()"
+                        [disabled]="isImporting || !csvFile || !tenant.pgId">
+                        <mat-icon>cloud_upload</mat-icon>
+                        {{ isImporting ? 'Importing...' : 'Import Tenants' }}
+                    </button>
+                </div>
+
+                <!-- Progress -->
+                <mat-progress-bar mode="indeterminate" *ngIf="isImporting" class="import-progress"></mat-progress-bar>
+
+                <!-- Results -->
+                <div class="import-result" *ngIf="importResult">
+                    <div class="result-summary">
+                        <div class="result-stat green">
+                            <mat-icon>check_circle</mat-icon>
+                            <span>{{ importResult.successCount }}</span>
+                            <p>Imported</p>
+                        </div>
+                        <div class="result-stat red" *ngIf="importResult.failedCount > 0">
+                            <mat-icon>cancel</mat-icon>
+                            <span>{{ importResult.failedCount }}</span>
+                            <p>Failed</p>
+                        </div>
+                        <div class="result-stat blue">
+                            <mat-icon>summarize</mat-icon>
+                            <span>{{ importResult.totalProcessed }}</span>
+                            <p>Total Rows</p>
+                        </div>
+                    </div>
+
+                    <!-- Error list -->
+                    <div class="error-list" *ngIf="importResult.errors?.length > 0">
+                        <h4>
+                            <mat-icon>error_outline</mat-icon>
+                            Row Errors ({{ importResult.errors.length }})
+                        </h4>
+                        <ul>
+                            <li *ngFor="let err of importResult.errors">{{ err }}</li>
+                        </ul>
+                    </div>
+
+                    <div class="all-success" *ngIf="importResult.errors?.length === 0">
+                        <mat-icon>celebration</mat-icon>
+                        All rows imported successfully!
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
