@@ -1,70 +1,74 @@
 <div class="account-container">
-      <form (ngSubmit)="Register()" #registrationForm="ngForm">
-        <h1 class="form-title">Create Account</h1>
+  <form (ngSubmit)="Register()" #registrationForm="ngForm">
+    <h1 class="form-title">Create Account</h1>
 
-        <div class="form-grid">
-          <!-- First Name -->
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>First Name</mat-label>
-            <input matInput type="text" name="firstName" [(ngModel)]="user.firstName" required>
-          </mat-form-field>
+    <div class="form-grid">
+      <!-- First Name -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>First Name</mat-label>
+        <input matInput type="text" name="firstName" [(ngModel)]="user.firstName" required>
+      </mat-form-field>
 
-          <!-- Last Name -->
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Last Name</mat-label>
-            <input matInput type="text" name="lastName" [(ngModel)]="user.lastName" required>
-          </mat-form-field>
+      <!-- Last Name -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Last Name</mat-label>
+        <input matInput type="text" name="lastName" [(ngModel)]="user.lastName" required>
+      </mat-form-field>
 
-          <!-- Email -->
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Email</mat-label>
-            <input matInput type="email" name="email" [(ngModel)]="user.email" required
-              pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}" #email="ngModel">
-            <mat-error *ngIf="email.invalid && (email.dirty || email.touched)">
-              <span *ngIf="email.errors?.['required']">Email is required</span>
-              <span *ngIf="email.errors?.['pattern']">Please enter a valid email address</span>
-            </mat-error>
-          </mat-form-field>
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" name="email" [(ngModel)]="user.email" required pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}"
+          #email="ngModel">
+        <mat-error *ngIf="email.invalid && (email.dirty || email.touched)">
+          <span *ngIf="email.errors?.['required']">Email is required</span>
+          <span *ngIf="email.errors?.['pattern']">Please enter a valid email address</span>
+        </mat-error>
+      </mat-form-field>
 
-          
 
-          <!-- Phone -->
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Phone Number</mat-label>
-            <input matInput type="tel" name="phone" [(ngModel)]="user.phone" required pattern="[0-9]{10}"
-              #phone="ngModel">
-            <mat-error *ngIf="phone.invalid && (phone.dirty || phone.touched)">
-              <span *ngIf="phone.errors?.['required']">Phone number is required</span>
-              <span *ngIf="phone.errors?.['pattern']">Please enter a valid 10-digit number</span>
-            </mat-error>
-          </mat-form-field>
 
-          <!-- Password -->
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Password</mat-label>
-            <input matInput type="password" name="password" [(ngModel)]="user.password" required minlength="8"
-              #password="ngModel">
-            <mat-hint>Minimum 8 characters</mat-hint>
-            <mat-error *ngIf="password.invalid && (password.dirty || password.touched)">
-              <span *ngIf="password.errors?.['required']">Password is required</span>
-              <span *ngIf="password.errors?.['minlength']">Minimum 8 characters required</span>
-            </mat-error>
-          </mat-form-field>
+      <!-- Phone -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Phone Number</mat-label>
+        <input matInput type="tel" name="phone" [(ngModel)]="user.phone" required pattern="[0-9]{10}" #phone="ngModel">
+        <mat-error *ngIf="phone.invalid && (phone.dirty || phone.touched)">
+          <span *ngIf="phone.errors?.['required']">Phone number is required</span>
+          <span *ngIf="phone.errors?.['pattern']">Please enter a valid 10-digit number</span>
+        </mat-error>
+      </mat-form-field>
 
-          <!-- Confirm Password -->
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Confirm Password</mat-label>
-            <input matInput type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required>
-          </mat-form-field>
-        </div>
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" name="password" [(ngModel)]="user.password" required minlength="8"
+          #password="ngModel">
+        <mat-hint>Minimum 8 characters</mat-hint>
+        <mat-error *ngIf="password.invalid && (password.dirty || password.touched)">
+          <span *ngIf="password.errors?.['required']">Password is required</span>
+          <span *ngIf="password.errors?.['minlength']">Minimum 8 characters required</span>
+        </mat-error>
+      </mat-form-field>
 
-        <div class="form-actions">
-          <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid">
-            Register
-          </button>
-
-          <li><a routerLink="/login">Already Have an Account?</a></li>
-
-        </div>
-      </form>
+      <!-- Confirm Password -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required>
+      </mat-form-field>
     </div>
+    <div class="terms-checkbox">
+      <mat-checkbox [(ngModel)]="acceptedTerms" name="terms" required>
+        I agree to the
+        <a href="/terms" target="_blank">Terms and Conditions</a>
+      </mat-checkbox>
+    </div>
+    <div class="form-actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid">
+        Register
+      </button>
+
+      <li><a routerLink="/login">Already Have an Account?</a></li>
+
+    </div>
+  </form>
+</div>

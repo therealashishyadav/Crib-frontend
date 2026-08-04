@@ -360,3 +360,6 @@ transition-duration: 0.01ms !important;
 }
 }
 
+.terms-checkbox {
+  margin: var(--space-md) 0 var(--space-sm);
+}
