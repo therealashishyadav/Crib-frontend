@@ -165,11 +165,10 @@ downloadPgCsvTemplate(): void {
     sharingJson
   ];
 
-  const headerLine = fields.join(',');
-  const sampleLine = sampleRow.join(',');
-  const comment = '# Full PG import template. sharingOptionsJson is a JSON array with fields: sharingType, pricePerMonth, totalBeds, amenities.\n';
+const headerLine = this.toCsvLine(fields);
+const sampleLine = this.toCsvLine(sampleRow);
 
-  const csvContent = comment + headerLine + '\n' + sampleLine;
+const csvContent = headerLine + '\n' + sampleLine;
   const blob = new Blob([csvContent], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -178,5 +177,15 @@ downloadPgCsvTemplate(): void {
   a.click();
   URL.revokeObjectURL(url);
 }
+private escapeCsvField(value: any): string {
+  const str = value === null || value === undefined ? '' : String(value);
+  if (/[",\n\r]/.test(str)) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
 
+private toCsvLine(values: any[]): string {
+  return values.map(v => this.escapeCsvField(v)).join(',');
+}
 }
