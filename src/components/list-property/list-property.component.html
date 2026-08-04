@@ -724,5 +724,98 @@
 
   </form>
 </section>
+<!-- Bulk CSV Import -->
+<div class="pg-csv-section">
+  <div class="csv-toggle-row">
+    <button mat-stroked-button type="button" (click)="toggleCsvImport()">
+      <mat-icon>upload_file</mat-icon>
+      {{ showCsvImport ? 'Hide Bulk Import' : 'Bulk Import PGs via CSV' }}
+    </button>
+  </div>
 
+  <div class="csv-import-card" *ngIf="showCsvImport">
+    <div class="csv-import-header">
+      <h3>Bulk PG Import</h3>
+      <p>Upload a CSV to add multiple PG listings at once.</p>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="csv-step">
+      <div class="csv-step-num">1</div>
+      <div class="csv-step-body">
+        <p class="csv-step-title">Download the template</p>
+        <p class="csv-step-desc">
+          Fill in your PG data using this template.<br>
+          <span class="csv-hint">
+            <mat-icon>info</mat-icon>
+            occupancyType: GIRLS, BOYS, or COED. sharingOptionsJson: valid JSON.
+          </span>
+        </p>
+        <button mat-stroked-button type="button" (click)="downloadPgTemplate()">
+          <mat-icon>download</mat-icon> Download CSV Template
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="csv-step">
+      <div class="csv-step-num">2</div>
+      <div class="csv-step-body">
+        <p class="csv-step-title">Upload your filled CSV</p>
+        <p class="csv-step-desc">Maximum size: 5MB. Only .csv files accepted.</p>
+        <div class="csv-file-row">
+          <input type="file" accept=".csv" (change)="onPgCsvSelected($event)" hidden #pgCsvInput>
+          <button mat-stroked-button type="button" (click)="pgCsvInput.click()">
+            <mat-icon>attach_file</mat-icon> Choose CSV File
+          </button>
+          <span class="csv-file-name" *ngIf="csvFileName">{{ csvFileName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import -->
+    <div class="csv-actions">
+      <button mat-raised-button color="primary" type="button"
+              (click)="importPgsCsv()"
+              [disabled]="isImporting || !csvFile">
+        <mat-icon>cloud_upload</mat-icon>
+        {{ isImporting ? 'Importing...' : 'Import PGs' }}
+      </button>
+    </div>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="isImporting" class="csv-progress"></mat-progress-bar>
+
+    <!-- Results -->
+    <div class="csv-result" *ngIf="pgImportResult">
+      <div class="csv-result-summary">
+        <div class="csv-stat green">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ pgImportResult.successCount }}</span>
+          <p>Imported</p>
+        </div>
+        <div class="csv-stat red" *ngIf="pgImportResult.failedCount > 0">
+          <mat-icon>cancel</mat-icon>
+          <span>{{ pgImportResult.failedCount }}</span>
+          <p>Failed</p>
+        </div>
+        <div class="csv-stat blue">
+          <mat-icon>summarize</mat-icon>
+          <span>{{ pgImportResult.totalProcessed }}</span>
+          <p>Total Rows</p>
+        </div>
+      </div>
+
+      <div class="csv-errors" *ngIf="pgImportResult.errors?.length > 0">
+        <h4><mat-icon>error_outline</mat-icon> Row Errors</h4>
+        <ul>
+          <li *ngFor="let err of pgImportResult.errors">{{ err }}</li>
+        </ul>
+      </div>
+
+      <div class="csv-all-success" *ngIf="pgImportResult.errors?.length === 0">
+        <mat-icon>celebration</mat-icon> All PGs imported successfully!
+      </div>
+    </div>
+  </div>
+</div>
 <app-footer></app-footer>

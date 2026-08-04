@@ -111,4 +111,72 @@ export class PgListingService {
       headers: this.getAuthHeaders()
     });
   }
+
+  importPgsFromCsv(file: File): Observable<any> {
+  const token = localStorage.getItem('token') ?? '';
+  const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+  const formData = new FormData();
+  formData.append('file', file);
+  return this.http.post<any>(`${this.baseUrl}/import-csv`, formData, { headers });
+}
+
+downloadPgCsvTemplate(): void {
+  const fields = [
+    'pgName','fullAddress','city','locality','pinCode','googleMapLink','nearbyLandmarks',
+    'coverImageUrl','galleryImages','virtualTourLink','videoLink',
+    'occupancyType','roomSizeSqFt','furnished','attachedWashroom','balconyAvailable',
+    'airConditioned','bedType','mattressProvided','studyTableAvailable',
+    'foodProvided','mealTypes','foodOptions','cookingAllowed','commonKitchenAccess',
+    'fridgeAvailable','microwaveAvailable',
+    'wifiAvailable','powerBackupAvailable','geyserAvailable','washingMachineAvailable',
+    'housekeepingFrequency','cctvSurveillance','securityGuardAvailable','liftAvailable',
+    'twoWheelerParking','fourWheelerParking','loungeAvailable','recreationAreaAvailable',
+    'gymAvailable','rooftopAccess',
+    'dailyCleaning','laundryService','maintenanceOnCall','waterPurifierAvailable','dispenserAvailable',
+    'entryExitTimings','visitorsAllowed','guestsOvernightAllowed','securityDepositAmount',
+    'idVerificationRequired','fireSafetyAvailable','smokingAllowed','petsAllowed','alcoholAllowed',
+    'depositAmount','noticePeriodDays','lockInPeriodMonths','additionalChargesInfo','maintenanceChargesInfo',
+    'ownerName','contactNumber','whatsappNumber','email','visitingHours','availabilityFor',
+    'agreementType','minimumStayMonths','noticePeriodToLeaveDays','refundPolicy','houseRulesDocumentUrl',
+    'specialOffers','earlyBirdDiscounts','referralBonuses',
+    'immediatePossession','availableFromDate','waitingList','totalRooms','availableRooms',
+    'sharingOptionsJson'
+  ];
+
+  const sampleSharing = [
+    { sharingType: 'ONE_SHARING', pricePerMonth: 8500, totalBeds: 2, amenities: ['AC','WiFi'] }
+  ];
+  const sharingJson = JSON.stringify(sampleSharing);
+
+  const sampleRow = [
+    'Sunrise PG','123 Main Road','Pune','Viman Nagar','411014','https://...','Near Wipro',
+    '','','','',
+    'COED','150','true','true','false','false','SINGLE','true','true',
+    'true','Breakfast, Lunch','Veg','false','false','true','false',
+    'true','false','true','false','DAILY','true','false','true',
+    'true','false','false','false','false','false',
+    'true','false','true','true','false',
+    '10:00 PM','true','false','5000','true','true','false','false','false',
+    '10000','30','6','Electricity extra','Maintenance included',
+    'Rajesh Kumar','9876543210','9876543210','owner@email.com','10 AM - 7 PM','BOTH',
+    'RENTAL_AGREEMENT','3','15','Refundable','https://...',
+    'First month 10% off','','',
+    'true','2025-06-01','false','10','8',
+    sharingJson
+  ];
+
+  const headerLine = fields.join(',');
+  const sampleLine = sampleRow.join(',');
+  const comment = '# Full PG import template. sharingOptionsJson is a JSON array with fields: sharingType, pricePerMonth, totalBeds, amenities.\n';
+
+  const csvContent = comment + headerLine + '\n' + sampleLine;
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pg-import-template-full.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 }

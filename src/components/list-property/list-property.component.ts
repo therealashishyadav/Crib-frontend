@@ -21,6 +21,7 @@ import { PgModel, SharingOptionModel } from '../../entity/PgModel';
 import { PgListingService } from '../../service/pg-listing.service';
 import { OwnerNavbarComponent } from '../owner-navbar/owner-navbar.component';
 import { MetaService } from '../../service/meta.service';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 // ── Cloudinary config ─────────────────────────────────────────────────────────
 const CLOUDINARY_CLOUD_NAME    = 'dmb3nvt45';       // your cloud name
@@ -45,6 +46,7 @@ const CLOUDINARY_UPLOAD_PRESET = 'nookly_unsigned'; // your unsigned preset
     MatSnackBarModule,
     OwnerNavbarComponent,
     FooterComponent,
+    MatProgressBarModule,
   ],
   templateUrl: './list-property.component.html',
   styleUrls: ['./list-property.component.css'],
@@ -331,5 +333,61 @@ export class ListPropertyComponent implements OnInit {
     this.videoFile         = null;
     this.pgForm.resetForm();
   }
+
+// ── Bulk CSV Import ──
+showCsvImport = false;
+csvFile: File | null = null;
+csvFileName = '';
+isImporting = false;
+pgImportResult: any = null;
+
+toggleCsvImport(): void {
+  this.showCsvImport = !this.showCsvImport;
+  this.pgImportResult = null;
+  this.csvFile = null;
+  this.csvFileName = '';
+}
+
+downloadPgTemplate(): void {
+  this.pgListingService.downloadPgCsvTemplate();
+}
+
+onPgCsvSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files?.[0]) {
+    const file = input.files[0];
+    if (!file.name.endsWith('.csv')) {
+      this.snackBar.open('Please select a CSV file only.', 'Close', { duration: 3000 });
+      return;
+    }
+    this.csvFile = file;
+    this.csvFileName = file.name;
+  }
+}
+
+importPgsCsv(): void {
+  if (!this.csvFile) {
+    this.snackBar.open('Please select a CSV file.', 'Close', { duration: 3000 });
+    return;
+  }
+  this.isImporting = true;
+  this.pgImportResult = null;
+
+  this.pgListingService.importPgsFromCsv(this.csvFile).subscribe({
+    next: (result) => {
+      this.isImporting = false;
+      this.pgImportResult = result;
+      this.csvFile = null;
+      this.csvFileName = '';
+      if (result.successCount > 0) {
+        this.snackBar.open(`${result.successCount} PG(s) imported successfully!`, 'Close', { duration: 4000 });
+      }
+    },
+    error: (err) => {
+      this.isImporting = false;
+      this.snackBar.open(err?.error?.error ?? 'Import failed.', 'Close', { duration: 4000 });
+    }
+  });
+}
 
 }

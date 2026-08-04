@@ -1,53 +1,46 @@
 :host {
-  /* Brand Palette */
-  --nookly-azure: #4A90E2;
-  --nookly-mist: #D9E6F1;
+  --nookly-azure: #C27A5C;
+  --nookly-mist: #C5D5B2;
   --nookly-slate: #A7B3C6;
-  --nookly-midnight: #2C3E50;
-  --nookly-white: #FFFFFF;
+  --nookly-midnight: #2F2F2F;
+  --nookly-white: #FDFBF7;
+  --nookly-azure-deep: #A66348;
+  --nookly-azure-glow: rgba(194, 122, 92, 0.12);
+  --nookly-azure-line: rgba(194, 122, 92, 0.25);
+  --nookly-midnight-05: rgba(47, 47, 47, 0.05);
+  --nookly-gold: #D4B896;
+  --nookly-gold-soft: rgba(212, 184, 150, 0.15);
 
-  --nookly-azure-deep: #2d6abf;
-  --nookly-azure-glow: rgba(74, 144, 226, 0.12);
-  --nookly-azure-line: rgba(74, 144, 226, 0.25);
-  --nookly-midnight-05: rgba(44, 62, 80, 0.05);
-  --nookly-gold: #C9A96E;
-  --nookly-gold-soft: rgba(201, 169, 110, 0.15);
-
-  /* Typography */
   --font-display: 'Cormorant Garamond', 'Georgia', serif;
-  --font-body: 'Jost', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Jost', 'Segoe UI', sans-serif;
 
-  /* Compact spacing scale */
   --space-xs: 0.35rem;
   --space-sm: 0.75rem;
   --space-md: 1.25rem;
   --space-lg: 2rem;
   --space-xl: 3rem;
 
-  /* Motion */
-  --ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --dur-mid: 420ms;
-  --dur-slow: 700ms;
+  --dur-mid: 300ms;
+  --dur-slow: 450ms;
 
-  /* Radius */
+  --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 24px;
-  --radius-pill: 9999px;
+  --radius-xl: 36px;
 
-  /* Shadows */
-  --shadow-card: 0 8px 24px rgba(44, 62, 80, 0.08), 0 1px 3px rgba(44, 62, 80, 0.04);
-  --shadow-hover: 0 20px 40px rgba(44, 62, 80, 0.12), 0 4px 12px rgba(74, 144, 226, 0.1);
-  --shadow-azure: 0 8px 24px rgba(74, 144, 226, 0.2);
+  --shadow-card: 0 8px 24px rgba(47, 47, 47, 0.06), 0 1px 3px rgba(47, 47, 47, 0.04);
+  --shadow-hover: 0 16px 32px rgba(47, 47, 47, 0.08), 0 4px 12px rgba(194, 122, 92, 0.1);
+  --shadow-azure: 0 8px 24px rgba(194, 122, 92, 0.18);
 
   display: block;
   min-height: 100vh;
   padding: var(--space-xl) var(--space-sm);
 
-  /* Unsplash luxury real estate background with overlay */
   background-image:
-    linear-gradient(135deg, rgba(44, 62, 80, 0.8) 0%, rgba(74, 144, 226, 0.7) 100%),
-    url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+    linear-gradient(135deg, rgba(47, 47, 47, 0.5) 0%, rgba(194, 122, 92, 0.35) 100%),
+    url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
@@ -56,7 +49,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Floating orbs (same as registration) */
 :host::before,
 :host::after {
   content: '';
@@ -64,8 +56,8 @@
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  animation: orbitFloat 16s ease-in-out infinite alternate;
-  opacity: 0.25;
+  animation: orbitFloat 18s ease-in-out infinite alternate;
+  opacity: 0.2;
 }
 
 :host::before {
@@ -74,7 +66,6 @@
   top: -150px;
   right: -120px;
   background: radial-gradient(circle, var(--nookly-mist) 0%, transparent 70%);
-  animation-duration: 20s;
 }
 
 :host::after {
@@ -82,8 +73,7 @@
   height: 320px;
   bottom: 40px;
   left: -100px;
-  background: radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, transparent 70%);
-  animation-duration: 24s;
+  background: radial-gradient(circle, rgba(194, 122, 92, 0.25) 0%, transparent 70%);
   animation-direction: alternate-reverse;
 }
 
@@ -91,21 +81,20 @@
   0% {
     transform: translate(0, 0) scale(1);
   }
-
   100% {
-    transform: translate(25px, 20px) scale(1.05);
+    transform: translate(30px, 25px) scale(1.04);
   }
 }
 
-/* Main container – narrower for login */
 .login-container {
   max-width: 520px;
   margin: 0 auto;
-  padding: var(--space-lg) var(--space-lg);
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(2px);
+  padding: var(--space-xl) var(--space-lg);
+  background: rgba(253, 251, 247, 0.96);
+  backdrop-filter: blur(4px);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+  border: 1px solid rgba(210, 201, 192, 0.3);
   position: relative;
   z-index: 2;
   animation: pageReveal 0.6s var(--ease-luxury) both;
@@ -116,23 +105,22 @@
     opacity: 0;
     transform: translateY(15px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Form title – elegant serif */
 .auth-title {
   font-family: var(--font-display);
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  font-weight: 600;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 500;
   color: var(--nookly-midnight);
   margin: 0 0 var(--space-md) 0;
   padding-bottom: var(--space-xs);
   position: relative;
   display: inline-block;
+  letter-spacing: -0.01em;
 }
 
 .auth-title::after {
@@ -140,10 +128,10 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 60px;
+  width: 50px;
   height: 2px;
   background: linear-gradient(90deg, var(--nookly-gold), var(--nookly-azure));
-  border-radius: var(--radius-pill);
+  border-radius: 2px;
   transition: width var(--dur-slow) var(--ease-luxury);
 }
 
@@ -151,13 +139,11 @@
   width: 100%;
 }
 
-/* Full width fields */
 .full-width-field {
   width: 100%;
   margin-bottom: var(--space-md);
 }
 
-/* ── ANGULAR MATERIAL OUTLINE OVERRIDES (NO DOUBLE BORDER) ── */
 ::ng-deep .mat-mdc-form-field {
   width: 100%;
 }
@@ -182,7 +168,6 @@
   border-color: var(--nookly-azure) !important;
 }
 
-/* Focus – single azure line, no thickness increase, no glow */
 ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
 ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
 ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
@@ -199,7 +184,6 @@
   box-shadow: none !important;
 }
 
-/* Label styling */
 ::ng-deep .mat-mdc-form-field-label {
   font-family: var(--font-body);
   font-weight: 500;
@@ -211,15 +195,13 @@
   color: var(--nookly-azure);
 }
 
-/* Input text */
 ::ng-deep .mat-mdc-input-element {
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--nookly-midnight);
   caret-color: var(--nookly-azure);
 }
 
-/* Material icons inside input */
 ::ng-deep .mat-icon {
   color: var(--nookly-slate);
   transition: color var(--dur-mid);
@@ -229,7 +211,6 @@
   color: var(--nookly-azure);
 }
 
-/* ── BUTTONS – LUXURY REDESIGN ── */
 .form-actions {
   display: flex;
   gap: 1rem;
@@ -240,110 +221,79 @@
 .auth-button {
   flex: 1;
   min-width: 140px;
-  background: linear-gradient(105deg, var(--nookly-midnight) 100%, var(--nookly-azure-glow) 100%);
+  background: var(--nookly-azure);
   border: none;
-  border-radius: var(--radius-pill);
-  padding: 0.6rem 1.8rem;
+  border-radius: var(--radius-xl);
+  padding: 0.7rem 1.8rem;
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  color: var(--nookly-white);
+  letter-spacing: 0.2px;
+  color: white;
   box-shadow: var(--shadow-azure);
   transition: all 0.3s var(--ease-bounce);
   cursor: pointer;
 }
 
-/* Primary Sign In – rich gradient with shimmer */
+.auth-button:hover {
+  background: var(--nookly-azure-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -6px rgba(194, 122, 92, 0.35);
+}
+
 button.mat-mdc-raised-button.mat-primary {
-  background: linear-gradient(105deg, var(--nookly-midnight) 0%, var(--nookly-azure) 100%);
+  background: var(--nookly-azure);
   border: none;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-xl);
   padding: 0.7rem 1.5rem;
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  color: var(--nookly-white);
+  letter-spacing: 0.2px;
+  color: white;
   box-shadow: var(--shadow-azure);
   transition: all 0.3s var(--ease-bounce);
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
   width: 100%;
-}
-
-/* Shimmer effect on hover */
-button.mat-mdc-raised-button.mat-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-button.mat-mdc-raised-button.mat-primary:hover::before {
-  left: 100%;
 }
 
 button.mat-mdc-raised-button.mat-primary:hover:not([disabled]) {
-  background: linear-gradient(105deg, #1F3348 0%, var(--nookly-azure-deep) 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px -8px rgba(74, 144, 226, 0.5);
+  background: var(--nookly-azure-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -6px rgba(194, 122, 92, 0.35);
 }
 
 button.mat-mdc-raised-button.mat-primary:active:not([disabled]) {
   transform: translateY(1px);
 }
 
-/* Secondary "Create New Account" – elegant outlined with subtle gold hover */
 button.mat-mdc-button.mat-accent {
   background: transparent;
   border: 1.5px solid var(--nookly-azure);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-xl);
   padding: 0.65rem 1.5rem;
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 500;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   color: var(--nookly-azure);
   transition: all 0.3s var(--ease-luxury);
   cursor: pointer;
   width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-button.mat-mdc-button.mat-accent::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, var(--nookly-azure-glow), transparent);
-  transition: left 0.4s ease;
 }
 
 button.mat-mdc-button.mat-accent:hover {
-  border-color: var(--nookly-gold);
-  color: var(--nookly-midnight);
+  background: var(--nookly-midnight-05);
+  border-color: var(--nookly-azure-deep);
+  color: var(--nookly-azure-deep);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-button.mat-mdc-button.mat-accent:hover::before {
-  left: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 button.mat-mdc-button.mat-accent:active {
   transform: translateY(1px);
 }
 
-/* Remove Material default ripples/overlays */
 ::ng-deep .mat-mdc-button .mat-mdc-button-ripple,
 ::ng-deep .mat-mdc-raised-button .mat-mdc-button-ripple,
 ::ng-deep .mat-mdc-button .mat-mdc-button-focus-overlay,
@@ -351,7 +301,6 @@ button.mat-mdc-button.mat-accent:active {
   display: none;
 }
 
-/* Forgot password link */
 .auth-footer {
   text-align: center;
   margin-top: var(--space-md);
@@ -373,7 +322,6 @@ button.mat-mdc-button.mat-accent:active {
   text-decoration: underline;
 }
 
-/* ── NEW: LOGIN DIVIDER (or continue with) ── */
 .login-divider {
   display: flex;
   align-items: center;
@@ -397,7 +345,6 @@ button.mat-mdc-button.mat-accent:active {
   white-space: nowrap;
 }
 
-/* ── NEW: GOOGLE BUTTON CONTAINER ── */
 #googleButton {
   display: flex;
   justify-content: center;
@@ -405,15 +352,13 @@ button.mat-mdc-button.mat-accent:active {
   width: 100%;
 }
 
-/* Makes the Google button fully responsive and matches your design */
 ::ng-deep #googleButton iframe {
   width: 100% !important;
   max-width: 280px !important;
   min-height: 44px !important;
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-xl) !important;
 }
 
-/* ── RESPONSIVE BREAKPOINTS ── */
 @media (max-width: 640px) {
   :host {
     padding: var(--space-lg) var(--space-sm);
@@ -444,19 +389,15 @@ button.mat-mdc-button.mat-accent:active {
   :host::before,
   :host::after {
     display: none;
-    /* performance on mobile */
   }
 
-  /* Mobile Google button adjustments */
   ::ng-deep #googleButton iframe {
     max-width: 100% !important;
   }
 }
 
-/* ── ACCESSIBILITY (no double focus outline) ── */
 :host *:focus-visible {
-  /* outline: 2px solid var(--nookly-azure); */
-  /* commented to avoid conflict with Material focus */
+  outline: 2px solid var(--nookly-azure);
   outline-offset: 3px;
   border-radius: var(--radius-sm);
 }
@@ -466,7 +407,6 @@ button.mat-mdc-button.mat-accent:active {
   color: var(--nookly-midnight);
 }
 
-/* ── PRINT STYLES ── */
 @media print {
   :host {
     background: white;
@@ -476,6 +416,7 @@ button.mat-mdc-button.mat-accent:active {
   .login-container {
     box-shadow: none;
     background: white;
+    border: none;
   }
 
   :host::before,
@@ -502,5 +443,19 @@ button.mat-mdc-button.mat-accent:active {
     width: 100% !important;
     max-width: 280px !important;
     min-height: 44px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  :host::before,
+  :host::after,
+  .login-container,
+  .auth-title::after,
+  button,
+  a {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
